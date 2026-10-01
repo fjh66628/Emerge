@@ -113,10 +113,6 @@ public static class MVP01Builder
         RenderSettings.fogEndDistance = 56f;
 
         AddReflectionProbe("Metal field reflection", V(0, 5, 0), V(90, 24, 90), lighting.transform);
-        Material shaftMaterial = MakeLightShaft();
-        GameObject shafts = ChildGroup("Soft volumetric light", lighting.transform);
-        AddLightShaft("West light shaft", V(-5, 12, 8), shaftMaterial, shafts.transform);
-        AddLightShaft("East light shaft", V(13, 12, 5), shaftMaterial, shafts.transform);
 
         VolumeProfile profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(Root + "/Materials/MVP01_Volume.asset");
         if (profile == null)
@@ -168,7 +164,6 @@ public static class MVP01Builder
         cameraObject.AddComponent<AudioListener>();
         UniversalAdditionalCameraData cameraData = cameraObject.AddComponent<UniversalAdditionalCameraData>();
         cameraData.renderPostProcessing = true;
-        cameraData.requiresDepthTexture = true;
         player.AddComponent<FirstPersonWalk>();
 
         if (!EditorSceneManager.SaveScene(scene, ScenePath))
@@ -184,7 +179,7 @@ public static class MVP01Builder
             Camera previewCamera = GameObject.Find("Main Camera")?.GetComponent<Camera>();
             if (previewCamera != null) CapturePreviews(previewCamera);
         };
-        Debug.Log($"MVP01 built: one metal floor plane, {boxCount} metal columns, 2 soft light shafts. Scene: {ScenePath}");
+        Debug.Log($"MVP01 built: one metal floor plane, {boxCount} metal columns, first-person player. Scene: {ScenePath}");
     }
 
     [MenuItem("MVP01/Capture Preview")]
@@ -279,48 +274,6 @@ public static class MVP01Builder
         material.SetFloat("_BandStrength", 0.012f);
         EditorUtility.SetDirty(material);
         return material;
-    }
-
-    private static Material MakeLightShaft()
-    {
-        string path = Root + "/Materials/Soft_Volume_Light.mat";
-        Shader shader = AssetDatabase.LoadAssetAtPath<Shader>(Root + "/Shaders/SoftVolumeLight.shader");
-        if (shader == null) throw new InvalidOperationException("SoftVolumeLight shader has not imported.");
-        Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
-        if (material == null)
-        {
-            material = new Material(shader);
-            AssetDatabase.CreateAsset(material, path);
-        }
-        material.shader = shader;
-        material.SetColor("_LightColor", new Color(1f, 0.96f, 0.88f));
-        material.SetFloat("_Density", 0.08f);
-        EditorUtility.SetDirty(material);
-        return material;
-    }
-
-    private static void AddLightShaft(string name, Vector3 source, Material material, Transform parent)
-    {
-        GameObject lightObject = new GameObject(name + " spotlight");
-        lightObject.transform.SetParent(parent);
-        lightObject.transform.position = source;
-        lightObject.transform.rotation = Quaternion.LookRotation(Vector3.down);
-        Light spotlight = lightObject.AddComponent<Light>();
-        spotlight.type = LightType.Spot;
-        spotlight.color = new Color(1f, 0.94f, 0.84f);
-        spotlight.intensity = 4f;
-        spotlight.range = 15f;
-        spotlight.spotAngle = 38f;
-        spotlight.shadows = LightShadows.Soft;
-        spotlight.shadowStrength = 0.45f;
-
-        GameObject beam = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        beam.name = name + " haze";
-        beam.transform.SetParent(parent);
-        beam.transform.position = source - V(0, 6, 0);
-        beam.transform.localScale = V(8, 12, 8);
-        beam.GetComponent<MeshRenderer>().sharedMaterial = material;
-        UnityEngine.Object.DestroyImmediate(beam.GetComponent<BoxCollider>());
     }
 
     private static Material MakeSurface(string name, Color tint, string textureName, float metallic, float smoothness)
@@ -526,7 +479,6 @@ public static class MVP01Builder
         Vector3 originalPosition = cameraTransform.position;
         Quaternion originalRotation = cameraTransform.rotation;
         Capture(camera, "MVP01_MetalField.png", V(0, 1.75f, -8), V(0, 4.5f, 19));
-        Capture(camera, "MVP01_VolumeLight.png", V(-10, 1.75f, 0), V(-5, 5, 8));
         Capture(camera, "MVP01_MetalFloor.png", V(-3, 1.75f, -2), V(5, 0.25f, 10));
         Capture(camera, "MVP01_MetalColumns.png", V(8, 1.75f, 4), V(19, 6, 8));
         cameraTransform.position = originalPosition;
