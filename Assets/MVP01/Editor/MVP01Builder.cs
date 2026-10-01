@@ -88,6 +88,7 @@ public static class MVP01Builder
         }
 
         MVP01FloraBuilder.Build(world.transform);
+        MVP01BoardBuilder.Build(world.transform);
 
         GameObject lighting = new GameObject("02  |  LIGHT AND ATMOSPHERE");
         GameObject sunObject = new GameObject("Cold directional sun");
@@ -187,6 +188,23 @@ public static class MVP01Builder
         Camera camera = GameObject.Find("Main Camera")?.GetComponent<Camera>();
         if (camera == null) throw new InvalidOperationException("Open the MVP01 scene first.");
         CapturePreviews(camera);
+    }
+
+    [MenuItem("MVP01/Update Flower Circle and Board")]
+    public static void UpdateFlowerCircleAndBoard()
+    {
+        Scene scene = SceneManager.GetActiveScene();
+        if (scene.path != ScenePath)
+            throw new InvalidOperationException("Open the MVP01 scene before updating its flower circle.");
+        GameObject world = GameObject.Find("01  |  METAL COLUMN FIELD");
+        if (world == null) throw new InvalidOperationException("The metal field root is missing.");
+
+        MVP01FloraBuilder.Build(world.transform);
+        MVP01BoardBuilder.Build(world.transform);
+        if (!EditorSceneManager.SaveScene(scene))
+            throw new IOException("Unity could not save the updated MVP01 scene.");
+        AssetDatabase.SaveAssets();
+        CaptureCurrentScene();
     }
 
     private static GameObject ChildGroup(string name, Transform parent)
@@ -539,6 +557,7 @@ public static class MVP01Builder
         Capture(camera, "MVP01_MetalFloor.png", V(-3, 1.75f, -2), V(4, 0.9f, 8));
         Capture(camera, "MVP01_MetalColumns.png", V(8, 1.75f, 4), V(19, 6, 8));
         Capture(camera, "MVP01_FloraDetail.png", V(1.5f, 1.55f, -2.5f), V(0, 1.3f, 3));
+        Capture(camera, "MVP01_PaintingBoard.png", V(0.3f, 1.7f, -4.2f), V(0, 1.9f, 0));
         cameraTransform.position = originalPosition;
         cameraTransform.rotation = originalRotation;
     }

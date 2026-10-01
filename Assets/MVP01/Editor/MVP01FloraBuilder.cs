@@ -13,6 +13,8 @@ internal static class MVP01FloraBuilder
     private const int GrassCount = 1000;
     private const int FlowerCount = 190;
     private const int GroundFlowerClusters = 650;
+    private const float FlowerCircleRadius = 8.5f;
+    private const float BoardClearanceRadius = 1.25f;
 
     private static readonly Color[] GroundFlowerPalette =
     {
@@ -42,17 +44,23 @@ internal static class MVP01FloraBuilder
         var random = new System.Random(20261002);
         for (int i = 0; i < GrassCount; i++)
         {
-            Vector2 point = RadialPoint(random, 16.5f, 2.05f);
+            Vector2 point = i < 880
+                ? DiscPoint(random, 9.4f, BoardClearanceRadius)
+                : AnnulusPoint(random, 9.4f, 16.5f);
             AddGrass(random, point);
         }
         for (int i = 0; i < FlowerCount; i++)
         {
-            Vector2 point = RadialPoint(random, 13.5f, 1.75f);
+            Vector2 point = i < 178
+                ? DiscPoint(random, FlowerCircleRadius, BoardClearanceRadius)
+                : AnnulusPoint(random, FlowerCircleRadius, 14f);
             AddFlower(random, point);
         }
         for (int i = 0; i < GroundFlowerClusters; i++)
         {
-            Vector2 centre = RadialPoint(random, 14.5f, 1.9f);
+            Vector2 centre = i < 610
+                ? DiscPoint(random, FlowerCircleRadius, BoardClearanceRadius + 0.4f)
+                : AnnulusPoint(random, FlowerCircleRadius, 15f);
             Color clusterColor = GroundFlowerPalette[random.Next(GroundFlowerPalette.Length)];
             int blossoms = random.Next(3, 6);
             for (int j = 0; j < blossoms; j++)
@@ -92,17 +100,31 @@ internal static class MVP01FloraBuilder
         material.SetFloat("_WindStrength", 0.045f);
         EditorUtility.SetDirty(material);
 
-        GameObject flora = new GameObject("Central growth | dense to sparse");
+        Transform existing = parent.Find("Central growth | dense to sparse");
+        GameObject flora = existing != null ? existing.gameObject : new GameObject("Central growth | dense to sparse");
         flora.transform.SetParent(parent);
-        flora.AddComponent<MeshFilter>().sharedMesh = mesh;
-        flora.AddComponent<MeshRenderer>().sharedMaterial = material;
+        MeshFilter filter = flora.GetComponent<MeshFilter>();
+        if (filter == null) filter = flora.AddComponent<MeshFilter>();
+        filter.sharedMesh = mesh;
+        MeshRenderer renderer = flora.GetComponent<MeshRenderer>();
+        if (renderer == null) renderer = flora.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = material;
         // Thin plants remain passable during first-person exploration.
     }
 
-    private static Vector2 RadialPoint(System.Random random, float radius, float bias)
+    private static Vector2 DiscPoint(System.Random random, float radius, float clearRadius)
     {
         float angle = Next(random, 0f, Mathf.PI * 2f);
-        float distance = radius * Mathf.Pow(Next(random, 0f, 1f), bias);
+        float distance = Mathf.Sqrt(Mathf.Lerp(clearRadius * clearRadius, radius * radius,
+            Next(random, 0f, 1f)));
+        return new Vector2(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance);
+    }
+
+    private static Vector2 AnnulusPoint(System.Random random, float innerRadius, float outerRadius)
+    {
+        float angle = Next(random, 0f, Mathf.PI * 2f);
+        float distance = Mathf.Sqrt(Mathf.Lerp(innerRadius * innerRadius,
+            outerRadius * outerRadius, Next(random, 0f, 1f)));
         return new Vector2(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance);
     }
 
