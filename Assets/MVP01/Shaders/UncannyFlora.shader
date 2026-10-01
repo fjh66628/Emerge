@@ -64,7 +64,8 @@ Shader "MVP01/Uncanny Flora"
                 Light sun = GetMainLight();
                 half diffuse = abs(dot(normalize(input.normalWS), sun.direction));
                 half3 reflected = input.color.rgb * (0.32h + diffuse * 0.72h) * sun.color;
-                half3 glow = _GlowColor.rgb * input.color.a * _GlowStrength;
+                half3 glowTint = lerp(input.color.rgb, _GlowColor.rgb, 0.25h);
+                half3 glow = glowTint * input.color.a * _GlowStrength;
                 half3 color = MixFog(reflected + glow, input.fogFactor);
                 return half4(color, 1);
             }

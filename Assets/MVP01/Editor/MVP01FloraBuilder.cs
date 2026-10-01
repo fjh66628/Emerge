@@ -12,6 +12,18 @@ internal static class MVP01FloraBuilder
     private const string MaterialPath = Root + "/Materials/Uncanny_Flora.mat";
     private const int GrassCount = 1000;
     private const int FlowerCount = 190;
+    private const int GroundFlowerClusters = 650;
+
+    private static readonly Color[] GroundFlowerPalette =
+    {
+        new Color(0.74f, 0.07f, 0.13f), // deep carmine
+        new Color(0.82f, 0.25f, 0.10f), // rust
+        new Color(0.88f, 0.60f, 0.18f), // amber
+        new Color(0.50f, 0.27f, 0.68f), // violet
+        new Color(0.27f, 0.58f, 0.63f), // oxidised teal
+        new Color(0.78f, 0.43f, 0.58f), // dusty rose
+        new Color(0.82f, 0.79f, 0.62f)  // old ivory
+    };
 
     private static readonly List<Vector3> Vertices = new List<Vector3>();
     private static readonly List<Color> Colors = new List<Color>();
@@ -38,10 +50,23 @@ internal static class MVP01FloraBuilder
             Vector2 point = RadialPoint(random, 13.5f, 1.75f);
             AddFlower(random, point);
         }
+        for (int i = 0; i < GroundFlowerClusters; i++)
+        {
+            Vector2 centre = RadialPoint(random, 14.5f, 1.9f);
+            Color clusterColor = GroundFlowerPalette[random.Next(GroundFlowerPalette.Length)];
+            int blossoms = random.Next(3, 6);
+            for (int j = 0; j < blossoms; j++)
+            {
+                float angle = Next(random, 0f, Mathf.PI * 2f);
+                float offset = Next(random, 0f, 0.38f);
+                Vector2 point = centre + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * offset;
+                AddGroundFlower(random, point, clusterColor);
+            }
+        }
 
         Mesh mesh = AssetDatabase.LoadAssetAtPath<Mesh>(MeshPath);
         bool newMesh = mesh == null;
-        if (newMesh) mesh = new Mesh { name = "Central grass and pale flowers" };
+        if (newMesh) mesh = new Mesh { name = "Central grass and layered flowers" };
         mesh.Clear();
         mesh.indexFormat = IndexFormat.UInt32;
         mesh.SetVertices(Vertices);
@@ -162,6 +187,47 @@ internal static class MVP01FloraBuilder
             AddTriangle(top, p, q, core, core, core, phase, 1f, 1f, 1f);
             AddTriangle(bottom, q, p, core, core, core, phase, 1f, 1f, 1f);
         }
+    }
+
+    private static void AddGroundFlower(System.Random random, Vector2 point, Color clusterColor)
+    {
+        float phase = Next(random, 0f, 6.28f);
+        float height = Next(random, 0.16f, 0.43f);
+        float radius = Next(random, 0.075f, 0.15f);
+        Vector3 basePos = new Vector3(point.x, 0.036f, point.y);
+        Vector3 head = basePos + new Vector3(Next(random, -0.025f, 0.025f), height,
+            Next(random, -0.025f, 0.025f));
+        Color stem = new Color(0.025f, 0.055f, 0.055f, 0f);
+        Vector3 width = Vector3.right * 0.006f;
+        AddQuad(basePos - width, basePos + width, head + width, head - width,
+            stem, stem, phase, 0f, 0.5f);
+
+        float variation = Next(random, 0.78f, 1.12f);
+        Color tipColor = new Color(
+            Mathf.Min(1f, clusterColor.r * variation),
+            Mathf.Min(1f, clusterColor.g * variation),
+            Mathf.Min(1f, clusterColor.b * variation), 0.34f);
+        Color baseColor = Color.Lerp(tipColor, new Color(0.07f, 0.045f, 0.08f, 0.2f), 0.27f);
+        int petals = random.Next(5, 7);
+        float rotation = Next(random, 0f, Mathf.PI * 2f);
+        for (int i = 0; i < petals; i++)
+        {
+            float angle = rotation + i * Mathf.PI * 2f / petals;
+            Vector3 radial = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+            Vector3 tangent = new Vector3(-radial.z, 0, radial.x);
+            float petalRadius = radius * Next(random, 0.85f, 1.12f);
+            Vector3 left = head + radial * 0.022f - tangent * petalRadius * 0.38f;
+            Vector3 right = head + radial * 0.022f + tangent * petalRadius * 0.38f;
+            Vector3 tip = head + radial * petalRadius + Vector3.up * Next(random, 0.015f, 0.055f);
+            AddTriangle(left, right, tip, baseColor, baseColor, tipColor, phase, 0.5f, 0.5f, 0.65f);
+        }
+
+        Color core = new Color(0.035f, 0.03f, 0.045f, 0f);
+        Vector3 coreTop = head + Vector3.up * 0.025f;
+        AddTriangle(head + Vector3.left * 0.024f, head + Vector3.forward * 0.024f, coreTop,
+            core, core, core, phase, 0.5f, 0.5f, 0.5f);
+        AddTriangle(head + Vector3.right * 0.024f, head + Vector3.back * 0.024f, coreTop,
+            core, core, core, phase, 0.5f, 0.5f, 0.5f);
     }
 
     private static void AddQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d,
