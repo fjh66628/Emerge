@@ -146,9 +146,9 @@ public static class MVP01Builder
         RenderSettings.reflectionIntensity = 0.8f;
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.Linear;
-        RenderSettings.fogColor = new Color(0.85f, 0.88f, 0.87f);
-        RenderSettings.fogStartDistance = 20f;
-        RenderSettings.fogEndDistance = 72f;
+        RenderSettings.fogColor = new Color(0.89f, 0.92f, 0.91f);
+        RenderSettings.fogStartDistance = 10f;
+        RenderSettings.fogEndDistance = 56f;
 
         AddReflectionProbe("Courtyard reflection", V(0, 5, 15), V(42, 20, 40), lighting.transform);
         AddReflectionProbe("Passage reflection", V(0, 3, -18), V(16, 12, 30), lighting.transform);
@@ -211,8 +211,13 @@ public static class MVP01Builder
         AssetDatabase.SaveAssets();
         if (!previousDirty) EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
-        Camera previewCamera = GameObject.Find("Main Camera")?.GetComponent<Camera>();
-        if (previewCamera != null) CapturePreviews(previewCamera);
+        // Let the freshly opened scene and URP finish a frame before reading the render target.
+        EditorApplication.delayCall += () =>
+        {
+            if (EditorSceneManager.GetActiveScene().path != ScenePath) return;
+            Camera previewCamera = GameObject.Find("Main Camera")?.GetComponent<Camera>();
+            if (previewCamera != null) CapturePreviews(previewCamera);
+        };
         Debug.Log($"MVP01 built: {boxCount} textured boxes, 2 reflection probes, first-person player. Scene: {ScenePath}");
     }
 
@@ -323,13 +328,18 @@ public static class MVP01Builder
         }
         material.SetColor("_BaseColor", tint);
         material.SetTexture("_BaseMap", Texture(textureName, "base", false));
-        material.SetTexture("_MetallicGlossMap", Texture(textureName, "mask", true));
+        bool concreteSurface = textureName == "concrete";
+        material.SetFloat("_WorkflowMode", concreteSurface ? 0f : 1f);
+        material.SetTexture("_MetallicGlossMap", concreteSurface ? null : Texture(textureName, "mask", true));
+        material.SetTexture("_SpecGlossMap", concreteSurface ? Texture(textureName, "spec", true) : null);
         material.SetTexture("_OcclusionMap", Texture(textureName, "mask", true));
         material.SetTexture("_BumpMap", Texture(textureName, "normal", true));
         material.SetFloat("_Metallic", metallic);
-        material.SetFloat("_Smoothness", smoothness);
-        material.SetFloat("_BumpScale", textureName == "concrete" ? 0.33f : 0.20f);
+        material.SetFloat("_Smoothness", concreteSurface ? 0.68f : smoothness);
+        material.SetFloat("_BumpScale", concreteSurface ? 0.46f : 0.20f);
         material.SetFloat("_OcclusionStrength", 0.65f);
+        if (concreteSurface) material.EnableKeyword("_SPECULAR_SETUP");
+        else material.DisableKeyword("_SPECULAR_SETUP");
         material.EnableKeyword("_METALLICSPECGLOSSMAP");
         material.EnableKeyword("_OCCLUSIONMAP");
         material.EnableKeyword("_NORMALMAP");
@@ -366,14 +376,37 @@ public static class MVP01Builder
     {
         const int resolution = 256;
         float[,] height = new float[resolution, resolution];
+        float[,] largeScale = new float[resolution, resolution];
+        float[,] directional = new float[resolution, resolution];
         int seed = surface == "concrete" ? 13 : surface == "steel" ? 47 : 71;
         for (int y = 0; y < resolution; y++)
         for (int x = 0; x < resolution; x++)
         {
+            if (surface == "concrete")
+            {
+                float u = x / (resolution - 1f);
+                float v = y / (resolution - 1f);
+                float warpU = (SeamlessPerlin(u, v, 2f, 2f, seed + 9) - 0.5f) * 0.055f;
+                float warpV = (SeamlessPerlin(u, v, 2f, 2f, seed + 23) - 0.5f) * 0.055f;
+                u = Mathf.Repeat(u + warpU, 1f);
+                v = Mathf.Repeat(v + warpV, 1f);
+
+                // Four tileable Perlin octaves: large cement clouds, aggregate, grain, and pores.
+                float macro = SeamlessPerlin(u, v, 2f, 2f, seed + 31);
+                float aggregate = SeamlessPerlin(u, v, 5f, 6f, seed + 61);
+                float grain = SeamlessPerlin(u, v, 16f, 19f, seed + 97);
+                float pores = SeamlessPerlin(u, v, 42f, 43f, seed + 131);
+                float stria = 0.68f * SeamlessPerlin(u, v, 2f, 26f, seed + 157)
+                    + 0.32f * SeamlessPerlin(u, v, 5f, 53f, seed + 181);
+                largeScale[x, y] = macro;
+                directional[x, y] = stria;
+                height[x, y] = Mathf.Clamp01(0.43f * macro + 0.27f * aggregate
+                    + 0.17f * grain + 0.06f * pores + 0.07f * stria);
+                continue;
+            }
             float broad = Mathf.PerlinNoise((x + seed) * 0.025f, (y + seed) * 0.025f);
             float fine = Mathf.PerlinNoise((x + seed * 3) * 0.19f, (y + seed * 3) * 0.19f);
-            float board = surface == "concrete" ? Mathf.Sin(y * 0.18f + broad * 3f) * 0.035f : 0f;
-            height[x, y] = Mathf.Clamp01(broad * 0.67f + fine * 0.25f + board);
+            height[x, y] = Mathf.Clamp01(broad * 0.67f + fine * 0.25f);
         }
 
         Texture2D texture = new Texture2D(resolution, resolution, TextureFormat.RGBA32, true, kind != "base");
@@ -382,26 +415,44 @@ public static class MVP01Builder
         for (int x = 0; x < resolution; x++)
         {
             float h = height[x, y];
+            float macro = largeScale[x, y];
+            float stria = directional[x, y];
             float fleck = Mathf.PerlinNoise((x + seed) * 0.53f, (y - seed) * 0.53f);
             Color color;
-            if (kind == "base")
+            if (surface == "concrete" && kind == "base")
             {
-                float value = surface == "concrete" ? 0.88f + (h - 0.5f) * 0.10f : 0.90f + (h - 0.5f) * 0.10f;
+                float value = Mathf.Clamp01(0.81f + (h - 0.48f) * 0.72f + (macro - 0.5f) * 0.13f);
+                float warmth = (macro - 0.5f) * 0.025f;
+                color = new Color(value + warmth, value + warmth * 0.2f, value - warmth, 1f);
+            }
+            else if (surface == "concrete" && kind == "spec")
+            {
+                // Directional Perlin changes specular F0 and smoothness along formwork grain.
+                float specular = Mathf.Clamp(0.048f + (stria - 0.5f) * 0.055f, 0.025f, 0.075f);
+                float gloss = Mathf.Clamp01(0.62f + (stria - 0.5f) * 0.30f + (macro - 0.5f) * 0.10f);
+                color = new Color(specular, specular * 0.99f, specular * 0.96f, gloss);
+            }
+            else if (kind == "base")
+            {
+                float value = 0.90f + (h - 0.5f) * 0.10f;
                 if (surface == "paint") value *= fleck > 0.79f ? 0.69f : 1f;
                 color = new Color(value, value, value, 1);
             }
             else if (kind == "mask")
             {
                 float metal = surface == "concrete" ? 0.0f : surface == "paint" ? (fleck > 0.79f ? 0.9f : 0.08f) : 0.90f;
-                float ao = Mathf.Lerp(0.84f, 1f, h);
-                float gloss = surface == "concrete" ? 0.72f + h * 0.12f : 0.76f + h * 0.16f;
-                color = new Color(metal, ao, 0f, gloss);
+                float ao = surface == "concrete" ? Mathf.Lerp(0.77f, 1f, h) : Mathf.Lerp(0.84f, 1f, h);
+                float gloss = 0.76f + h * 0.16f;
+                color = new Color(metal, ao, surface == "concrete" ? stria : 0f, gloss);
             }
             else
             {
                 float dx = height[(x + 1) % resolution, y] - height[(x + resolution - 1) % resolution, y];
                 float dy = height[x, (y + 1) % resolution] - height[x, (y + resolution - 1) % resolution];
-                Vector3 n = new Vector3(-dx * 1.3f, -dy * 1.3f, 1f).normalized;
+                float striaDy = surface == "concrete"
+                    ? directional[x, (y + 1) % resolution] - directional[x, (y + resolution - 1) % resolution]
+                    : 0f;
+                Vector3 n = new Vector3(-dx * 1.3f, -(dy + striaDy * 0.22f) * 1.3f, 1f).normalized;
                 color = new Color(n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f, 1f);
             }
             pixels[y * resolution + x] = color;
@@ -411,6 +462,17 @@ public static class MVP01Builder
         File.WriteAllBytes(path, texture.EncodeToPNG());
         UnityEngine.Object.DestroyImmediate(texture);
         AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
+    }
+
+    private static float SeamlessPerlin(float u, float v, float scaleU, float scaleV, int seed)
+    {
+        float offsetU = seed * 0.173f;
+        float offsetV = seed * 0.311f;
+        float a = Mathf.PerlinNoise(offsetU + u * scaleU, offsetV + v * scaleV);
+        float b = Mathf.PerlinNoise(offsetU + (u - 1f) * scaleU, offsetV + v * scaleV);
+        float c = Mathf.PerlinNoise(offsetU + u * scaleU, offsetV + (v - 1f) * scaleV);
+        float d = Mathf.PerlinNoise(offsetU + (u - 1f) * scaleU, offsetV + (v - 1f) * scaleV);
+        return Mathf.Lerp(Mathf.Lerp(a, b, u), Mathf.Lerp(c, d, u), v);
     }
 
     private static void AddReflectionProbe(string name, Vector3 position, Vector3 size, Transform parent)
