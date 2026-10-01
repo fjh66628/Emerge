@@ -30,7 +30,7 @@ public static class MVP01Builder
         };
     }
 
-    [MenuItem("MVP01/Build Brutalist Walk")]
+    [MenuItem("MVP01/Build Metal Field")]
     public static void Build()
     {
         Directory.CreateDirectory(Root + "/Scenes");
@@ -42,11 +42,10 @@ public static class MVP01Builder
         boxCount = 0;
 
         Material sky = MakeSky();
-        Material concrete = MakeSurface("Board Form Concrete", new Color(0.62f, 0.63f, 0.60f), "concrete", 0.03f, 0.31f);
-        Material pale = MakeSurface("Pale Concrete", new Color(0.79f, 0.79f, 0.75f), "concrete", 0.03f, 0.29f);
-        Material dark = MakeSurface("Basalt Floor", new Color(0.28f, 0.31f, 0.31f), "concrete", 0.02f, 0.26f);
-        Material steel = MakeSurface("Brushed Steel", new Color(0.51f, 0.56f, 0.55f), "steel", 0.90f, 0.51f);
-        Material accent = MakeSurface("Oxide Accent", new Color(0.57f, 0.27f, 0.15f), "paint", 0.25f, 0.42f);
+        Material floorMetal = MakeSurface("Metal Floor", new Color(0.35f, 0.39f, 0.41f), "steel", 0.94f, 0.62f);
+        floorMetal.SetTextureScale("_BaseMap", new Vector2(25f, 25f));
+        EditorUtility.SetDirty(floorMetal);
+        Material columnMetal = MakeSurface("Brushed Steel", new Color(0.58f, 0.63f, 0.65f), "steel", 0.94f, 0.55f);
 
         Scene previous = SceneManager.GetActiveScene();
         bool previousDirty = previous.IsValid() && previous.isDirty;
@@ -57,71 +56,34 @@ public static class MVP01Builder
             replaceActive ? NewSceneMode.Single : NewSceneMode.Additive);
         EditorSceneManager.SetActiveScene(scene);
 
-        GameObject world = new GameObject("01  |  MONOLITH FIELD");
-        GameObject route = ChildGroup("Walkable slabs", world.transform);
-        GameObject architecture = ChildGroup("Concrete architecture", world.transform);
-        GameObject details = ChildGroup("Steel and oxide details", world.transform);
-        GameObject backdrop = ChildGroup("Distant silhouettes", world.transform);
+        GameObject world = new GameObject("01  |  METAL COLUMN FIELD");
+        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        floor.name = "Single metal floor plane";
+        floor.transform.SetParent(world.transform);
+        floor.transform.localScale = V(10f, 1f, 10f);
+        floor.GetComponent<MeshRenderer>().sharedMaterial = floorMetal;
+        floor.isStatic = true;
 
-        Box("Continuous basalt plinth", V(0, -0.75f, 0), V(70, 1.5f, 76), dark, route.transform);
-        for (int i = 0; i < 13; i++)
+        GameObject columns = ChildGroup("Perimeter metal columns", world.transform);
+        float[] rowX = { -15f, -5f, 5f, 15f };
+        for (int i = 0; i < rowX.Length; i++)
         {
-            float z = -30 + i * 5.0f;
-            Box("Inset concrete seam L " + i, V(-14, 0.025f, z), V(11, 0.05f, 0.10f), concrete, route.transform);
-            Box("Inset concrete seam R " + i, V(14, 0.025f, z), V(11, 0.05f, 0.10f), concrete, route.transform);
+            float northHeight = 8f + (i % 3) * 2.2f;
+            float southHeight = 9f + ((i + 1) % 3) * 1.8f;
+            Box("North metal column " + i, V(rowX[i], northHeight * 0.5f, 20f),
+                V(1.8f, northHeight, 1.8f), columnMetal, columns.transform);
+            Box("South metal column " + i, V(rowX[i], southHeight * 0.5f, -20f),
+                V(1.8f, southHeight, 1.8f), columnMetal, columns.transform);
         }
-        Box("Entry landing", V(0, 0.08f, -27), V(10, 0.16f, 8), concrete, route.transform);
-        Box("Courtyard landing", V(0, 0.08f, 13), V(30, 0.16f, 26), concrete, route.transform);
-        Box("Return path", V(18, 0.08f, -8), V(8, 0.16f, 42), concrete, route.transform);
-
-        Box("Entry wall left", V(-5.6f, 3.2f, -22), V(1.4f, 6.4f, 20), concrete, architecture.transform);
-        Box("Entry wall right", V(5.6f, 3.2f, -22), V(1.4f, 6.4f, 20), concrete, architecture.transform);
-        Box("Compression lintel", V(0, 5.8f, -14), V(12.5f, 1.6f, 3), pale, architecture.transform);
-        Box("Threshold blade left", V(-4.1f, 3.7f, -10), V(1.5f, 7.4f, 2), steel, details.transform);
-        Box("Threshold blade right", V(4.1f, 3.7f, -10), V(1.5f, 7.4f, 2), steel, details.transform);
-
-        float[] columnZ = { -7, -1, 5 };
-        for (int i = 0; i < columnZ.Length; i++)
+        float[] sideZ = { -10f, 0f, 10f };
+        for (int i = 0; i < sideZ.Length; i++)
         {
-            float heightL = 5.8f + i * 1.3f;
-            float heightR = 7.8f - i * 0.9f;
-            Box("Column L " + i, V(-3.7f, heightL * 0.5f, columnZ[i]), V(1.3f, heightL, 1.3f), i == 1 ? pale : concrete, architecture.transform);
-            Box("Column R " + i, V(3.7f, heightR * 0.5f, columnZ[i] + 1.5f), V(1.3f, heightR, 1.3f), i == 1 ? steel : concrete, architecture.transform);
-        }
-        Box("Sky slot bridge", V(0, 7.5f, 1), V(11, 1.2f, 2.4f), concrete, architecture.transform);
-
-        Box("Central monolith", V(0, 6.5f, 19), V(9.5f, 13, 8.5f), concrete, architecture.transform);
-        Box("Monolith upper offset", V(3.4f, 12.9f, 20), V(12.8f, 2.1f, 9.5f), pale, architecture.transform);
-        Box("Cantilever counterweight", V(-5.8f, 9.5f, 17.5f), V(6.5f, 3.2f, 5.5f), dark, architecture.transform);
-        Box("Monolith lower steel inset", V(0, 3.2f, 14.7f), V(5.7f, 0.8f, 0.11f), steel, details.transform);
-
-        Box("West enclosure", V(-19, 6, 15), V(2.2f, 12, 35), concrete, architecture.transform);
-        Box("East enclosure", V(26, 5, 13), V(2.0f, 10, 31), pale, architecture.transform);
-        Box("Rear horizontal mass", V(3, 4.8f, 34), V(38, 9.6f, 2.2f), concrete, architecture.transform);
-        Box("Rear raised crown", V(-9, 10.2f, 33.5f), V(12, 2.8f, 4.5f), dark, architecture.transform);
-
-        Box("West vertical mass", V(-13, 5, 7), V(5, 10, 7), pale, architecture.transform);
-        Box("East freestanding mass", V(17, 5.7f, 21), V(5, 11.4f, 8), concrete, architecture.transform);
-        Box("East mass cap", V(18.7f, 11.9f, 22), V(8.4f, 1.5f, 9), steel, details.transform);
-        Box("Return corridor edge", V(23, 1.8f, -8), V(1, 3.6f, 25), dark, architecture.transform);
-        Box("Return corridor cut", V(12, 1.6f, -14), V(1, 3.2f, 14), concrete, architecture.transform);
-
-        for (int i = 0; i < 7; i++)
-        {
-            float z = -25 + i * 8.2f;
-            float h = 0.42f + (i % 3) * 0.24f;
-            Box("Oxide navigation marker " + i, V(22.35f, h * 0.5f, z), V(0.10f, h, 1.5f), accent, details.transform);
-        }
-        Box("Courtyard oxide marker", V(-12, 0.22f, 22), V(4.2f, 0.44f, 0.22f), accent, details.transform);
-        Box("Concrete study block A", V(-11, 1.2f, 19), V(2.4f, 2.4f, 2.4f), pale, architecture.transform);
-        Box("Concrete study block B", V(-14, 0.75f, 24), V(1.5f, 1.5f, 1.5f), concrete, architecture.transform);
-        Box("Metal study block", V(11, 1.1f, 27), V(2.2f, 2.2f, 2.2f), steel, details.transform);
-
-        for (int i = 0; i < 8; i++)
-        {
-            float x = -37 + i * 10.3f;
-            float h = 11 + (i * 7 % 12);
-            Box("Distant tower " + i, V(x, h * 0.5f, 48 + (i % 3) * 4), V(5 + i % 3, h, 6), i % 2 == 0 ? pale : concrete, backdrop.transform, false);
+            float westHeight = 10f + i * 1.4f;
+            float eastHeight = 12f - i * 1.3f;
+            Box("West metal column " + i, V(-21f, westHeight * 0.5f, sideZ[i]),
+                V(2.2f, westHeight, 2.2f), columnMetal, columns.transform);
+            Box("East metal column " + i, V(21f, eastHeight * 0.5f, sideZ[i]),
+                V(2.2f, eastHeight, 2.2f), columnMetal, columns.transform);
         }
 
         GameObject lighting = new GameObject("02  |  LIGHT AND ATMOSPHERE");
@@ -150,8 +112,7 @@ public static class MVP01Builder
         RenderSettings.fogStartDistance = 10f;
         RenderSettings.fogEndDistance = 56f;
 
-        AddReflectionProbe("Courtyard reflection", V(0, 5, 15), V(42, 20, 40), lighting.transform);
-        AddReflectionProbe("Passage reflection", V(0, 3, -18), V(16, 12, 30), lighting.transform);
+        AddReflectionProbe("Metal field reflection", V(0, 5, 0), V(90, 24, 90), lighting.transform);
 
         VolumeProfile profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(Root + "/Materials/MVP01_Volume.asset");
         if (profile == null)
@@ -184,7 +145,7 @@ public static class MVP01Builder
         volume.sharedProfile = profile;
 
         GameObject player = new GameObject("03  |  FIRST PERSON PLAYER");
-        player.transform.position = V(0, 0.08f, -28.5f);
+        player.transform.position = V(0, 0.08f, -8f);
         CharacterController controller = player.AddComponent<CharacterController>();
         controller.height = 1.8f;
         controller.radius = 0.35f;
@@ -218,7 +179,7 @@ public static class MVP01Builder
             Camera previewCamera = GameObject.Find("Main Camera")?.GetComponent<Camera>();
             if (previewCamera != null) CapturePreviews(previewCamera);
         };
-        Debug.Log($"MVP01 built: {boxCount} textured boxes, 2 reflection probes, first-person player. Scene: {ScenePath}");
+        Debug.Log($"MVP01 built: one metal floor plane, {boxCount} metal columns, first-person player. Scene: {ScenePath}");
     }
 
     [MenuItem("MVP01/Capture Preview")]
@@ -409,6 +370,16 @@ public static class MVP01Builder
                     + 0.17f * grain + 0.06f * pores + 0.07f * stria - poreCavity);
                 continue;
             }
+            if (surface == "steel")
+            {
+                float u = x / (resolution - 1f);
+                float v = y / (resolution - 1f);
+                float steelCloud = SeamlessPerlin(u, v, 5f, 5f, seed + 7);
+                float grain = SeamlessPerlin(u, v, 38f, 38f, seed + 13);
+                float brushing = SeamlessPerlin(u, v, 2f, 49f, seed + 19);
+                height[x, y] = Mathf.Clamp01(0.54f * steelCloud + 0.20f * grain + 0.18f * brushing);
+                continue;
+            }
             float broad = Mathf.PerlinNoise((x + seed) * 0.025f, (y + seed) * 0.025f);
             float fine = Mathf.PerlinNoise((x + seed * 3) * 0.19f, (y + seed * 3) * 0.19f);
             height[x, y] = Mathf.Clamp01(broad * 0.67f + fine * 0.25f);
@@ -507,10 +478,9 @@ public static class MVP01Builder
         Transform cameraTransform = camera.transform;
         Vector3 originalPosition = cameraTransform.position;
         Quaternion originalRotation = cameraTransform.rotation;
-        Capture(camera, "MVP01_Entrance.png", V(0, 1.75f, -25), V(0, 2.8f, 9));
-        Capture(camera, "MVP01_ConcreteDetail.png", V(-2f, 1.65f, -26), V(-4.9f, 1.55f, -22));
-        Capture(camera, "MVP01_Courtyard.png", V(-10, 1.75f, 6), V(1, 7, 20));
-        Capture(camera, "MVP01_Monolith.png", V(14, 1.75f, 1), V(0, 8, 19));
+        Capture(camera, "MVP01_MetalField.png", V(0, 1.75f, -8), V(0, 4.5f, 19));
+        Capture(camera, "MVP01_MetalFloor.png", V(-3, 1.75f, -2), V(5, 0.25f, 10));
+        Capture(camera, "MVP01_MetalColumns.png", V(8, 1.75f, 4), V(19, 6, 8));
         cameraTransform.position = originalPosition;
         cameraTransform.rotation = originalRotation;
     }
