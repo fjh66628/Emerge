@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: WhiteStrataSky
-  m_Shader: {fileID: 4800000, guid: 3a817c93cfc47114eb9fa471d30cfca7, type: 3}
+  m_Name: Uncanny_Flora
+  m_Shader: {fileID: 4800000, guid: b398c5e9dcde65447a5b1ff8b45ed1cd, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -25,11 +25,9 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _BandStrength: 0.012
+    - _GlowStrength: 0.28
+    - _WindStrength: 0.045
     m_Colors:
-    - _HorizonColor: {r: 0.99, g: 1, b: 0.98, a: 1}
-    - _LowerColor: {r: 0.8, g: 0.86, b: 0.87, a: 1}
-    - _UpperColor: {r: 0.91, g: 0.94, b: 0.94, a: 1}
-    - _ZenithColor: {r: 0.71, g: 0.78, b: 0.81, a: 1}
+    - _GlowColor: {r: 0.65, g: 0.75, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

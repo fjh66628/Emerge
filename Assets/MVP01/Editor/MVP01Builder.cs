@@ -86,31 +86,33 @@ public static class MVP01Builder
                 V(2.2f, eastHeight, 2.2f), columnMetal, columns.transform);
         }
 
+        MVP01FloraBuilder.Build(world.transform);
+
         GameObject lighting = new GameObject("02  |  LIGHT AND ATMOSPHERE");
         GameObject sunObject = new GameObject("Cold directional sun");
         sunObject.transform.SetParent(lighting.transform);
         sunObject.transform.rotation = Quaternion.Euler(35, -42, 0);
         Light sun = sunObject.AddComponent<Light>();
         sun.type = LightType.Directional;
-        sun.intensity = 1.25f;
-        sun.color = new Color(1f, 0.965f, 0.91f);
+        sun.intensity = 1.12f;
+        sun.color = new Color(0.86f, 0.92f, 1f);
         sun.shadows = LightShadows.Soft;
         sun.shadowStrength = 0.82f;
 
         RenderSettings.skybox = sky;
         RenderSettings.sun = sun;
         RenderSettings.ambientMode = AmbientMode.Trilight;
-        RenderSettings.ambientSkyColor = new Color(0.76f, 0.79f, 0.78f);
-        RenderSettings.ambientEquatorColor = new Color(0.58f, 0.61f, 0.60f);
-        RenderSettings.ambientGroundColor = new Color(0.32f, 0.35f, 0.35f);
+        RenderSettings.ambientSkyColor = new Color(0.69f, 0.75f, 0.78f);
+        RenderSettings.ambientEquatorColor = new Color(0.49f, 0.56f, 0.59f);
+        RenderSettings.ambientGroundColor = new Color(0.25f, 0.31f, 0.34f);
         RenderSettings.ambientIntensity = 0.85f;
         RenderSettings.defaultReflectionMode = DefaultReflectionMode.Skybox;
         RenderSettings.reflectionIntensity = 0.8f;
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.Linear;
-        RenderSettings.fogColor = new Color(0.89f, 0.92f, 0.91f);
-        RenderSettings.fogStartDistance = 10f;
-        RenderSettings.fogEndDistance = 56f;
+        RenderSettings.fogColor = new Color(0.83f, 0.88f, 0.89f);
+        RenderSettings.fogStartDistance = 8f;
+        RenderSettings.fogEndDistance = 48f;
 
         AddReflectionProbe("Metal field reflection", V(0, 5, 0), V(90, 24, 90), lighting.transform);
 
@@ -131,8 +133,8 @@ public static class MVP01Builder
             grading = profile.Add<ColorAdjustments>(true);
             AssetDatabase.AddObjectToAsset(grading, profile);
         }
-        grading.contrast.Override(5f);
-        grading.saturation.Override(-7f);
+        grading.contrast.Override(9f);
+        grading.saturation.Override(-13f);
         grading.postExposure.Override(0f);
         EditorUtility.SetDirty(profile);
         EditorUtility.SetDirty(tone);
@@ -145,7 +147,7 @@ public static class MVP01Builder
         volume.sharedProfile = profile;
 
         GameObject player = new GameObject("03  |  FIRST PERSON PLAYER");
-        player.transform.position = V(0, 0.08f, -8f);
+        player.transform.position = V(0, 0.08f, -17f);
         CharacterController controller = player.AddComponent<CharacterController>();
         controller.height = 1.8f;
         controller.radius = 0.35f;
@@ -179,7 +181,7 @@ public static class MVP01Builder
             Camera previewCamera = GameObject.Find("Main Camera")?.GetComponent<Camera>();
             if (previewCamera != null) CapturePreviews(previewCamera);
         };
-        Debug.Log($"MVP01 built: one metal floor plane, {boxCount} metal columns, first-person player. Scene: {ScenePath}");
+        Debug.Log($"MVP01 built: one metal floor plane, {boxCount} metal columns, central flora, first-person player. Scene: {ScenePath}");
     }
 
     [MenuItem("MVP01/Capture Preview")]
@@ -267,10 +269,10 @@ public static class MVP01Builder
             AssetDatabase.CreateAsset(material, path);
         }
         material.shader = shader;
-        material.SetColor("_ZenithColor", new Color(0.79f, 0.83f, 0.84f));
-        material.SetColor("_UpperColor", new Color(0.96f, 0.96f, 0.93f));
+        material.SetColor("_ZenithColor", new Color(0.71f, 0.78f, 0.81f));
+        material.SetColor("_UpperColor", new Color(0.91f, 0.94f, 0.94f));
         material.SetColor("_HorizonColor", new Color(0.99f, 1.0f, 0.98f));
-        material.SetColor("_LowerColor", new Color(0.86f, 0.89f, 0.88f));
+        material.SetColor("_LowerColor", new Color(0.80f, 0.86f, 0.87f));
         material.SetFloat("_BandStrength", 0.012f);
         EditorUtility.SetDirty(material);
         return material;
@@ -478,9 +480,10 @@ public static class MVP01Builder
         Transform cameraTransform = camera.transform;
         Vector3 originalPosition = cameraTransform.position;
         Quaternion originalRotation = cameraTransform.rotation;
-        Capture(camera, "MVP01_MetalField.png", V(0, 1.75f, -8), V(0, 4.5f, 19));
-        Capture(camera, "MVP01_MetalFloor.png", V(-3, 1.75f, -2), V(5, 0.25f, 10));
+        Capture(camera, "MVP01_MetalField.png", V(0, 1.75f, -17), V(0, 1.4f, 5));
+        Capture(camera, "MVP01_MetalFloor.png", V(-3, 1.75f, -2), V(4, 0.9f, 8));
         Capture(camera, "MVP01_MetalColumns.png", V(8, 1.75f, 4), V(19, 6, 8));
+        Capture(camera, "MVP01_FloraDetail.png", V(1.5f, 1.55f, -2.5f), V(0, 1.3f, 3));
         cameraTransform.position = originalPosition;
         cameraTransform.rotation = originalRotation;
     }
