@@ -334,12 +334,16 @@ public static class MVP01Builder
         material.SetTexture("_SpecGlossMap", concreteSurface ? Texture(textureName, "spec", true) : null);
         material.SetTexture("_OcclusionMap", Texture(textureName, "mask", true));
         material.SetTexture("_BumpMap", Texture(textureName, "normal", true));
+        material.SetTexture("_ParallaxMap", concreteSurface ? Texture(textureName, "height", true) : null);
+        material.SetFloat("_Parallax", concreteSurface ? 0.035f : 0.005f);
         material.SetFloat("_Metallic", metallic);
         material.SetFloat("_Smoothness", concreteSurface ? 0.68f : smoothness);
         material.SetFloat("_BumpScale", concreteSurface ? 0.46f : 0.20f);
         material.SetFloat("_OcclusionStrength", 0.65f);
         if (concreteSurface) material.EnableKeyword("_SPECULAR_SETUP");
         else material.DisableKeyword("_SPECULAR_SETUP");
+        if (concreteSurface) material.EnableKeyword("_PARALLAXMAP");
+        else material.DisableKeyword("_PARALLAXMAP");
         material.EnableKeyword("_METALLICSPECGLOSSMAP");
         material.EnableKeyword("_OCCLUSIONMAP");
         material.EnableKeyword("_NORMALMAP");
@@ -400,8 +404,9 @@ public static class MVP01Builder
                     + 0.32f * SeamlessPerlin(u, v, 5f, 53f, seed + 181);
                 largeScale[x, y] = macro;
                 directional[x, y] = stria;
+                float poreCavity = Mathf.SmoothStep(0.56f, 0.73f, pores) * 0.11f;
                 height[x, y] = Mathf.Clamp01(0.43f * macro + 0.27f * aggregate
-                    + 0.17f * grain + 0.06f * pores + 0.07f * stria);
+                    + 0.17f * grain + 0.06f * pores + 0.07f * stria - poreCavity);
                 continue;
             }
             float broad = Mathf.PerlinNoise((x + seed) * 0.025f, (y + seed) * 0.025f);
@@ -431,6 +436,12 @@ public static class MVP01Builder
                 float specular = Mathf.Clamp(0.048f + (stria - 0.5f) * 0.055f, 0.025f, 0.075f);
                 float gloss = Mathf.Clamp01(0.62f + (stria - 0.5f) * 0.30f + (macro - 0.5f) * 0.10f);
                 color = new Color(specular, specular * 0.99f, specular * 0.96f, gloss);
+            }
+            else if (surface == "concrete" && kind == "height")
+            {
+                // Center the relief around 0.5; URP Lit reads green for parallax.
+                float relief = Mathf.Clamp01(h + 0.10f);
+                color = new Color(relief, relief, relief, 1f);
             }
             else if (kind == "base")
             {
@@ -497,6 +508,7 @@ public static class MVP01Builder
         Vector3 originalPosition = cameraTransform.position;
         Quaternion originalRotation = cameraTransform.rotation;
         Capture(camera, "MVP01_Entrance.png", V(0, 1.75f, -25), V(0, 2.8f, 9));
+        Capture(camera, "MVP01_ConcreteDetail.png", V(-2f, 1.65f, -26), V(-4.9f, 1.55f, -22));
         Capture(camera, "MVP01_Courtyard.png", V(-10, 1.75f, 6), V(1, 7, 20));
         Capture(camera, "MVP01_Monolith.png", V(14, 1.75f, 1), V(0, 8, 19));
         cameraTransform.position = originalPosition;
