@@ -42,6 +42,7 @@ public static class MVP01Builder
         boxCount = 0;
 
         Material sky = MakeSky();
+        ConfigureRadialFog();
         Material floorMetal = MakeSurface("Metal Floor", new Color(0.35f, 0.39f, 0.41f), "steel", 0.94f, 0.62f);
         floorMetal.SetTextureScale("_BaseMap", new Vector2(25f, 25f));
         EditorUtility.SetDirty(floorMetal);
@@ -108,11 +109,7 @@ public static class MVP01Builder
         RenderSettings.ambientIntensity = 0.85f;
         RenderSettings.defaultReflectionMode = DefaultReflectionMode.Skybox;
         RenderSettings.reflectionIntensity = 0.8f;
-        RenderSettings.fog = true;
-        RenderSettings.fogMode = FogMode.Linear;
-        RenderSettings.fogColor = new Color(0.83f, 0.88f, 0.89f);
-        RenderSettings.fogStartDistance = 8f;
-        RenderSettings.fogEndDistance = 48f;
+        RenderSettings.fog = false;
 
         AddReflectionProbe("Metal field reflection", V(0, 5, 0), V(90, 24, 90), lighting.transform);
 
@@ -276,6 +273,64 @@ public static class MVP01Builder
         material.SetFloat("_BandStrength", 0.012f);
         EditorUtility.SetDirty(material);
         return material;
+    }
+
+    private static void ConfigureRadialFog()
+    {
+        string materialPath = Root + "/Materials/Camera_Radial_Fog.mat";
+        Shader shader = AssetDatabase.LoadAssetAtPath<Shader>(Root + "/Shaders/CameraRadialFog.shader");
+        if (shader == null) throw new InvalidOperationException("CameraRadialFog shader has not imported.");
+        Material material = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
+        if (material == null)
+        {
+            material = new Material(shader) { name = "Camera Radial Fog" };
+            AssetDatabase.CreateAsset(material, materialPath);
+        }
+        material.shader = shader;
+        material.SetColor("_FogColor", new Color(0.83f, 0.88f, 0.89f));
+        material.SetFloat("_FogStart", 7f);
+        material.SetFloat("_FogEnd", 48f);
+        material.SetFloat("_NoiseScale", 0.11f);
+        material.SetFloat("_NoiseStrength", 14f);
+        EditorUtility.SetDirty(material);
+
+        const string rendererPath = "Assets/Settings/PC_Renderer.asset";
+        UniversalRendererData rendererData = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(rendererPath);
+        if (rendererData == null) throw new InvalidOperationException("PC URP renderer asset is missing.");
+        const string featureName = "MVP01 Camera Radial Fog";
+        FullScreenPassRendererFeature feature = rendererData.rendererFeatures
+            .OfType<FullScreenPassRendererFeature>()
+            .FirstOrDefault(item => item.name == featureName);
+        if (feature == null)
+        {
+            feature = ScriptableObject.CreateInstance<FullScreenPassRendererFeature>();
+            feature.name = featureName;
+            AssetDatabase.AddObjectToAsset(feature, rendererData);
+            rendererData.rendererFeatures.Add(feature);
+        }
+        feature.injectionPoint = FullScreenPassRendererFeature.InjectionPoint.BeforeRenderingPostProcessing;
+        feature.fetchColorBuffer = true;
+        feature.requirements = ScriptableRenderPassInput.Depth;
+        feature.passMaterial = material;
+        feature.passIndex = 0;
+        feature.bindDepthStencilAttachment = false;
+        feature.SetActive(true);
+        feature.Create();
+
+        // Keep URP's feature ID map in sync so the subasset survives an Editor reload.
+        SerializedObject serializedRenderer = new SerializedObject(rendererData);
+        SerializedProperty featureMap = serializedRenderer.FindProperty("m_RendererFeatureMap");
+        featureMap.arraySize = rendererData.rendererFeatures.Count;
+        for (int i = 0; i < rendererData.rendererFeatures.Count; i++)
+        {
+            if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier(rendererData.rendererFeatures[i],
+                    out string _, out long localId))
+                featureMap.GetArrayElementAtIndex(i).longValue = localId;
+        }
+        serializedRenderer.ApplyModifiedPropertiesWithoutUndo();
+        rendererData.SetDirty();
+        EditorUtility.SetDirty(rendererData);
+        EditorUtility.SetDirty(feature);
     }
 
     private static Material MakeSurface(string name, Color tint, string textureName, float metallic, float smoothness)
