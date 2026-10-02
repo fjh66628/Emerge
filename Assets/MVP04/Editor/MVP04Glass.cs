@@ -21,9 +21,8 @@ public static partial class MVP04Builder
 
     private static void SharpenWindowBeams(Material volume)
     {
-        volume.SetFloat("_BeamEdge",.025f);volume.SetFloat("_BeamSpread",.003f);
-        volume.SetFloat("_BeamContrast",1.65f);volume.SetFloat("_ShadowSharpness",.7f);
-        EditorUtility.SetDirty(volume);
+        MVP04LightingWindow.SetEdgePreset(volume,2);
+        volume.SetFloat("_BeamIntensity",1);
     }
 
     [MenuItem("MVP04/Apply Frosted Glass and Sharper Beams")]

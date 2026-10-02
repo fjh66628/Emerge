@@ -12,10 +12,11 @@ Shader "MVP04/Window Volume"
         _Length ("Beam length", Float) = 26
         _Density ("Dust density", Range(0,.2)) = .045
         _NoiseScale ("Dust scale", Float) = .48
-        _BeamEdge ("Beam edge softness", Range(.005,.15)) = .025
-        _BeamSpread ("Beam spread per metre", Range(0,.03)) = .003
-        _BeamContrast ("Transmission contrast", Range(1,3)) = 1.65
-        _ShadowSharpness ("Shadow edge definition", Range(0,1)) = .7
+        _BeamEdge ("Beam edge softness", Range(.003,.15)) = .008
+        _BeamSpread ("Beam spread per metre", Range(0,.03)) = .001
+        _BeamContrast ("Transmission contrast", Range(1,3)) = 2.05
+        _ShadowSharpness ("Shadow edge definition", Range(0,1)) = .9
+        _BeamIntensity ("Beam brightness", Range(0,2)) = 1
     }
     SubShader
     {
@@ -41,6 +42,7 @@ Shader "MVP04/Window Volume"
                 float _Radius, _Length, _Density, _NoiseScale;
                 float _SideDensity;
                 float _BeamEdge, _BeamSpread, _BeamContrast, _ShadowSharpness;
+                float _BeamIntensity;
                 int _SideCount;
                 float4 _SideSources[8], _SideWindows[8];
             CBUFFER_END
@@ -62,7 +64,17 @@ Shader "MVP04/Window Volume"
             }
             float DefinedShadow(float shadow)
             {
-                return lerp(shadow,smoothstep(.28,.72,shadow),_ShadowSharpness);
+                float sharpness=saturate(_ShadowSharpness);
+                float width=lerp(.5,.045,sharpness);
+                return lerp(shadow,smoothstep(.5-width,.5+width,shadow),sharpness);
+            }
+            float SideAperture(float2 uv)
+            {
+                // Same straight jambs and elliptical crown as the side-window geometry.
+                // Use the shared edge control for both the rose and side-window silhouettes.
+                float x=abs(uv.x*2-1), y=uv.y*4.5;
+                float edge=y>3.15 ? 1-length(float2(x,(y-3.15)/1.35)) : min(1-x,y/1.22);
+                return smoothstep(0,max(_BeamEdge,.001),edge);
             }
             half4 Frag(Varyings input):SV_Target
             {
@@ -127,7 +139,7 @@ Shader "MVP04/Window Volume"
                         float2 paneUV=float2(.5+sign(centre.x)*(hit.z-centre.z)/2.44,(hit.y-3)/4.5);
                         if(any(paneUV<=0) || any(paneUV>=1)) continue;
                         half4 glass=SAMPLE_TEXTURE2D_LOD(_SideMask,sampler_SideMask,paneUV,0);
-                        float mask=TransmissionMask(glass.rgb)*smoothstep(.15,.85,glass.a);
+                        float mask=TransmissionMask(glass.rgb)*smoothstep(.15,.85,glass.a)*SideAperture(paneUV);
                         if(mask<.015) continue;
                         float dist=length(fromLight);
                         float shadow=DefinedShadow(AdditionalLightRealtimeShadow((int)_SideSources[w].w,p,-fromLight/dist));
@@ -141,7 +153,7 @@ Shader "MVP04/Window Volume"
                     lightSum+=transmittance*opacity*radiance/max(extinction,1e-5);
                     transmittance*=1-opacity;
                 }
-                return half4(original.rgb*transmittance+lightSum,original.a);
+                return half4(original.rgb*transmittance+lightSum*max(0,_BeamIntensity),original.a);
             }
             ENDHLSL
         }

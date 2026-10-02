@@ -6,6 +6,20 @@ The dark interior is arranged symmetrically along the nave: bundled stone column
 
 ## Rendering
 
+### Interactive lighting controls
+
+Open **MVP04 > 体积光设置** for a dedicated settings window. Sliders update the Game and Scene views immediately, save to the MVP04 volume material after a short debounce, and support Undo/Redo. Changes made during Play Mode are persistent material edits. The **柔和 / 清晰 / 锐利** presets change edge softness, rose-beam spread, transmission contrast and shadow definition without changing brightness or density. The **立即保存** button also saves pending edits.
+
+- **边缘锐利度:** larger values narrow the aperture transition for both the rose and side windows.
+- **窗格分束对比 / 阴影锐利度:** strengthen the gaps between shafts and tighten the shadow penumbra.
+- **圆窗光束扩散:** smaller values keep the rose beam narrow along its length.
+- **光束亮度:** scales the scattering from all windows, independently of surface lighting.
+- **圆窗 / 侧窗雾中散射:** adjust the amount of scattering in the air; **尘雾纹理频率** adjusts its noise detail.
+
+The builder's sharp preset uses edge softness **0.008**, rose spread **0.001**, transmission contrast **2.05**, and shadow sharpness **0.9**. `Previews/MVP04_LightingSettings.png` shows the settings window. Its live values can differ from the builder defaults after editing.
+
+### Shading
+
 - **Window light:** `WindowVolumeFeature` runs one bounded 72-step world-space ray march before post processing for the rose and eight side windows. Scene depth limits integration to visible air. Main and additional-light shadow maps account for architectural occlusion. Narrower beam edges, reduced spreading, stronger transmission contrast and remapped shadow penumbrae make the shafts more defined. Four arched windows on each side have actual wall openings, carved stone surrounds and blue/teal/amber glass. Each `SideWindowLight` associates a shadow-casting spotlight with its aperture; glass transmission and drifting 3D noise colour the diagonal shafts. Camera-specific visible-light indices select the correct shadow map. The volume is tailored to this chapel's fixed window dimensions.
 - **Frosted glass:** `FrostedGlass.shader` shades both rose and side panes with PBR, rough micro-normals, mottled scattering and fine grain that fades below pixel resolution. A short texture blur softens transmitted colour while the opaque lead remains dark. This approximates light diffusing through ground glass; it does not trace exterior refraction. The original transmission masks remain available to the light beams and projected cookies.
 - **Side illumination:** matching RGB spotlight cookies project the glass pattern onto stone and furniture. MVP04 uses Forward+ to keep window lights, ambient bounce and candles active together. The shared stone PBR shader supports clustered lights and cookies, while retaining the MVP03 forward variant.
