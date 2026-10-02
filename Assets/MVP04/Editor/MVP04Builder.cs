@@ -256,13 +256,45 @@ public static class MVP04Builder
         Light sun=new GameObject("Moonlight / through the rose").AddComponent<Light>();
         sun.type=LightType.Directional;sun.transform.rotation=Quaternion.LookRotation(SunDirection);
         sun.color=new Color(.63f,.76f,1);sun.intensity=1.75f;sun.shadows=LightShadows.Soft;sun.shadowStrength=1;sun.shadowBias=.035f;sun.shadowNormalBias=.13f;
-        RenderSettings.sun=sun;RenderSettings.ambientMode=AmbientMode.Trilight;
-        RenderSettings.ambientSkyColor=new Color(.37f,.43f,.56f);RenderSettings.ambientEquatorColor=new Color(.25f,.30f,.41f);RenderSettings.ambientGroundColor=new Color(.16f,.20f,.29f);
+        RenderSettings.sun=sun;
         RenderSettings.skybox=null;RenderSettings.reflectionIntensity=.25f;
         RenderSettings.fog=true;RenderSettings.fogMode=FogMode.ExponentialSquared;RenderSettings.fogDensity=.011f;RenderSettings.fogColor=new Color(.025f,.036f,.06f);
-        var fill=new GameObject("Rose interior bounce").AddComponent<Light>();fill.type=LightType.Point;fill.transform.position=V(0,7,15.1f);fill.color=new Color(.44f,.64f,1);fill.intensity=5;fill.range=10;
-        var air=new GameObject("Soft nave bounce").AddComponent<Light>();air.type=LightType.Directional;air.transform.rotation=Quaternion.LookRotation(V(.25f,-.55f,1));air.color=new Color(.40f,.49f,.67f);air.intensity=.24f;air.shadows=LightShadows.None;
-        var entrance=new GameObject("Moonlight reflected into entrance").AddComponent<Light>();entrance.type=LightType.Point;entrance.transform.position=V(0,4.2f,-7);entrance.color=new Color(.36f,.46f,.68f);entrance.intensity=3.2f;entrance.range=11;
+        var fill=new GameObject("Rose interior bounce").AddComponent<Light>();fill.type=LightType.Point;fill.transform.position=V(0,7,15.1f);
+        var air=new GameObject("Soft nave bounce").AddComponent<Light>();air.type=LightType.Directional;air.transform.rotation=Quaternion.LookRotation(V(.25f,-.55f,1));air.shadows=LightShadows.None;
+        var entrance=new GameObject("Moonlight reflected into entrance").AddComponent<Light>();entrance.type=LightType.Point;entrance.transform.position=V(0,4.2f,-7);
+        ConfigureAmbientLighting();
+    }
+
+    [MenuItem("MVP04/Apply Readable Ambient Lighting")]
+    public static void ApplyAmbientLighting()
+    {
+        var scene=UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        if(Application.isPlaying || scene.path!=ScenePath)
+            throw new InvalidOperationException("Open MVP04 outside Play mode to adjust its lighting.");
+        ConfigureAmbientLighting();
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
+    }
+
+    private static void ConfigureAmbientLighting()
+    {
+        // Lift unlit surfaces using environment and bounced light; keep direct window exposure intact.
+        RenderSettings.ambientMode=AmbientMode.Trilight;
+        RenderSettings.ambientSkyColor=new Color(.56f,.61f,.72f);
+        RenderSettings.ambientEquatorColor=new Color(.42f,.47f,.58f);
+        RenderSettings.ambientGroundColor=new Color(.30f,.35f,.45f);
+        Tune("Soft nave bounce",.55f,new Color(.52f,.60f,.76f),0);
+        Tune("Moonlight reflected into entrance",8f,new Color(.50f,.60f,.75f),14);
+        Tune("Rose interior bounce",8f,new Color(.49f,.65f,.88f),12);
+
+        void Tune(string name,float intensity,Color color,float range)
+        {
+            var light=GameObject.Find(name)?.GetComponent<Light>();
+            if(light==null)return;
+            light.intensity=intensity;light.color=color;
+            if(range>0)light.range=range;
+            EditorUtility.SetDirty(light);
+        }
     }
 
     private static Camera CameraRig(int index)
