@@ -3,6 +3,8 @@ Shader "MVP04/Window Volume"
     Properties
     {
         _RoseMask ("Stained glass transmission", 2D) = "white" {}
+        _SideMask ("Side window transmission", 2D) = "black" {}
+        _SideDensity ("Side window dust density", Range(0,.2)) = .11
         [HDR] _ScatterColor ("Scattered radiance", Color) = (1.3,1.5,1.9,1)
         _WindowOrigin ("Window centre", Vector) = (0,8.4,17.5,0)
         _LightDirection ("Direction into nave", Vector) = (0,-0.42,-0.91,0)
@@ -21,14 +23,21 @@ Shader "MVP04/Window Volume"
             #pragma vertex Vert
             #pragma fragment Frag
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile _ _CLUSTER_LIGHT_LOOP
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             TEXTURE2D(_RoseMask); SAMPLER(sampler_RoseMask);
+            TEXTURE2D(_SideMask); SAMPLER(sampler_SideMask);
             CBUFFER_START(UnityPerMaterial)
                 float4 _ScatterColor, _WindowOrigin, _LightDirection;
                 float _Radius, _Length, _Density, _NoiseScale;
+                float _SideDensity;
+                int _SideCount;
+                float4 _SideSources[8], _SideWindows[8];
             CBUFFER_END
             float Hash(float3 p)
             {
@@ -55,12 +64,12 @@ Shader "MVP04/Window Volume"
                 float3 ray=normalize(surface-origin);
                 // Bound the ray march to the nave: no samples outside the lit air volume.
                 float3 safeRay=sign(ray+1e-7)*max(abs(ray),1e-5);
-                float3 t0=(float3(-5,-.1,-9)-origin)/safeRay;
-                float3 t1=(float3(5,12,18)-origin)/safeRay;
+                float3 t0=(float3(-8.65,-.1,-12)-origin)/safeRay;
+                float3 t1=(float3(8.65,12,18)-origin)/safeRay;
                 float3 nearT=min(t0,t1), farT=max(t0,t1);
                 float begin=max(0,max(nearT.x,max(nearT.y,nearT.z)));
                 float end=min(sceneDistance,min(farT.x,min(farT.y,farT.z)));
-                if(end<=begin || _Density<=0) return original;
+                if(end<=begin || (_Density<=0 && _SideDensity<=0)) return original;
                 float3 axis=normalize(_LightDirection.xyz);
                 float3 right=normalize(cross(axis,float3(0,1,0)));
                 float3 up=normalize(cross(right,axis));
@@ -76,18 +85,45 @@ Shader "MVP04/Window Volume"
                     float3 p=origin+ray*(begin+(s+jitter)*stepSize);
                     float3 delta=p-_WindowOrigin.xyz;
                     float along=dot(delta,axis);
-                    if(along<0 || along>_Length) continue;
                     float radius=_Radius*(1+along*.012);
                     float2 radial=float2(dot(delta,right),dot(delta,up))/radius;
-                    float edge=1-smoothstep(.82,1,dot(radial,radial));
-                    if(edge<=0) continue;
-                    half3 glass=SAMPLE_TEXTURE2D_LOD(_RoseMask,sampler_RoseMask,radial*.5+.5,0).rgb;
-                    float mask=max(glass.r,max(glass.g,glass.b));
+                    float edge=(1-smoothstep(.82,1,dot(radial,radial)))*step(0,along)*step(along,_Length);
                     float dust=.42+.58*Noise(p*_NoiseScale+float3(_Time.y*.025,0,0));
-                    float shadow=MainLightRealtimeShadow(TransformWorldToShadowCoord(p));
-                    float extinction=_Density*edge*dust*mask*stepSize;
-                    half opacity=1-exp(-extinction);
-                    lightSum+=transmittance*opacity*glass*_ScatterColor.rgb*shadow*phase;
+                    float extinction=0;
+                    half3 radiance=0;
+                    if(edge>0 && _Density>0)
+                    {
+                        half3 glass=SAMPLE_TEXTURE2D_LOD(_RoseMask,sampler_RoseMask,radial*.5+.5,0).rgb;
+                        float mask=max(glass.r,max(glass.g,glass.b));
+                        float shadow=MainLightRealtimeShadow(TransformWorldToShadowCoord(p));
+                        float weight=_Density*edge*mask;
+                        extinction+=weight;
+                        radiance+=weight*glass*_ScatterColor.rgb*shadow*phase;
+                    }
+                    // Intersect each spotlight ray with its real glass plane. The same aperture
+                    // projection is used for the surface cookie; side light shadows occlude the air.
+                    [loop] for(int w=0;w<_SideCount;w++)
+                    {
+                        float3 source=_SideSources[w].xyz, centre=_SideWindows[w].xyz;
+                        float3 fromLight=p-source;
+                        float projection=(centre.x-source.x)/fromLight.x;
+                        if(projection<=0 || projection>=1) continue;
+                        float3 hit=source+fromLight*projection;
+                        float2 paneUV=float2(.5+sign(centre.x)*(hit.z-centre.z)/2.44,(hit.y-3)/4.5);
+                        if(any(paneUV<=0) || any(paneUV>=1)) continue;
+                        half4 glass=SAMPLE_TEXTURE2D_LOD(_SideMask,sampler_SideMask,paneUV,0);
+                        float mask=max(glass.r,max(glass.g,glass.b))*glass.a;
+                        if(mask<.015) continue;
+                        float dist=length(fromLight);
+                        float shadow=AdditionalLightRealtimeShadow((int)_SideSources[w].w,p,-fromLight/dist);
+                        float fade=(1-smoothstep(16,23,dist))*projection;
+                        float weight=_SideDensity*mask*fade*_SideWindows[w].w*shadow;
+                        float sidePhase=.65+.35*pow(saturate(dot(ray,-fromLight/dist)),3);
+                        extinction+=weight;
+                        radiance+=weight*glass.rgb*half3(3.6,4.2,5.25)*sidePhase;
+                    }
+                    half opacity=1-exp(-extinction*dust*stepSize);
+                    lightSum+=transmittance*opacity*radiance/max(extinction,1e-5);
                     transmittance*=1-opacity;
                 }
                 return half4(original.rgb*transmittance+lightSum,original.a);

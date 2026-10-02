@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public static class MVP04Builder
+public static partial class MVP04Builder
 {
     private const string Root="Assets/MVP04";
     private const string ScenePath=Root+"/Scenes/MVP04_NocturneChapel.unity";
@@ -93,34 +93,7 @@ public static class MVP04Builder
 
     private static void Structure(Material stone,Material trim,Material mortar)
     {
-        for(int side=-1;side<=1;side+=2)
-        {
-            var wallBacking=new ChapelMesh();wallBacking.Box(V(side*9.05f,6.8f,3),V(.7f,13.6f,32),.03f);wallBacking.Save("SideWallBacking"+side,mortar,true);
-            for(int bay=0;bay<5;bay++)
-            {
-                float z=-9+bay*6;
-                var wall=new ChapelMesh();var detail=new ChapelMesh();
-                for(int y=0;y<19;y++)for(int j=0;j<5;j++)
-                    wall.Box(V(side*8.73f,.35f+y*.69f,z+(j-2)*1.18f+(y%2)*.10f),V(.25f,.666f,1.156f),.024f,Shade());
-                for(int y=0;y<12;y++)
-                {
-                    float cy=.72f+y*.56f;
-                    detail.Cylinder(V(side*5.35f,cy,z),.45f,.545f,Shade(.87f,1.04f));
-                    for(int flute=-1;flute<=1;flute+=2)
-                        detail.Cylinder(V(side*5.35f+flute*.41f,cy,z),.14f,.548f,Shade(.82f,1.06f),10);
-                }
-                detail.Box(V(side*5.35f,.21f,z),V(1.55f,.42f,1.5f),.065f);
-                detail.Box(V(side*5.35f,.5f,z),V(1.13f,.16f,1.05f),.025f);
-                detail.Box(V(side*5.35f,7.22f,z),V(1.18f,.33f,1.13f),.045f);
-                detail.Box(V(side*5.35f,7.46f,z),V(1.48f,.16f,1.34f),.025f);
-                detail.Box(V(side*8.55f,.32f,z),V(.6f,.55f,6),.04f);
-                detail.Arch(V(side*8.48f,4.5f,z),2.5f,2.9f,.19f,.22f,25,Quaternion.Euler(0,90,0));
-                for(int edge=-1;edge<=1;edge+=2)
-                    detail.Box(V(side*8.45f,2.6f,z+edge*2.58f),V(.25f,3.9f,.25f),.035f);
-                wall.Save("AshlarWall"+side+"Bay"+bay,stone);
-                detail.Save("ColumnAndCarving"+side+"Bay"+bay,trim,true);
-            }
-        }
+        BuildSideWindows(stone,trim,mortar);
         // Transverse arches and paired diagonal ribs make the vaulted nave readable from the entrance.
         for(int bay=0;bay<5;bay++)
         {
@@ -399,9 +372,14 @@ public static class MVP04Builder
     public static void CapturePreview()
     {
         Camera camera=Camera.main;if(camera==null)throw new InvalidOperationException("Open MVP04 first.");
+        CaptureCamera(camera,"Previews/MVP04_DarkChapel.png");
+    }
+
+    private static void CaptureCamera(Camera camera,string path)
+    {
         var target=new RenderTexture(1600,1000,24,RenderTextureFormat.ARGB32);var pixels=new Texture2D(1600,1000,TextureFormat.RGB24,false);
         var oldTarget=camera.targetTexture;var oldActive=RenderTexture.active;
-        try{camera.targetTexture=target;camera.Render();RenderTexture.active=target;pixels.ReadPixels(new Rect(0,0,1600,1000),0,0);pixels.Apply();Directory.CreateDirectory("Previews");File.WriteAllBytes("Previews/MVP04_DarkChapel.png",pixels.EncodeToPNG());}
+        try{camera.targetTexture=target;camera.Render();RenderTexture.active=target;pixels.ReadPixels(new Rect(0,0,1600,1000),0,0);pixels.Apply();Directory.CreateDirectory("Previews");File.WriteAllBytes(path,pixels.EncodeToPNG());}
         finally{camera.targetTexture=oldTarget;RenderTexture.active=oldActive;UnityEngine.Object.DestroyImmediate(pixels);UnityEngine.Object.DestroyImmediate(target);}
     }
 }
