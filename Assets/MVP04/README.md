@@ -19,3 +19,5 @@ The dark interior is arranged symmetrically along the nave: bundled stone column
 **MVP04 > Capture Dark Chapel Preview** saves the active camera at 1600x1000 to `Previews/MVP04_DarkChapel.png`. The project uses Unity 6.3 / URP 17.3 Render Graph; the custom volume feature targets that render path.
 
 **MVP04 > Add Side Stained Glass Windows** updates the side walls, windows and their lights in the open chapel, preserving its furniture, player, camera and ambient settings. **MVP04 > Capture Side Window Preview** temporarily turns the camera towards the side aisle, writes `Previews/MVP04_SideWindows.png`, and restores the camera.
+
+Validate lighting in the actual Game window as well as the off-screen preview. `ChapelMesh.Box` supplies face normals for zero-bevel boxes: zero-length normals on the side-wall backing caused invalid HDR lighting that bloom and depth of field spread into large white regions. The repaired backing meshes retain the original light and post-processing settings. `Previews/MVP04_GameView.png` records the corrected Play Mode output.

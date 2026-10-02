@@ -37,7 +37,9 @@ namespace MVP04.Editor
                 {
                     Vector3 p=n*hn+u*us[x]+v*vs[y];
                     Vector3 clamped=new Vector3(Mathf.Clamp(p.x,-inner.x,inner.x),Mathf.Clamp(p.y,-inner.y,inner.y),Mathf.Clamp(p.z,-inner.z,inner.z));
-                    Vector3 normal=(p-clamped).normalized;
+                    // With no bevel p == clamped. A zero normal produces invalid PBR lighting
+                    // which then spreads across the screen through HDR bloom and depth of field.
+                    Vector3 normal=bevel>0 ? (p-clamped).normalized : n;
                     vertices.Add(centre+q*(clamped+normal*bevel));normals.Add(q*normal);colors.Add(color);uvs.Add(new Vector2(us[x],vs[y]));
                 }
                 for(int y=0;y<3;y++)for(int x=0;x<3;x++){int a=offset+y*4+x;indices.AddRange(new[]{a,a+1,a+5,a,a+5,a+4});}
