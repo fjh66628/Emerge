@@ -24,10 +24,14 @@ public static class MVP02Builder
         Directory.CreateDirectory("Previews");
 
         ConfigureRenderer();
-        Material white = MakeSurface("01_ChalkWhite", new Color(0.975f, 0.973f, 0.952f), 0.4f);
-        Material warm = MakeSurface("02_WarmWhite", new Color(0.93f, 0.927f, 0.892f), 0.4f);
-        Material yellow = MakeSurface("03_AcidYellow", new Color(0.68f, 1f, 0.025f), 0.4f);
-        Material black = MakeSurface("04_DeepBlack", new Color(0.032f, 0.035f, 0.035f), 0.98f);
+        Material white = MakeSurface("01_ChalkWhite", new Color(0.975f, 0.973f, 0.952f),
+            new Color(0.66f, 0.67f, 0.64f), new Color(0.10f, 0.11f, 0.11f));
+        Material warm = MakeSurface("02_WarmWhite", new Color(0.93f, 0.927f, 0.892f),
+            new Color(0.63f, 0.63f, 0.59f), new Color(0.10f, 0.11f, 0.11f));
+        Material yellow = MakeSurface("03_AcidYellow", new Color(0.68f, 1f, 0.025f),
+            new Color(0.45f, 0.65f, 0.055f), new Color(0.13f, 0.17f, 0.04f));
+        Material black = MakeSurface("04_DeepBlack", new Color(0.055f, 0.058f, 0.057f),
+            new Color(0.04f, 0.044f, 0.043f), new Color(0.025f, 0.028f, 0.027f));
         Material sky = MakeSky();
 
         Scene previous = SceneManager.GetActiveScene();
@@ -74,14 +78,14 @@ public static class MVP02Builder
         Box("Floating black marker", V(-16, 5.4f, 9), V(4.2f, 0.16f, 3.1f), black, field.transform);
         Box("Floating white marker", V(14, 9.1f, 20), V(7.4f, 0.25f, 3.2f), white, field.transform);
 
-        GameObject sunObject = new GameObject("02  |  HARD CUT SUN");
+        GameObject sunObject = new GameObject("02  |  GRAPHIC SUN");
         sunObject.transform.rotation = Quaternion.Euler(42, 35, 0);
         Light sun = sunObject.AddComponent<Light>();
         sun.type = LightType.Directional;
         sun.color = Color.white;
         sun.intensity = 1.15f;
-        sun.shadows = LightShadows.Hard;
-        sun.shadowStrength = 1f;
+        sun.shadows = LightShadows.Soft;
+        sun.shadowStrength = 0.9f;
         sun.shadowBias = 0.015f;
         sun.shadowNormalBias = 0.15f;
         RenderSettings.sun = sun;
@@ -125,7 +129,7 @@ public static class MVP02Builder
             EditorBuildSettings.scenes = scenes.ToArray();
         }
         AssetDatabase.SaveAssets();
-        Debug.Log("MVP02 built: binary shader, discrete white sky, white cube map and hard black shadows.");
+        Debug.Log("MVP02 built: three-tone graphic shader, layered white sky, and white cube map.");
     }
 
     [MenuItem("MVP02/Capture Preview")]
@@ -163,7 +167,7 @@ public static class MVP02Builder
         AssetDatabase.SaveAssets();
     }
 
-    private static Material MakeSurface(string name, Color baseColor, float cutoff)
+    private static Material MakeSurface(string name, Color baseColor, Color shadeColor, Color shadowColor)
     {
         string path = Root + "/Materials/" + name + ".mat";
         Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
@@ -173,8 +177,10 @@ public static class MVP02Builder
             AssetDatabase.CreateAsset(material, path);
         }
         material.SetColor("_BaseColor", baseColor);
-        material.SetColor("_ShadowColor", new Color(0.025f, 0.027f, 0.028f));
-        material.SetFloat("_Threshold", cutoff);
+        material.SetColor("_ShadeColor", shadeColor);
+        material.SetColor("_ShadowColor", shadowColor);
+        material.SetFloat("_Threshold", 0.38f);
+        material.SetFloat("_TransitionWidth", 0.08f);
         EditorUtility.SetDirty(material);
         return material;
     }

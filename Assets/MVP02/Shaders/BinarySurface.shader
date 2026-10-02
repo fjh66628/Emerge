@@ -6,8 +6,10 @@ Shader "MVP02/Binary Surface"
         [HideInInspector] _Cutoff ("Alpha Cutoff", Float) = 0.5
         [HideInInspector] _Cull ("Cull", Float) = 2
         _BaseColor ("Lit Color", Color) = (0.97, 0.97, 0.94, 1)
-        _ShadowColor ("Shadow Color", Color) = (0.035, 0.038, 0.04, 1)
-        _Threshold ("Light Cutoff", Range(0, 1)) = 0.42
+        _ShadeColor ("Side Color", Color) = (0.64, 0.64, 0.60, 1)
+        _ShadowColor ("Cast Shadow Color", Color) = (0.10, 0.11, 0.11, 1)
+        _Threshold ("Light Cutoff", Range(0, 1)) = 0.38
+        _TransitionWidth ("Light Transition Width", Range(0.01, 0.2)) = 0.08
     }
 
     SubShader
@@ -28,8 +30,10 @@ Shader "MVP02/Binary Surface"
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor;
+                half4 _ShadeColor;
                 half4 _ShadowColor;
                 half _Threshold;
+                half _TransitionWidth;
             CBUFFER_END
 
             struct Attributes
@@ -58,8 +62,12 @@ Shader "MVP02/Binary Surface"
             {
                 Light sun = GetMainLight(TransformWorldToShadowCoord(input.positionWS));
                 half orientation = saturate(dot(normalize(input.normalWS), sun.direction));
-                half lit = step(_Threshold, orientation * sun.shadowAttenuation);
-                return half4(lerp(_ShadowColor.rgb, _BaseColor.rgb, lit), 1);
+                half faceLight = smoothstep(_Threshold - _TransitionWidth,
+                    _Threshold + _TransitionWidth, orientation);
+                half shadowLight = smoothstep(0.15h, 0.85h, sun.shadowAttenuation);
+                half3 faceColor = lerp(_ShadeColor.rgb, _BaseColor.rgb, faceLight);
+                half castShadow = (1.0h - shadowLight) * smoothstep(0.06h, 0.25h, orientation);
+                return half4(lerp(faceColor, _ShadowColor.rgb, castShadow), 1);
             }
             ENDHLSL
         }

@@ -44,9 +44,10 @@ Shader "MVP02/Cut Paper Sky"
             half4 Frag(Varyings input) : SV_Target
             {
                 half height = normalize(input.directionWS).y;
-                half3 color = lerp(_LowerColor.rgb, _HorizonColor.rgb, step(-0.13, height));
-                color = lerp(color, _MiddleColor.rgb, step(0.025, height));
-                color = lerp(color, _UpperColor.rgb, step(0.42, height));
+                half3 color = lerp(_LowerColor.rgb, _HorizonColor.rgb,
+                    smoothstep(-0.16, -0.10, height));
+                color = lerp(color, _MiddleColor.rgb, smoothstep(-0.01, 0.06, height));
+                color = lerp(color, _UpperColor.rgb, smoothstep(0.38, 0.46, height));
                 return half4(color, 1);
             }
             ENDHLSL
