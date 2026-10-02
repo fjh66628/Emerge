@@ -63,6 +63,7 @@ MonoBehaviour:
   resolutionDivisor: 2
   viewSteps: 40
   lightSteps: 2
+  denoiseStrength: 0.9
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

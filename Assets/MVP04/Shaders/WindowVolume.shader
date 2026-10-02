@@ -34,8 +34,6 @@ Shader "MVP04/Window Volume"
             int _SourceCount, _ViewSteps, _LightSteps;
             float4 _Sources[3];
             float3 _RoomMin, _RoomMax;
-            float Hash(float3 p)
-            {p=frac(p*.1031);p+=dot(p,p.yzx+33.33);return frac((p.x+p.y)*p.z);}
             float SigmaT(float3 p)
             {
                 // One hardware-filtered lookup replaces repeated eight-corner noise hashing.
@@ -83,7 +81,9 @@ Shader "MVP04/Window Volume"
                 if(end<=begin)return half4(0,0,0,1);
                 int steps=min(_ViewSteps,max(8,(int)ceil((end-begin)/.3)));
                 float stepSize=(end-begin)/steps;
-                float jitter=Hash(float3(input.positionCS.xy,2.73));
+                // Interleaved offsets cover the step interval evenly in a small pixel
+                // neighbourhood, avoiding clumps from independent white-noise offsets.
+                float jitter=frac(52.9829189*frac(dot(input.positionCS.xy,float2(.06711056,.00583715))));
                 float transmittance=1;
                 float3 scattered=0;
                 [loop] for(int s=0;s<steps;s++)
@@ -113,6 +113,41 @@ Shader "MVP04/Window Volume"
                     transmittance*=segmentT;
                 }
                 return half4(scattered,transmittance);
+            }
+            ENDHLSL
+        }
+        Pass
+        {
+            Name "Edge aware volume denoise"
+            ZWrite Off ZTest Always Cull Off
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment Denoise
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
+            float4 _VolumeSize;
+            float _FilterStride, _DenoiseStrength;
+            half4 Denoise(Varyings input):SV_Target
+            {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+                float2 uv=input.texcoord;
+                float4 centre=SAMPLE_TEXTURE2D_X_LOD(_BlitTexture,sampler_PointClamp,uv,0);
+                float depth=LinearEyeDepth(SampleSceneDepth(uv),_ZBufferParams);
+                float4 sum=0;float weightSum=0;
+                [unroll] for(int y=-1;y<=1;y++)[unroll] for(int x=-1;x<=1;x++)
+                {
+                    float2 tap=clamp(uv+float2(x,y)*_VolumeSize.zw*_FilterStride,
+                        _VolumeSize.zw*.5,1-_VolumeSize.zw*.5);
+                    float4 value=SAMPLE_TEXTURE2D_X_LOD(_BlitTexture,sampler_PointClamp,tap,0);
+                    float tapDepth=LinearEyeDepth(SampleSceneDepth(tap),_ZBufferParams);
+                    float depthDifference=abs(tapDepth-depth)/max(.03,depth*.015);
+                    float radianceDifference=length(value.rgb-centre.rgb)/max(.0001,length(value.rgb)+length(centre.rgb));
+                    float spatial=(x==0?1:.5)*(y==0?1:.5);
+                    float weight=spatial*exp2(-depthDifference*depthDifference-16*radianceDifference*radianceDifference);
+                    sum+=value*weight;weightSum+=weight;
+                }
+                return lerp(centre,sum/max(weightSum,.0001),saturate(_DenoiseStrength));
             }
             ENDHLSL
         }

@@ -12,6 +12,7 @@ namespace MVP04
         [Range(1,3)] public int resolutionDivisor=2;
         [Range(16,96)] public int viewSteps=40;
         [Range(1,6)] public int lightSteps=2;
+        [Range(0,1)] public float denoiseStrength=.9f;
         private WindowPass pass;
 
         public override void Create()
@@ -28,6 +29,7 @@ namespace MVP04
             pass.resolutionDivisor = resolutionDivisor;
             pass.viewSteps = viewSteps;
             pass.lightSteps = lightSteps;
+            pass.denoiseStrength = denoiseStrength;
             renderer.EnqueuePass(pass);
         }
 
@@ -35,6 +37,7 @@ namespace MVP04
         {
             public Material material;
             public int resolutionDivisor,viewSteps,lightSteps;
+            public float denoiseStrength;
             private readonly Vector4[] sources=new Vector4[3];
             private static readonly int VolumeTexture=Shader.PropertyToID("_ChapelVolumeTexture");
             public WindowPass() => requiresIntermediateTexture = true;
@@ -93,11 +96,35 @@ namespace MVP04
                     builder.UseAllGlobalTextures(true);
                     if (resources.mainShadowsTexture.IsValid()) builder.UseTexture(resources.mainShadowsTexture);
                     if (resources.additionalShadowsTexture.IsValid()) builder.UseTexture(resources.additionalShadowsTexture);
-                    builder.SetGlobalTextureAfterPass(lowVolume,VolumeTexture);
+                    if(denoiseStrength<=0)builder.SetGlobalTextureAfterPass(lowVolume,VolumeTexture);
+                }
+                // Filter only scattering/transmittance, before upsampling. Depth rejects
+                // foreground/background mixing; radiance weights retain coloured shaft edges.
+                if(denoiseStrength>0)
+                {
+                    var filterSource=lowVolume;
+                    int iterations=divisor>1?2:1;
+                    for(int iteration=0;iteration<iterations;iteration++)
+                    {
+                        var filterDescriptor=lowDescriptor;
+                        filterDescriptor.name="MVP04 filtered scattering "+iteration;
+                        var filtered=graph.CreateTexture(filterDescriptor);
+                        var filterProperties=new MaterialPropertyBlock();
+                        filterProperties.SetVector("_VolumeSize",new Vector4(width,height,1f/width,1f/height));
+                        filterProperties.SetFloat("_FilterStride",iteration+1);
+                        filterProperties.SetFloat("_DenoiseStrength",Mathf.Clamp01(denoiseStrength));
+                        var filter=new RenderGraphUtils.BlitMaterialParameters(filterSource,filtered,material,1,filterProperties);
+                        using(var builder=graph.AddBlitPass(filter,"Chapel / edge aware denoise "+iteration,returnBuilder:true))
+                        {
+                            builder.UseTexture(resources.cameraDepthTexture);
+                            if(iteration==iterations-1)builder.SetGlobalTextureAfterPass(filtered,VolumeTexture);
+                        }
+                        filterSource=filtered;
+                    }
                 }
                 var compositeProperties=new MaterialPropertyBlock();
                 compositeProperties.SetVector("_VolumeSize",new Vector4(width,height,1f/width,1f/height));
-                var composite=new RenderGraphUtils.BlitMaterialParameters(source,destination,material,1,compositeProperties);
+                var composite=new RenderGraphUtils.BlitMaterialParameters(source,destination,material,2,compositeProperties);
                 using(var builder=graph.AddBlitPass(composite,"Chapel / bilateral upsample",returnBuilder:true))
                 {
                     builder.UseTexture(resources.cameraDepthTexture);

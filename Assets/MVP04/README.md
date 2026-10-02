@@ -47,17 +47,21 @@ This is single scattering with finite ray-march sampling and shadow-map resoluti
 
 ## Performance and settings
 
-Open **MVP04 > ?????**. The **????** selector switches between front, left and right source settings. Positions, targets, intensity, cone, range and transmission remain independently editable. Changes preview live, support Undo/Redo and are saved during Play Mode too. The source positions should remain outside the room envelope.
+Open **MVP04 > 体积光设置**. The **当前光源** selector switches between front, left and right source settings. Positions, targets, intensity, cone, range and transmission remain independently editable. Changes preview live, support Undo/Redo and are saved during Play Mode too. The source positions should remain outside the room envelope.
 
-The **?????** selector changes only the volume pass:
+The **体积光质量** selector changes only the volume pass:
 
 | Preset | Width / height | Camera steps | Light-path samples |
 | --- | --- | --- | --- |
-| ?? | 1/3 | 32 | 1 |
-| ?? (default) | 1/2 | 40 | 2 |
-| ?? | Full | 64 | 4 |
+| 性能 | 1/3 | 32 | 1 |
+| 标准 (default) | 1/2 | 40 | 2 |
+| 精细 | Full | 64 | 4 |
 
-The integrator writes scattering RGB and transmittance to an RGBA16F texture. A four-tap, depth-weighted upsample combines it with the original full-resolution colour. Foreground edges reject background samples; extremely thin geometry with no matching low-resolution depth is left clear to avoid background light bleeding over it. This conservative fallback trades a small amount of fog accuracy at subpixel silhouettes for a clean character outline. Geometry, sprites, shadows and the existing pixel finish retain their normal resolution.
+The integrator writes scattering RGB and transmittance to an RGBA16F texture. Interleaved sampling offsets distribute ray-march samples across small pixel neighbourhoods, replacing independent white-noise offsets. The **体积光降噪** slider defaults to **0.9**; **0** bypasses filtering for comparison. Reduced-resolution rendering uses two 3x3 spatial filters with strides of one and two texels; full-resolution rendering uses one filter. Depth and relative RGB differences reduce mixing across object silhouettes and coloured shaft boundaries. The filters process only scattering and transmittance. This is spatial reconstruction with no temporal history; extremely fine shaft details can soften at reduced resolution.
+
+A four-tap, depth-weighted upsample combines the filtered volume with the original full-resolution colour. Foreground edges reject background samples; extremely thin geometry with no matching low-resolution depth is left clear to avoid background light bleeding over it. This conservative fallback trades a small amount of fog accuracy at subpixel silhouettes for a clean character outline. Geometry, sprites, shadows and the existing pixel finish retain their normal resolution.
+
+`Previews/MVP04_DenoiseOff.png` and `MVP04_DenoiseOn.png` compare filtering at the same camera pose, both using the interleaved sampling pattern. At 2560x1440 with the performance preset and unchanged light/medium settings, 120-frame Editor averages were **5.73 ms off / 5.85 ms on**. This is a frame-time comparison, not an isolated GPU timing or frame-rate guarantee. See `Previews/MVP04_DenoiseValidation.json`.
 
 A reusable 32? R8 texture replaces repeated procedural density hashing. Light components no longer rewrite unchanged transforms, properties and shader globals every frame; projection cookies rebuild only when needed.
 

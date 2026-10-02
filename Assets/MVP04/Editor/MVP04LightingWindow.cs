@@ -69,7 +69,16 @@ public sealed class MVP04LightingWindow : EditorWindow
                 EditorUtility.SetDirty(feature);Changed();
             });
             refreshers.Add(()=>quality.SetValueWithoutNotify(options[Preset()]));
-            var info=new Label("只调整体积光；场景与人物保持原始分辨率。深度引导还原用于减少轮廓漏光。");
+            var denoise=new Slider("体积光降噪",0,1){name="volume-denoise",showInputField=true,
+                tooltip="只平滑体积光的采样颗粒，按深度与光束颜色保留边缘。0 可关闭对比，建议 0.9。"};
+            denoise.style.marginTop=9;performance.Add(denoise);
+            refreshers.Add(()=>denoise.SetValueWithoutNotify(feature.denoiseStrength));
+            denoise.RegisterValueChangedCallback(evt=>
+            {
+                Undo.RecordObject(feature,"调整体积光降噪");feature.denoiseStrength=Mathf.Clamp01(evt.newValue);
+                EditorUtility.SetDirty(feature);Changed();
+            });
+            var info=new Label("体积光先降噪，再按深度还原；场景与人物保持原始分辨率。降噪只处理散射光与透射率。");
             info.style.whiteSpace=WhiteSpace.Normal;performance.Add(info);
         }
         var air=Section(scroll,"空气介质 · 全教堂共享");
