@@ -215,11 +215,13 @@ public static partial class MVP04Builder
         }
         holder.Save("CandleHolder"+suffix,bronze);candles.Save("Wax"+suffix,wax);
         var glow=flames.Save("Flames"+suffix,flame);glow.GetComponent<Renderer>().shadowCastingMode=ShadowCastingMode.Off;
+        Light lamp=null;
         if(stand)
         {
-            Light lamp=new GameObject("Candle pool "+suffix).AddComponent<Light>();lamp.type=LightType.Point;
+            lamp=new GameObject("Candle pool "+suffix).AddComponent<Light>();lamp.type=LightType.Point;
             lamp.transform.position=p+V(0,1.9f,0);lamp.color=new Color(1,.57f,.29f);lamp.intensity=4.2f;lamp.range=6.2f;lamp.shadows=LightShadows.None;
         }
+        ConfigureCandleSway(glow.GetComponent<Renderer>(),lamp);
     }
 
     private static void Lighting()

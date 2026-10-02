@@ -1,0 +1,101 @@
+{
+  "groups": 12,
+  "pointLights": 10,
+  "observedFrames": 326,
+  "lights": [
+    {
+      "name": "Flames2.6_14.8",
+      "baseline": 4.2,
+      "minimum": 3.34800386,
+      "maximum": 4.59413338,
+      "maxDisplacementMetres": 0.01899709,
+      "animated": true,
+      "bounded": true
+    },
+    {
+      "name": "Flames-2.6_14.8",
+      "baseline": 4.2,
+      "minimum": 3.54160118,
+      "maximum": 4.56866741,
+      "maxDisplacementMetres": 0.0183779113,
+      "animated": true,
+      "bounded": true
+    },
+    {
+      "name": "Flames6.8_0.0",
+      "baseline": 4.2,
+      "minimum": 3.50845337,
+      "maximum": 4.48909664,
+      "maxDisplacementMetres": 0.021099085,
+      "animated": true,
+      "bounded": true
+    },
+    {
+      "name": "Flames-6.8_0.0",
+      "baseline": 4.2,
+      "minimum": 3.44799352,
+      "maximum": 4.87607765,
+      "maxDisplacementMetres": 0.0219082981,
+      "animated": true,
+      "bounded": true
+    },
+    {
+      "name": "Flames6.8_12.0",
+      "baseline": 4.2,
+      "minimum": 3.4632802,
+      "maximum": 4.75596666,
+      "maxDisplacementMetres": 0.0159071274,
+      "animated": true,
+      "bounded": true
+    },
+    {
+      "name": "Flames-6.8_12.0",
+      "baseline": 4.2,
+      "minimum": 3.49516439,
+      "maximum": 4.795805,
+      "maxDisplacementMetres": 0.02266457,
+      "animated": true,
+      "bounded": true
+    },
+    {
+      "name": "Flames6.8_6.0",
+      "baseline": 4.2,
+      "minimum": 3.558041,
+      "maximum": 4.602781,
+      "maxDisplacementMetres": 0.0227887239,
+      "animated": true,
+      "bounded": true
+    },
+    {
+      "name": "Flames6.8_-6.0",
+      "baseline": 4.2,
+      "minimum": 3.28318453,
+      "maximum": 4.552766,
+      "maxDisplacementMetres": 0.0241289064,
+      "animated": true,
+      "bounded": true
+    },
+    {
+      "name": "Flames-6.8_6.0",
+      "baseline": 4.2,
+      "minimum": 3.661331,
+      "maximum": 4.62687969,
+      "maxDisplacementMetres": 0.0208632927,
+      "animated": true,
+      "bounded": true
+    },
+    {
+      "name": "Flames-6.8_-6.0",
+      "baseline": 4.2,
+      "minimum": 3.50682259,
+      "maximum": 4.49105,
+      "maxDisplacementMetres": 0.0219251346,
+      "animated": true,
+      "bounded": true
+    }
+  ],
+  "lightRestoreWorks": true,
+  "emissionRestoreWorks": true,
+  "sharedMaterialUnchanged": true,
+  "nativeKeyboard": true
+}

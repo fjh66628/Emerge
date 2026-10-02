@@ -39,6 +39,14 @@ There are three real exterior spotlights: the existing front source plus a sourc
 
 Each side source lights the entire corresponding row of four windows. `ChapelWindowLight` projects the real apertures into a 1024? RGB cookie, shared by surface lighting and volumetric scattering. Rays intersect the nearest room-envelope face first; opaque walls and roof block transmission. Shadow maps add occlusion from deep reveals, columns, leading and furniture. Moving a source changes both its shafts and surface projections. The front and opposite-side emitters have independent settings, so light on both facades has an explicit physical origin.
 
+## Candle sway
+
+The twelve candle groups use `CandleSway` with independent noise phases. Three continuous Perlin-noise layers drive slow brightness drift and a weaker fast flutter. The ten existing candle point lights also wander by a few centimetres, while each group's emissive flame mesh follows the same brightness signal. The two small altar groups animate their emission using the existing lighting arrangement.
+
+Select a `Flames...` object to adjust its **Candle Sway** component: **Intensity Variation** (default 0.3, a maximum fractional deviation), **Sway Distance** (0.025 local metres horizontally, 30% vertically), **Emission Variation** (0.24), and **Motion Speed** (1.6). Playback uses game time and pauses with the game. Disabling the component restores the captured light intensity, position and material property block. The shared flame material is never changed at runtime.
+
+**MVP04 > Apply Candle Sway** attaches the effect to the existing chapel; new builds include it. It reuses the current point lights and their range, colour and shadow settings. `Previews/MVP04_CandleSwayValidation.json` records sampled brightness/motion and restoration checks.
+
 ## Participating medium
 
 `WindowVolumeFeature` runs a depth-limited world-space ray march before post processing. The standard preset uses half width and height (one quarter of the pixels), at most 40 camera-ray steps and two light-path samples. Air occupies the chapel envelope from (-8.86, 0, -13) to (8.86, 13.6, 17.57); the exterior is assumed clear.

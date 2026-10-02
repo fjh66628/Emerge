@@ -776,6 +776,7 @@ GameObject:
   - component: {fileID: 43182619}
   - component: {fileID: 43182618}
   - component: {fileID: 43182617}
+  - component: {fileID: 43182620}
   m_Layer: 0
   m_Name: Flames2.6_14.8
   m_TagString: Untagged
@@ -855,6 +856,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &43182620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 43182616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76d5f633b9f8614d94b3473679b067f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.CandleSway
+  glowLight: {fileID: 1578660114}
+  flameRenderer: {fileID: 43182617}
+  intensityVariation: 0.3
+  swayDistance: 0.025
+  emissionVariation: 0.24
+  motionSpeed: 1.6
+  noisePhase: 432.82004
 --- !u!1 &72564242
 GameObject:
   m_ObjectHideFlags: 0
@@ -1286,6 +1306,7 @@ GameObject:
   - component: {fileID: 105968520}
   - component: {fileID: 105968519}
   - component: {fileID: 105968518}
+  - component: {fileID: 105968521}
   m_Layer: 0
   m_Name: Flames-6.8_0.0
   m_TagString: Untagged
@@ -1365,6 +1386,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &105968521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 105968517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76d5f633b9f8614d94b3473679b067f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.CandleSway
+  glowLight: {fileID: 582012378}
+  flameRenderer: {fileID: 105968518}
+  intensityVariation: 0.3
+  swayDistance: 0.025
+  emissionVariation: 0.24
+  motionSpeed: 1.6
+  noisePhase: 337.39114
 --- !u!1 &123856558
 GameObject:
   m_ObjectHideFlags: 0
@@ -3864,6 +3904,7 @@ GameObject:
   - component: {fileID: 506941031}
   - component: {fileID: 506941030}
   - component: {fileID: 506941029}
+  - component: {fileID: 506941032}
   m_Layer: 0
   m_Name: Flames-6.8_6.0
   m_TagString: Untagged
@@ -3943,6 +3984,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &506941032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 506941028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76d5f633b9f8614d94b3473679b067f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.CandleSway
+  glowLight: {fileID: 1452175189}
+  flameRenderer: {fileID: 506941029}
+  intensityVariation: 0.3
+  swayDistance: 0.025
+  emissionVariation: 0.24
+  motionSpeed: 1.6
+  noisePhase: 97.41796
 --- !u!1 &537365668
 GameObject:
   m_ObjectHideFlags: 0
@@ -3954,6 +4014,7 @@ GameObject:
   - component: {fileID: 537365671}
   - component: {fileID: 537365670}
   - component: {fileID: 537365669}
+  - component: {fileID: 537365672}
   m_Layer: 0
   m_Name: Flames-6.8_-6.0
   m_TagString: Untagged
@@ -4033,6 +4094,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &537365672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 537365668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76d5f633b9f8614d94b3473679b067f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.CandleSway
+  glowLight: {fileID: 558538708}
+  flameRenderer: {fileID: 537365669}
+  intensityVariation: 0.3
+  swayDistance: 0.025
+  emissionVariation: 0.24
+  motionSpeed: 1.6
+  noisePhase: 335.56757
 --- !u!1 &558538707
 GameObject:
   m_ObjectHideFlags: 0
@@ -4478,6 +4558,7 @@ GameObject:
   - component: {fileID: 679595493}
   - component: {fileID: 679595492}
   - component: {fileID: 679595491}
+  - component: {fileID: 679595494}
   m_Layer: 0
   m_Name: Flames6.8_0.0
   m_TagString: Untagged
@@ -4557,6 +4638,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &679595494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 679595490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76d5f633b9f8614d94b3473679b067f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.CandleSway
+  glowLight: {fileID: 175050821}
+  flameRenderer: {fileID: 679595491}
+  intensityVariation: 0.3
+  swayDistance: 0.025
+  emissionVariation: 0.24
+  motionSpeed: 1.6
+  noisePhase: 289.378
 --- !u!1 &682240650
 GameObject:
   m_ObjectHideFlags: 0
@@ -6925,6 +7025,7 @@ GameObject:
   - component: {fileID: 926513666}
   - component: {fileID: 926513665}
   - component: {fileID: 926513664}
+  - component: {fileID: 926513667}
   m_Layer: 0
   m_Name: Flames6.8_-6.0
   m_TagString: Untagged
@@ -7004,6 +7105,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &926513667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 926513663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76d5f633b9f8614d94b3473679b067f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.CandleSway
+  glowLight: {fileID: 301025535}
+  flameRenderer: {fileID: 926513664}
+  intensityVariation: 0.3
+  swayDistance: 0.025
+  emissionVariation: 0.24
+  motionSpeed: 1.6
+  noisePhase: 503.3483
 --- !u!1 &939277483
 GameObject:
   m_ObjectHideFlags: 0
@@ -8533,6 +8653,7 @@ GameObject:
   - component: {fileID: 1199581667}
   - component: {fileID: 1199581666}
   - component: {fileID: 1199581665}
+  - component: {fileID: 1199581668}
   m_Layer: 0
   m_Name: Flames-1.1_15.6
   m_TagString: Untagged
@@ -8612,6 +8733,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1199581668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1199581664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76d5f633b9f8614d94b3473679b067f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.CandleSway
+  glowLight: {fileID: 0}
+  flameRenderer: {fileID: 1199581665}
+  intensityVariation: 0.3
+  swayDistance: 0.025
+  emissionVariation: 0.24
+  motionSpeed: 1.6
+  noisePhase: 158.06523
 --- !u!1 &1212075217
 GameObject:
   m_ObjectHideFlags: 0
@@ -8826,6 +8966,7 @@ GameObject:
   - component: {fileID: 1222640190}
   - component: {fileID: 1222640189}
   - component: {fileID: 1222640188}
+  - component: {fileID: 1222640191}
   m_Layer: 0
   m_Name: Flames-6.8_12.0
   m_TagString: Untagged
@@ -8905,6 +9046,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1222640191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1222640187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76d5f633b9f8614d94b3473679b067f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.CandleSway
+  glowLight: {fileID: 1306598522}
+  flameRenderer: {fileID: 1222640188}
+  intensityVariation: 0.3
+  swayDistance: 0.025
+  emissionVariation: 0.24
+  motionSpeed: 1.6
+  noisePhase: 276.2701
 --- !u!1 &1228651135
 GameObject:
   m_ObjectHideFlags: 0
@@ -9832,6 +9992,7 @@ GameObject:
   - component: {fileID: 1345231458}
   - component: {fileID: 1345231457}
   - component: {fileID: 1345231456}
+  - component: {fileID: 1345231459}
   m_Layer: 0
   m_Name: Flames6.8_12.0
   m_TagString: Untagged
@@ -9911,6 +10072,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1345231459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1345231455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76d5f633b9f8614d94b3473679b067f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.CandleSway
+  glowLight: {fileID: 1173977811}
+  flameRenderer: {fileID: 1345231456}
+  intensityVariation: 0.3
+  swayDistance: 0.025
+  emissionVariation: 0.24
+  motionSpeed: 1.6
+  noisePhase: 399.7705
 --- !u!1 &1346136948
 GameObject:
   m_ObjectHideFlags: 0
@@ -11415,6 +11595,7 @@ GameObject:
   - component: {fileID: 1552930926}
   - component: {fileID: 1552930925}
   - component: {fileID: 1552930924}
+  - component: {fileID: 1552930927}
   m_Layer: 0
   m_Name: Flames6.8_6.0
   m_TagString: Untagged
@@ -11494,6 +11675,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1552930927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1552930923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76d5f633b9f8614d94b3473679b067f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.CandleSway
+  glowLight: {fileID: 2018990429}
+  flameRenderer: {fileID: 1552930924}
+  intensityVariation: 0.3
+  swayDistance: 0.025
+  emissionVariation: 0.24
+  motionSpeed: 1.6
+  noisePhase: 497.8251
 --- !u!1 &1554857011
 GameObject:
   m_ObjectHideFlags: 0
@@ -11722,6 +11922,7 @@ GameObject:
   - component: {fileID: 1591442416}
   - component: {fileID: 1591442415}
   - component: {fileID: 1591442414}
+  - component: {fileID: 1591442417}
   m_Layer: 0
   m_Name: Flames-2.6_14.8
   m_TagString: Untagged
@@ -11801,6 +12002,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1591442417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1591442413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76d5f633b9f8614d94b3473679b067f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.CandleSway
+  glowLight: {fileID: 408063535}
+  flameRenderer: {fileID: 1591442414}
+  intensityVariation: 0.3
+  swayDistance: 0.025
+  emissionVariation: 0.24
+  motionSpeed: 1.6
+  noisePhase: 172.61554
 --- !u!1 &1607769377
 GameObject:
   m_ObjectHideFlags: 0
@@ -12578,6 +12798,7 @@ GameObject:
   - component: {fileID: 1768334863}
   - component: {fileID: 1768334862}
   - component: {fileID: 1768334861}
+  - component: {fileID: 1768334864}
   m_Layer: 0
   m_Name: Flames1.1_15.6
   m_TagString: Untagged
@@ -12657,6 +12878,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1768334864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1768334860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76d5f633b9f8614d94b3473679b067f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.CandleSway
+  glowLight: {fileID: 0}
+  flameRenderer: {fileID: 1768334861}
+  intensityVariation: 0.3
+  swayDistance: 0.025
+  emissionVariation: 0.24
+  motionSpeed: 1.6
+  noisePhase: 520.2916
 --- !u!1 &1770661772
 GameObject:
   m_ObjectHideFlags: 0
