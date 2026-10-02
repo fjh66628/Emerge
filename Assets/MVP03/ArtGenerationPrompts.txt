@@ -1,0 +1,17 @@
+MVP03 reference rebuild - image asset provenance
+Tool: built-in image_gen (imagegen skill); no API/CLI fallback.
+
+Final sources:
+Assets/MVP03/Textures/RebuiltLimestone.png
+Assets/MVP03/Textures/RebuiltTravelers.png
+Unity imports the travelers into RebuiltTraveler0.png and RebuiltTraveler1.png at a 56-pixel height with point filtering. RebuiltLimestoneNormal.png is a restrained normal map derived by the Unity builder from albedo luminance, not a scanned physical height field.
+
+LIMESTONE GENERATION PROMPT
+Use case: photorealistic-natural. Asset type: seamless square albedo texture for a Unity PBR medieval church limestone material. Fill the image edge to edge with one continuous weathered cool light grey limestone surface, no bricks and no mortar grid. Detailed chalky mineral grain, irregular faint charcoal mottling, tiny pitted pores, delicate hairline fissures, worn patches, understated green grey weather stains. Neutral diffuse even lighting, no cast shadow, no shiny highlights, no perspective, no bevel or edge of slab. Orthographic flat scan, subtle local contrast, average medium-light grey. Seamless repeat on all four edges. Photogrammetric game texture quality. No text, no labels, no objects.
+
+TRAVELERS INITIAL GENERATION PROMPT
+Use case: stylized-concept. Asset type: a two-character pixel-art sprite sheet for a Unity HD2D fantasy game. Transparent background. Exactly TWO full-body original medieval travelers, side by side with a large transparent gap; each character contained in its own half of the sheet. Left character: dark-haired male ranger, layered charcoal and forest-green coat, brown leather straps, worn boots. Right character: brown-haired female pilgrim, ivory cloak, blue scarf, muted purple skirt, brown boots, small satchel. Both standing idle, three-quarter view facing slightly toward one another, seen slightly from above. Detailed expertly hand-drawn 16-bit Japanese RPG pixel sprites with crisp square pixel clusters, deliberate dark outlines, 4-6 tone shading per material, expressive compact silhouettes, heads about one quarter of full height. Native-looking 48 by 72 pixel art per character enlarged with nearest neighbor. Clear face, bangs, sleeves and folds. Keep feet at the same baseline. NO ground shadow, NO props detached from characters, NO scenery, NO text, NO frame, NO grid. Preserve actual alpha transparency around all pixels.
+
+TRAVELERS FINAL EDIT PROMPT
+Input: the initial generated traveler sheet (not the user's reference screenshot).
+Edit this two-character sprite sheet for an HD2D RPG game. Preserve the two identities, color palettes and clothing motifs, transparent background, left ranger and right pilgrim, same two-column layout and full-body feet. Make both characters compact classic 16-bit RPG sprites: LARGE heads one third of their total height, total height only 3 heads, short legs, wide readable silhouettes, 3/4 standing pose. TRUE low-resolution 40x56 pixel sprite visual style, each pixel a large clean square, nearest-neighbor enlargement, limited palette with deliberate chunky 3-color shading per fabric. Simplify tiny details into readable pixel clusters. Lighten the ranger's olive coat and the pilgrim's ivory cloak so they are readable on stone. No illustration detail, no smooth anti-aliasing, no long thin realistic anatomy. No cast shadow, no ground, no labels. Actual transparent background.

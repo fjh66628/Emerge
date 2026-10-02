@@ -11,11 +11,17 @@ using UnityEngine.SceneManagement;
 public static class MVP03HDBuilder
 {
     const string Root = "Assets/MVP03";
-    const string ScenePath = Root + "/Scenes/MVP03_StainedGlassChapel.unity";
+    const string ScenePath = Root + "/Scenes/MVP03_PreviousCourtyard.unity";
     static System.Random Random = new System.Random(2603);
 
     [MenuItem("MVP03/Build HD2D Church")]
     public static void Build()
+    {
+        MVP03ReferenceBuilder.Build();
+    }
+
+    [MenuItem("MVP03/Archive/Build Earlier Courtyard")]
+    public static void BuildPrevious()
     {
         Random = new System.Random(2603);
         foreach (string folder in new[] { "Scenes", "Textures", "Materials", "Rendering" })
