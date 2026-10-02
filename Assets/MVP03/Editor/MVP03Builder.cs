@@ -12,10 +12,10 @@ using UnityEngine.SceneManagement;
 public static class MVP03Builder
 {
     private const string Root = "Assets/MVP03";
-    private const string ScenePath = Root + "/Scenes/MVP03_StainedGlassChapel.unity";
+    private const string ScenePath = Root + "/Scenes/MVP03_PixelChapelArchive.unity";
     private const int DisplayLayer = 30;
 
-    [MenuItem("MVP03/Build Chapel")]
+    [MenuItem("MVP03/Build Pixel Chapel Archive")]
     public static void Build()
     {
         Directory.CreateDirectory(Root + "/Scenes");
@@ -262,7 +262,7 @@ public static class MVP03Builder
         Debug.Log("MVP03 built: pixel-textured church, stained-glass spotlights, flat playable sprite.");
     }
 
-    [MenuItem("MVP03/Capture Preview")]
+    [MenuItem("MVP03/Capture Pixel Chapel Archive")]
     public static void CaptureCurrentScene()
     {
         if (SceneManager.GetActiveScene().path != ScenePath)
@@ -281,7 +281,7 @@ public static class MVP03Builder
         pixels.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0);
         pixels.Apply();
         Directory.CreateDirectory("Previews");
-        File.WriteAllBytes("Previews/MVP03_Chapel.png", pixels.EncodeToPNG());
+        File.WriteAllBytes("Previews/MVP03_PixelArchive.png", pixels.EncodeToPNG());
         display.targetTexture = oldTarget;
         RenderTexture.active = oldActive;
         UnityEngine.Object.DestroyImmediate(pixels);
