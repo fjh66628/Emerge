@@ -300,6 +300,7 @@ public static class MVP03ReferenceBuilder
         string path=Root+"/Rendering/RebuiltRenderer.asset";
         if(!File.Exists(path))AssetDatabase.CopyAsset("Assets/MVP02/Rendering/MVP02_Renderer.asset",path);
         var renderer=AssetDatabase.LoadAssetAtPath<UniversalRendererData>(path);
+        MVP03PixelPostBuilder.Configure(renderer);
         ScreenSpaceAmbientOcclusion ao=null;
         foreach(var f in renderer.rendererFeatures)if(f is ScreenSpaceAmbientOcclusion value)ao=value;
         if(ao==null){ao=ScriptableObject.CreateInstance<ScreenSpaceAmbientOcclusion>();ao.name="Stone crevice contact shadows";AssetDatabase.AddObjectToAsset(ao,renderer);renderer.rendererFeatures.Add(ao);}
