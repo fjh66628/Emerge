@@ -24,6 +24,8 @@ public static class MVP02Builder
         Directory.CreateDirectory("Previews");
 
         ConfigureRenderer();
+        Material ground = MakeSurface("00_CoolGrayGround", new Color(0.74f, 0.78f, 0.79f),
+            new Color(0.58f, 0.62f, 0.63f), new Color(0.12f, 0.14f, 0.15f));
         Material white = MakeSurface("01_ChalkWhite", new Color(0.975f, 0.973f, 0.952f),
             new Color(0.66f, 0.67f, 0.64f), new Color(0.10f, 0.11f, 0.11f));
         Material warm = MakeSurface("02_WarmWhite", new Color(0.93f, 0.927f, 0.892f),
@@ -41,7 +43,7 @@ public static class MVP02Builder
         EditorSceneManager.SetActiveScene(scene);
 
         GameObject map = new GameObject("01  |  BINARY CUBE MAP");
-        Box("White void / walkable foundation", V(0, -0.3f, 0), V(78, 0.6f, 78), white, map.transform);
+        Box("Cool gray / walkable foundation", V(0, -0.3f, 0), V(78, 0.6f, 78), ground, map.transform);
 
         GameObject core = Group("Central floating composition", map.transform);
         Box("Dark inset beneath monolith", V(0, 0.035f, 5), V(9.7f, 0.07f, 9.7f), black, core.transform);
@@ -53,6 +55,8 @@ public static class MVP02Builder
 
         GameObject route = Group("Walkable cubic route", map.transform);
         Box("Arrival plinth", V(11, 3.9f, -16), V(7.5f, 7.8f, 7.5f), white, route.transform);
+        Box("Arrival deck / cool gray walking surface", V(11, 7.81f, -16),
+            V(7.3f, 0.02f, 7.3f), ground, route.transform);
         Box("Arrival yellow lip", V(11, 7.85f, -19.65f), V(7.5f, 0.10f, 0.24f), yellow, route.transform);
         for (int i = 0; i < 12; i++)
         {
