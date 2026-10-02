@@ -703,6 +703,7 @@ GameObject:
   - component: {fileID: 414723940}
   - component: {fileID: 414723939}
   - component: {fileID: 414723938}
+  - component: {fileID: 414723941}
   m_Layer: 0
   m_Name: RebuiltTreeBranches
   m_TagString: Untagged
@@ -782,6 +783,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!64 &414723941
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 414723937}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 38e77e54b5c4f414f82ab4e93b739ab6, type: 2}
 --- !u!1 &461261172
 GameObject:
   m_ObjectHideFlags: 0
@@ -883,6 +906,7 @@ GameObject:
   - component: {fileID: 494170374}
   - component: {fileID: 494170373}
   - component: {fileID: 494170372}
+  - component: {fileID: 494170375}
   m_Layer: 0
   m_Name: Pilgrim / WASD
   m_TagString: Untagged
@@ -947,6 +971,21 @@ Transform:
   - {fileID: 1113144160}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &494170375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 494170371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f83681fefdcdc1f46a7c59382c68f423, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP03.MagicBoltCaster
+  projectilePrefab: {fileID: 8954629239744310947, guid: 54ec6b920a10f544c8898da8758cc28e, type: 3}
+  cooldown: 0.35
+  castHeight: 1.05
 --- !u!1 &508364276
 GameObject:
   m_ObjectHideFlags: 0
@@ -1754,6 +1793,7 @@ GameObject:
   - component: {fileID: 875076934}
   - component: {fileID: 875076933}
   - component: {fileID: 875076932}
+  - component: {fileID: 875076935}
   m_Layer: 0
   m_Name: RebuiltCarvedEdges
   m_TagString: Untagged
@@ -1833,6 +1873,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!64 &875076935
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875076931}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 7bec8132bcd27294a845c6c01642df51, type: 2}
 --- !u!1 &937869845
 GameObject:
   m_ObjectHideFlags: 0
@@ -2220,6 +2282,7 @@ GameObject:
   - component: {fileID: 1113894496}
   - component: {fileID: 1113894495}
   - component: {fileID: 1113894494}
+  - component: {fileID: 1113894497}
   m_Layer: 0
   m_Name: RebuiltWoodwork
   m_TagString: Untagged
@@ -2299,6 +2362,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!64 &1113894497
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113894493}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 61061af394328c1408cf6b3d8109af80, type: 2}
 --- !u!1 &1133549735
 GameObject:
   m_ObjectHideFlags: 0
@@ -2650,6 +2735,7 @@ GameObject:
   - component: {fileID: 1343722741}
   - component: {fileID: 1343722740}
   - component: {fileID: 1343722739}
+  - component: {fileID: 1343722742}
   m_Layer: 0
   m_Name: RebuiltArchitecture
   m_TagString: Untagged
@@ -2729,6 +2815,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!64 &1343722742
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1343722738}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 69495e519fd39c249bbbb245bcf6b653, type: 2}
 --- !u!1 &1360387353
 GameObject:
   m_ObjectHideFlags: 0
@@ -3360,6 +3468,7 @@ GameObject:
   - component: {fileID: 1580860754}
   - component: {fileID: 1580860753}
   - component: {fileID: 1580860752}
+  - component: {fileID: 1580860755}
   m_Layer: 0
   m_Name: RebuiltStairs
   m_TagString: Untagged
@@ -3439,6 +3548,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!64 &1580860755
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580860751}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: e6dff6462519f664596ea51cfb3d79da, type: 2}
 --- !u!1 &1600286636
 GameObject:
   m_ObjectHideFlags: 0

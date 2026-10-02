@@ -15,6 +15,11 @@ namespace MVP03
         private float walkTime;
         private bool preferVertical;
         private bool heldForward, heldBackward, heldLeft, heldRight;
+        private Vector3 facingDirection;
+
+        public Vector3 FacingDirection => facingDirection.sqrMagnitude > .01f
+            ? facingDirection
+            : Vector3.ProjectOnPlane(worldCamera != null ? worldCamera.transform.forward : Vector3.forward, Vector3.up).normalized;
 
         public void Configure(Camera camera, SpriteRenderer sprite)
         {
@@ -39,6 +44,7 @@ namespace MVP03
             Vector3 forward = Vector3.ProjectOnPlane(worldCamera.transform.forward, Vector3.up).normalized;
             Vector3 right = Vector3.ProjectOnPlane(worldCamera.transform.right, Vector3.up).normalized;
             Vector3 movement = (forward * input.y + right * input.x) * moveSpeed;
+            if (movement.sqrMagnitude > .01f) facingDirection = movement.normalized;
             controller.SimpleMove(movement);
 
             if (portrait == null) return;

@@ -106,6 +106,7 @@ public static class MVP03ReferenceBuilder
         volume.isGlobal=true; volume.sharedProfile=Atmosphere();
         camera.gameObject.AddComponent<PixelFocus>().Configure(camera,UnityEngine.Object.FindFirstObjectByType<PixelPilgrim>().transform,volume);
         ConfigureFollowCamera();
+        MVP03MagicBuilder.ConfigureScene();
         EditorSceneManager.SaveScene(scene,Root+"/Scenes/MVP03_StainedGlassChapel.unity");
         AssetDatabase.SaveAssets();
         Debug.Log("Rebuilt MVP03: beveled masonry, leaf meshes, imported pixel travelers, dedicated SSAO and optical focus.");
