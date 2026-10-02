@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9f69206b8d771714b8fecaa939e47d18, type: 3}
-  m_Name: ExteriorLight
+  m_Name: ExteriorRight
   m_EditorClassIdentifier: Assembly-CSharp::MVP04.ChapelLightSettings
   sourceEnabled: 1
-  position: {x: -2.12, y: 18, z: 38}
-  target: {x: 0, y: 4, z: 3}
-  intensity: 50000
-  colour: {r: 0.78, g: 0.86, b: 1, a: 1}
-  coneAngle: 75
-  range: 100
-  directTransmission: 1
+  position: {x: 24, y: 14, z: 12}
+  target: {x: 0, y: 1, z: 1}
+  intensity: 18000
+  colour: {r: 0.84, g: 0.88, b: 1, a: 1}
+  coneAngle: 82
+  range: 65
+  directTransmission: 0.7
   roseTransmission: {fileID: 2800000, guid: 56e3f532a09e25d4596c5667e9eaed6e, type: 3}
   sideTransmission: {fileID: 2800000, guid: 26f75f8b699672544b4e6b4b95a8beb7, type: 3}

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using MVP04;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -11,6 +12,9 @@ public sealed class MVP04LightingWindow : EditorWindow
     private const string MaterialPath="Assets/MVP04/Materials/RoseWindowVolume.mat";
     private Material volume;
     private ChapelLightSettings source;
+    private ChapelLightSettings[] sources;
+    private WindowVolumeFeature feature;
+    [SerializeField] private int selectedSource;
     private readonly List<System.Action> refreshers=new List<System.Action>();
     private IVisualElementScheduledItem pendingSave;
     private Label saveStatus;
@@ -27,32 +31,47 @@ public sealed class MVP04LightingWindow : EditorWindow
     {
         rootVisualElement.Clear();refreshers.Clear();
         volume=AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
-        source=AssetDatabase.LoadAssetAtPath<ChapelLightSettings>(SettingsPath);
+        sources=new[]{SettingsPath,"Assets/MVP04/Rendering/ExteriorLeft.asset","Assets/MVP04/Rendering/ExteriorRight.asset"}
+            .Select(AssetDatabase.LoadAssetAtPath<ChapelLightSettings>).ToArray();
+        selectedSource=Mathf.Clamp(selectedSource,0,2);source=sources[selectedSource];
+        feature=AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.Universal.UniversalRendererData>("Assets/MVP04/Rendering/NocturneRenderer.asset")?
+            .rendererFeatures.OfType<WindowVolumeFeature>().FirstOrDefault();
         rootVisualElement.style.backgroundColor=new Color(.13f,.14f,.16f);
         var scroll=new ScrollView();rootVisualElement.Add(scroll);
         scroll.style.paddingLeft=18;scroll.style.paddingRight=18;
         scroll.style.paddingTop=18;scroll.style.paddingBottom=18;
         var title=new Label("MVP04 · 光源与空气");title.style.fontSize=22;
         title.style.unityFontStyleAndWeight=FontStyle.Bold;scroll.Add(title);
-        var subtitle=new Label("同一光源穿过窗洞，投射到空气与建筑表面");
+        var subtitle=new Label("正面与左右侧窗外光源 · 共用空气介质");
         subtitle.style.color=new Color(.65f,.72f,.8f);subtitle.style.marginTop=4;scroll.Add(subtitle);
-        if(volume==null || source==null)
+        if(volume==null || sources[0]==null)
         {
             scroll.Add(new HelpBox("请先执行 MVP04 > Apply Physical Window Lighting。",HelpBoxMessageType.Info));return;
         }
         var emitter=Section(scroll,"外部光源 · 世界坐标 / 米");
-        var explanation=new Label("默认光源在教堂左前方上空。点光源产生几何硬边；光束方向和张角由光源、窗洞位置决定。背光侧不会出现直接光束。");
+        var explanation=new Label("正面、左侧和右侧各有一处外部光源。同一排窗户共享光源，光束随窗洞投射，并受石柱和墙壁遮挡。");
         explanation.style.whiteSpace=WhiteSpace.Normal;emitter.Add(explanation);
-        var serialized=new SerializedObject(source);
-        AddProperty("sourceEnabled","开启光源");
-        AddProperty("position","光源位置");
-        AddProperty("target","照射目标");
-        AddProperty("intensity","光源强度（URP）");
-        AddProperty("colour","光源颜色");
-        AddProperty("coneAngle","光源照射角度");
-        AddProperty("range","光源范围（米）");
-        AddProperty("directTransmission","玻璃直透比例");
-        emitter.Bind(serialized);
+        var selector=new DropdownField("当前光源",new List<string>{"正面圆窗","左侧窗户","右侧窗户"},selectedSource){name="source-selector"};emitter.Add(selector);
+        var fields=new VisualElement();emitter.Add(fields);
+        selector.RegisterValueChangedCallback(evt=>{selectedSource=selector.index;BuildSourceFields();});
+        BuildSourceFields();
+        if(feature!=null)
+        {
+            var performance=Section(scroll,"性能与质量");
+            var options=new List<string>{"性能 · 1/3 分辨率 / 32 步","标准 · 1/2 分辨率 / 40 步","精细 · 全分辨率 / 64 步"};
+            int Preset()=>feature.resolutionDivisor==3?0:feature.resolutionDivisor==2?1:2;
+            var quality=new DropdownField("体积光质量",options,Preset()){name="volume-quality"};performance.Add(quality);
+            quality.RegisterValueChangedCallback(evt=>
+            {
+                Undo.RecordObject(feature,"调整体积光质量");
+                int index=quality.index;feature.resolutionDivisor=index==0?3:index==1?2:1;
+                feature.viewSteps=index==0?32:index==1?40:64;feature.lightSteps=index==0?1:index==1?2:4;
+                EditorUtility.SetDirty(feature);Changed();
+            });
+            refreshers.Add(()=>quality.SetValueWithoutNotify(options[Preset()]));
+            var info=new Label("只调整体积光；场景与人物保持原始分辨率。深度引导还原用于减少轮廓漏光。");
+            info.style.whiteSpace=WhiteSpace.Normal;performance.Add(info);
+        }
         var air=Section(scroll,"空气介质 · 全教堂共享");
         AddSlider(air,"消光系数 / 米","density","_Density",0,.2f,"吸收与散射之和；数值过高时，光在到达深处前就会衰减。");
         AddSlider(air,"散射反照率","albedo","_ScatteringAlbedo",0,1,"散射占消光的比例。0 表示纯吸收，1 表示不吸收。");
@@ -64,16 +83,24 @@ public sealed class MVP04LightingWindow : EditorWindow
         help.style.whiteSpace=WhiteSpace.Normal;footer.Add(help);
         var actions=new VisualElement();actions.style.flexDirection=FlexDirection.Row;footer.Add(actions);
         var save=new Button(SaveSettings){text="立即保存",name="save-settings"};save.style.flexGrow=1;actions.Add(save);
-        var select=new Button(()=>{var light=Object.FindFirstObjectByType<ChapelWindowLight>();if(light!=null)Selection.activeGameObject=light.gameObject;}){text="选中光源 / 查看光路"};
+        var select=new Button(()=>{var light=Object.FindObjectsByType<ChapelWindowLight>(FindObjectsSortMode.None).FirstOrDefault(s=>s.settings==source);if(light!=null)Selection.activeGameObject=light.gameObject;}){text="选中光源 / 查看光路"};
         select.style.flexGrow=1;actions.Add(select);
         saveStatus=new Label("设置已载入");saveStatus.style.marginTop=8;footer.Add(saveStatus);
         RefreshControls();
 
-        void AddProperty(string property,string label)
+        void BuildSourceFields()
         {
-            var field=new PropertyField(serialized.FindProperty(property),label){name="source-"+property};
-            field.style.marginTop=6;emitter.Add(field);
-            field.RegisterCallback<SerializedPropertyChangeEvent>(_=>Changed());
+            fields.Unbind();fields.Clear();source=sources[selectedSource];
+            if(source==null){fields.Add(new HelpBox("请执行 MVP04 > Apply Optimized Side Lighting。",HelpBoxMessageType.Info));return;}
+            var serialized=new SerializedObject(source);
+            AddProperty("sourceEnabled","开启光源");AddProperty("position","光源位置");AddProperty("target","照射目标");
+            AddProperty("intensity","光源强度（URP）");AddProperty("colour","光源颜色");AddProperty("coneAngle","光源照射角度");
+            AddProperty("range","光源范围（米）");AddProperty("directTransmission","玻璃直透比例");fields.Bind(serialized);
+            void AddProperty(string property,string label)
+            {
+                var field=new PropertyField(serialized.FindProperty(property),label){name="source-"+property};
+                field.style.marginTop=6;fields.Add(field);field.RegisterCallback<SerializedPropertyChangeEvent>(_=>Changed());
+            }
         }
     }
     private VisualElement Section(VisualElement parent,string heading)
@@ -102,7 +129,7 @@ public sealed class MVP04LightingWindow : EditorWindow
         if(volume!=null)EditorUtility.SetDirty(volume);
         if(source!=null)EditorUtility.SetDirty(source);
         needsSave=true;
-        var light=Object.FindFirstObjectByType<ChapelWindowLight>();if(light!=null)light.Apply();
+        foreach(var light in Object.FindObjectsByType<ChapelWindowLight>(FindObjectsSortMode.None))light.Apply();
         if(saveStatus!=null)saveStatus.text="预览已更新 · 正在自动保存…";
         pendingSave?.Pause();pendingSave=rootVisualElement.schedule.Execute(SaveSettings).StartingIn(400);
         SceneView.RepaintAll();EditorApplication.QueuePlayerLoopUpdate();UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
@@ -113,7 +140,8 @@ public sealed class MVP04LightingWindow : EditorWindow
         if(needsSave)
         {
             if(volume!=null)AssetDatabase.SaveAssetIfDirty(volume);
-            if(source!=null)AssetDatabase.SaveAssetIfDirty(source);
+            if(sources!=null)foreach(var settings in sources)if(settings!=null)AssetDatabase.SaveAssetIfDirty(settings);
+            if(feature!=null)AssetDatabase.SaveAssetIfDirty(feature);
             needsSave=false;
         }
         if(saveStatus!=null)saveStatus.text="已保存 · 停止运行后仍保留";

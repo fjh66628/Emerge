@@ -60,6 +60,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MVP04.WindowVolumeFeature
   m_Active: 1
   material: {fileID: 2100000, guid: a600b84bf22a24b4dbb2fc2fef6672b0, type: 2}
+  resolutionDivisor: 2
+  viewSteps: 40
+  lightSteps: 2
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

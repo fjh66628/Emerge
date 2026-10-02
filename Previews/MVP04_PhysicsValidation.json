@@ -1,7 +1,19 @@
 {
+  "resolution": "480x300 linear HDR",
+  "noiseDuringTest": 0,
+  "sourceCount": 3,
   "hdrInvalid": 0,
-  "lightEnergy": 2209.3448442752124,
-  "relativeLinearityError": 2.6211429165815536E-07,
-  "volumeEnergy": 656.8025562511757,
-  "lightOffScatteringError": 0.0
+  "relativeLinearityError": 1.586905155526638e-07,
+  "volumeEnergy": 3122.5175262797857,
+  "lightOffScatteringError": 0.0,
+  "perSourceVolumeEnergy": {
+    "ExteriorLeft": 599.9152519520139,
+    "ExteriorLight": 1883.3024370481726,
+    "ExteriorRight": 639.3096216027625
+  },
+  "measuredSourceIntensities": {
+    "ExteriorLight": 50000,
+    "ExteriorLeft": 9000,
+    "ExteriorRight": 9000
+  }
 }

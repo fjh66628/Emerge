@@ -38,8 +38,8 @@ Shader "MVP04/Frosted Stained Glass"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
             float4 _BaseMap_TexelSize;
-            float3 _ChapelSourcePosition, _ChapelSourceForward, _ChapelSourceRadiance;
-            float4 _ChapelSourceParams;
+            int _ChapelSourceCount;
+            float4 _ChapelSourcePositions[3], _ChapelSourceForwards[3], _ChapelSourceRadiances[3], _ChapelSourceParameters[3];
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseMap_ST, _BaseColor, _FrostTint, _PaneSize;
                 float _FrostAmount, _FrostBlur, _GrainStrength, _Transmission, _Smoothness, _Cutoff, _Cull;
@@ -101,15 +101,20 @@ Shader "MVP04/Frosted Stained Glass"
                 surface.smoothness=clamp(_Smoothness+(cloud-.5)*.12-etched*.15,.08,.4);
                 // Thin rough-pane Lambert transmission from the actual exterior emitter.
                 // The complementary direct fraction is projected by its RGB light cookie.
-                float3 delta=_ChapelSourcePosition-i.positionWS;
-                float distanceSqr=max(dot(delta,delta),.01);
-                float3 toSource=delta*rsqrt(distanceSqr);
-                float cone=saturate(dot(-toSource,_ChapelSourceForward)*_ChapelSourceParams.y+_ChapelSourceParams.z);
-                float rangeFactor=saturate(1-pow(distanceSqr*_ChapelSourceParams.x,2));
-                float cosine=saturate(dot(-normalize(i.normalWS),toSource));
-                float3 irradiance=_ChapelSourceRadiance*(cone*cone*rangeFactor*rangeFactor*cosine/distanceSqr);
+                float3 irradiance=0;
+                [loop] for(int s=0;s<_ChapelSourceCount;s++)
+                {
+                    float3 delta=_ChapelSourcePositions[s].xyz-i.positionWS;
+                    float distanceSqr=max(dot(delta,delta),.01);
+                    float3 toSource=delta*rsqrt(distanceSqr);
+                    float4 parameters=_ChapelSourceParameters[s];
+                    float cone=saturate(dot(-toSource,_ChapelSourceForwards[s].xyz)*parameters.y+parameters.z);
+                    float rangeFactor=saturate(1-pow(distanceSqr*parameters.x,2));
+                    float cosine=saturate(dot(-normalize(i.normalWS),toSource));
+                    irradiance+=_ChapelSourceRadiances[s].rgb*(cone*cone*rangeFactor*rangeFactor*cosine*parameters.w/distanceSqr);
+                }
                 surface.emission=saturate(colour*(.83+.17*cloud+etched)+milk)*saturate(_Transmission)*
-                    _ChapelSourceParams.w*irradiance/PI;
+                    irradiance/PI;
                 half4 result=UniversalFragmentPBR(inputData,surface);
                 result.rgb=MixFog(result.rgb,i.fog);return result;
             }

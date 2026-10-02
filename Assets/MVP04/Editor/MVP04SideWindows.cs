@@ -14,13 +14,20 @@ public static partial class MVP04Builder
 
     [MenuItem("MVP04/Capture Side Window Preview")]
     public static void CaptureSideWindowPreview()
+        => CaptureSidePreview(1,"Previews/MVP04_SideWindows.png");
+
+    [MenuItem("MVP04/Capture Left Window Preview")]
+    public static void CaptureLeftWindowPreview()
+        => CaptureSidePreview(-1,"Previews/MVP04_LeftWindows.png");
+
+    private static void CaptureSidePreview(int side,string path)
     {
         Camera camera=Camera.main;if(camera==null)throw new InvalidOperationException("Open MVP04 first.");
         var position=camera.transform.position;var rotation=camera.transform.rotation;
         try
         {
-            camera.transform.position=V(-.7f,3.4f,-6.5f);camera.transform.LookAt(V(8.7f,4.3f,3));
-            CaptureCamera(camera,"Previews/MVP04_SideWindows.png");
+            camera.transform.position=V(-side*.7f,3.4f,-6.5f);camera.transform.LookAt(V(side*8.7f,4.3f,3));
+            CaptureCamera(camera,path);
         }
         finally{camera.transform.SetPositionAndRotation(position,rotation);}
     }

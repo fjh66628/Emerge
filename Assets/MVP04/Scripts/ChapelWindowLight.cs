@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MVP04
 {
-    // One finite exterior emitter. The same projected RGB transmission is consumed by
+    // A finite exterior emitter. The same projected RGB transmission is consumed by
     // URP surface lighting and the volume pass; no independent window beam directions.
     [ExecuteAlways, DisallowMultipleComponent, RequireComponent(typeof(Light))]
     public sealed class ChapelWindowLight : MonoBehaviour
@@ -15,14 +16,30 @@ namespace MVP04
         private Vector3 lastPosition, lastTarget;
         private float lastCone=-1, lastTransmission=-1;
         private Texture2D lastRose,lastSide;
+        private float lastIntensity=-1,lastRange=-1;
+        private Color lastColour;
+        private bool lastEnabled;
+        private static readonly List<ChapelWindowLight> Active=new List<ChapelWindowLight>(3);
+        private static readonly Vector4[] Positions=new Vector4[3],Forwards=new Vector4[3],Radiances=new Vector4[3],Parameters=new Vector4[3];
         public Light Source => lamp!=null?lamp:(lamp=GetComponent<Light>());
 
-        private void OnEnable() => Apply();
+        private void OnEnable()
+        {
+            if(!Active.Contains(this))Active.Add(this);
+            lastIntensity=-1;Apply();
+        }
         private void Update() => Apply();
         public void Apply()
         {
             if(settings==null)return;
             Light light=Source;
+            bool projectionChanged=cookie==null || lastPosition!=settings.position || lastTarget!=settings.target ||
+                lastCone!=settings.coneAngle || lastTransmission!=settings.directTransmission ||
+                lastRose!=settings.roseTransmission || lastSide!=settings.sideTransmission;
+            if(!projectionChanged && lastIntensity==settings.intensity && lastRange==settings.range &&
+                lastColour==settings.colour && lastEnabled==settings.sourceEnabled && light.enabled==settings.sourceEnabled &&
+                !transform.hasChanged && light.intensity==Mathf.Max(0,settings.intensity) && light.spotAngle==Mathf.Clamp(settings.coneAngle,15,140))
+                return;
             transform.position=settings.position;
             Vector3 direction=settings.target-settings.position;
             if(direction.sqrMagnitude>.001f)transform.rotation=Quaternion.LookRotation(direction);
@@ -35,22 +52,30 @@ namespace MVP04
             light.shadows=LightShadows.Hard; // A point emitter has a geometric, hard shadow.
             light.shadowStrength=1;light.shadowBias=.015f;light.shadowNormalBias=.03f;
             light.shadowNearPlane=.15f;
-            if(cookie==null || lastPosition!=settings.position || lastTarget!=settings.target ||
-                lastCone!=settings.coneAngle || lastTransmission!=settings.directTransmission ||
-                lastRose!=settings.roseTransmission || lastSide!=settings.sideTransmission)
-                RebuildCookie();
+            if(projectionChanged)RebuildCookie();
             light.cookie=cookie;
+            lastIntensity=settings.intensity;lastRange=settings.range;lastColour=settings.colour;lastEnabled=settings.sourceEnabled;
+            transform.hasChanged=false;
+            PublishGlobals();
+        }
 
-            // Rough transmission on the panes receives this same emitter. No self-lit windows
-            // remain when it is switched off, or on facades facing away from the source.
-            Shader.SetGlobalVector("_ChapelSourcePosition",transform.position);
-            Shader.SetGlobalVector("_ChapelSourceForward",transform.forward);
-            Color radiance=settings.colour.linear*(light.enabled?light.intensity:0);
-            Shader.SetGlobalVector("_ChapelSourceRadiance",new Vector4(radiance.r,radiance.g,radiance.b,0));
-            float outer=Mathf.Cos(light.spotAngle*.5f*Mathf.Deg2Rad);
-            float inner=Mathf.Cos(light.innerSpotAngle*.5f*Mathf.Deg2Rad);
-            Shader.SetGlobalVector("_ChapelSourceParams",new Vector4(1/(light.range*light.range),
-                1/Mathf.Max(.001f,inner-outer),-outer/Mathf.Max(.001f,inner-outer),1-settings.directTransmission));
+        private static void PublishGlobals()
+        {
+            int count=0;
+            foreach(var source in Active)
+            {
+                if(source==null || source.settings==null || count==3)continue;
+                Light light=source.Source;
+                Positions[count]=source.transform.position;Forwards[count]=source.transform.forward;
+                Color colour=source.settings.colour.linear*(light.enabled?light.intensity:0);
+                Radiances[count]=new Vector4(colour.r,colour.g,colour.b,0);
+                float outer=Mathf.Cos(light.spotAngle*.5f*Mathf.Deg2Rad),inner=Mathf.Cos(light.innerSpotAngle*.5f*Mathf.Deg2Rad);
+                float inverseCone=1/Mathf.Max(.001f,inner-outer);
+                Parameters[count++]=new Vector4(1/(light.range*light.range),inverseCone,-outer*inverseCone,1-source.settings.directTransmission);
+            }
+            Shader.SetGlobalInteger("_ChapelSourceCount",count);
+            Shader.SetGlobalVectorArray("_ChapelSourcePositions",Positions);Shader.SetGlobalVectorArray("_ChapelSourceForwards",Forwards);
+            Shader.SetGlobalVectorArray("_ChapelSourceRadiances",Radiances);Shader.SetGlobalVectorArray("_ChapelSourceParameters",Parameters);
         }
 
         [ContextMenu("Rebuild window projection")]
@@ -134,7 +159,7 @@ namespace MVP04
         private void OnDisable()
         {
             if(lamp!=null){lamp.cookie=null;lamp.enabled=false;}
-            Shader.SetGlobalVector("_ChapelSourceRadiance",Vector4.zero);
+            Active.Remove(this);PublishGlobals();
             if(cookie!=null){if(Application.isPlaying)Destroy(cookie);else DestroyImmediate(cookie);cookie=null;}
         }
         private void OnDrawGizmosSelected()
