@@ -1,0 +1,606 @@
+{
+  "capturedLocal": "2026-10-03 03:58:47",
+  "sourceCodeCommit": "36ea4be",
+  "scope": "MVP04 current workspace art parameters; selected light, volume and renderer assets contain local tuning not included in the source code commit. This JSON records values, not an auto-applied preset or full scene backup.",
+  "scene": "Assets/MVP04/Scenes/MVP04_NocturneChapel.unity",
+  "unity": "6000.3.25f1",
+  "urp": "17.3.0",
+  "colourSpace": "Linear",
+  "rendererMode": "ForwardPlus",
+  "pipeline": {
+    "renderScale": 1.0,
+    "msaaSampleCount": 1,
+    "shadowDistance": 50.0,
+    "supportsHDR": true
+  },
+  "camera": {
+    "projection": "Perspective",
+    "fieldOfView": 56.0,
+    "nearClipPlane": 0.12,
+    "farClipPlane": 80.0,
+    "position": [
+      0.416786969,
+      2.31893635,
+      5.28597164
+    ],
+    "forward": [
+      0.0,
+      -0.1975661,
+      0.9802896
+    ],
+    "focusHeight": 1.0,
+    "minimumDistance": 5.0,
+    "maximumDistance": 15.0,
+    "poseIsRuntimeObservation": true
+  },
+  "ambient": {
+    "mode": "Trilight",
+    "sky": [
+      0.56,
+      0.61,
+      0.72,
+      1.0
+    ],
+    "equator": [
+      0.42,
+      0.47,
+      0.58,
+      1.0
+    ],
+    "ground": [
+      0.3,
+      0.35,
+      0.45,
+      1.0
+    ],
+    "reflectionIntensity": 0.25,
+    "globalFog": false
+  },
+  "lightProfiles": [
+    {
+      "name": "ExteriorLight",
+      "sourceAsset": "Assets/MVP04/Rendering/ExteriorLight.asset",
+      "sourceEnabled": true,
+      "position": [
+        0.0,
+        18.0,
+        38.0
+      ],
+      "target": [
+        0.0,
+        4.0,
+        3.0
+      ],
+      "intensity": 50000.0,
+      "colour": [
+        0.78,
+        0.86,
+        1.0,
+        1.0
+      ],
+      "coneAngle": 15.0,
+      "range": 60.0,
+      "directTransmission": 0.75,
+      "roseTransmission": "Assets/MVP04/Textures/RoseTransmission.png",
+      "sideTransmission": "Assets/MVP04/Textures/SideGlassTransmission.png"
+    },
+    {
+      "name": "ExteriorLeft",
+      "sourceAsset": "Assets/MVP04/Rendering/ExteriorLeft.asset",
+      "sourceEnabled": true,
+      "position": [
+        -24.0,
+        14.0,
+        12.0
+      ],
+      "target": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "intensity": 48000.0,
+      "colour": [
+        0.76,
+        0.84,
+        1.0,
+        1.0
+      ],
+      "coneAngle": 82.0,
+      "range": 100.0,
+      "directTransmission": 0.75,
+      "roseTransmission": "Assets/MVP04/Textures/RoseTransmission.png",
+      "sideTransmission": "Assets/MVP04/Textures/SideGlassTransmission.png"
+    },
+    {
+      "name": "ExteriorRight",
+      "sourceAsset": "Assets/MVP04/Rendering/ExteriorRight.asset",
+      "sourceEnabled": true,
+      "position": [
+        24.0,
+        14.0,
+        12.0
+      ],
+      "target": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "intensity": 18000.0,
+      "colour": [
+        0.84,
+        0.88,
+        1.0,
+        1.0
+      ],
+      "coneAngle": 82.0,
+      "range": 65.0,
+      "directTransmission": 0.7,
+      "roseTransmission": "Assets/MVP04/Textures/RoseTransmission.png",
+      "sideTransmission": "Assets/MVP04/Textures/SideGlassTransmission.png"
+    }
+  ],
+  "volumeQuality": {
+    "resolutionDivisor": 3,
+    "viewSteps": 32,
+    "lightSteps": 1,
+    "denoiseStrength": 0.9
+  },
+  "materials": [
+    {
+      "name": "RoseWindowVolume",
+      "shader": "MVP04/Window Volume",
+      "properties": {
+        "_Density": 0.021,
+        "_ScatteringAlbedo": 0.4,
+        "_Anisotropy": 0.8,
+        "_NoiseAmount": 1.0,
+        "_NoiseScale": 0.892,
+        "_FlowSpeed": 2.0,
+        "_FlowDirection": [
+          0.8,
+          0.2,
+          0.35,
+          0.0
+        ],
+        "_FlowWarp": 3.0,
+        "_FlowDetail": 0.353,
+        "_DensityNoise": "Assets/MVP04/Textures/AirFlowNoise.asset"
+      }
+    },
+    {
+      "name": "NocturneTravelerWalk",
+      "shader": "MVP04/Lit Pixel Character",
+      "properties": {
+        "_BaseMap": "Assets/MVP04/Textures/PilgrimWalk.png",
+        "_BaseColor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "_Cutoff": 0.5,
+        "_Smoothness": 0.12,
+        "_NormalBend": 1.5,
+        "_BackLight": 0.35,
+        "_AmbientStrength": 1.0
+      }
+    },
+    {
+      "name": "MidnightLimestone",
+      "shader": "MVP03/World Stone PBR",
+      "properties": {
+        "_BaseMap": "Assets/MVP03/Textures/RebuiltLimestone.png",
+        "_BumpMap": "Assets/MVP03/Textures/RebuiltLimestoneNormal.png",
+        "_BaseColor": [
+          0.479999959,
+          0.53,
+          0.61,
+          1.0
+        ],
+        "_WorldScale": 0.8,
+        "_BumpScale": 0.65,
+        "_Smoothness": 0.18,
+        "_Cutoff": 0.5,
+        "_Cull": 2.0
+      }
+    },
+    {
+      "name": "SlatePaving",
+      "shader": "MVP03/World Stone PBR",
+      "properties": {
+        "_BaseMap": "Assets/MVP03/Textures/RebuiltLimestone.png",
+        "_BumpMap": "Assets/MVP03/Textures/RebuiltLimestoneNormal.png",
+        "_BaseColor": [
+          0.339999974,
+          0.389999956,
+          0.45,
+          1.0
+        ],
+        "_WorldScale": 0.8,
+        "_BumpScale": 0.65,
+        "_Smoothness": 0.3,
+        "_Cutoff": 0.5,
+        "_Cull": 2.0
+      }
+    },
+    {
+      "name": "WornCarvings",
+      "shader": "MVP03/World Stone PBR",
+      "properties": {
+        "_BaseMap": "Assets/MVP03/Textures/RebuiltLimestone.png",
+        "_BumpMap": "Assets/MVP03/Textures/RebuiltLimestoneNormal.png",
+        "_BaseColor": [
+          0.59,
+          0.62,
+          0.65,
+          1.0
+        ],
+        "_WorldScale": 0.8,
+        "_BumpScale": 0.65,
+        "_Smoothness": 0.24,
+        "_Cutoff": 0.5,
+        "_Cull": 2.0
+      }
+    },
+    {
+      "name": "DarkOak",
+      "shader": "Universal Render Pipeline/Lit",
+      "properties": {
+        "_WorkflowMode": 1.0,
+        "_BaseMap": "",
+        "_BaseColor": [
+          0.259999961,
+          0.159999967,
+          0.08499997,
+          1.0
+        ],
+        "_Cutoff": 0.5,
+        "_Smoothness": 0.32,
+        "_SmoothnessTextureChannel": 0.0,
+        "_Metallic": 0.0,
+        "_MetallicGlossMap": "",
+        "_SpecColor": [
+          0.199999928,
+          0.199999928,
+          0.199999928,
+          1.0
+        ],
+        "_SpecGlossMap": "",
+        "_SpecularHighlights": 1.0,
+        "_EnvironmentReflections": 1.0,
+        "_BumpScale": 1.0,
+        "_BumpMap": "",
+        "_Parallax": 0.005,
+        "_ParallaxMap": "",
+        "_OcclusionStrength": 1.0,
+        "_OcclusionMap": "",
+        "_EmissionColor": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "_EmissionMap": "",
+        "_DetailMask": "",
+        "_DetailAlbedoMapScale": 1.0,
+        "_DetailAlbedoMap": "",
+        "_DetailNormalMapScale": 1.0,
+        "_DetailNormalMap": "",
+        "_ClearCoatMask": 0.0,
+        "_ClearCoatSmoothness": 0.0,
+        "_Surface": 0.0,
+        "_Blend": 0.0,
+        "_Cull": 2.0,
+        "_AlphaClip": 0.0,
+        "_SrcBlend": 1.0,
+        "_DstBlend": 0.0,
+        "_SrcBlendAlpha": 1.0,
+        "_DstBlendAlpha": 0.0,
+        "_ZWrite": 1.0,
+        "_BlendModePreserveSpecular": 1.0,
+        "_AlphaToMask": 0.0,
+        "_AddPrecomputedVelocity": 0.0,
+        "_XRMotionVectorsPass": 1.0,
+        "_ReceiveShadows": 1.0,
+        "_QueueOffset": 0.0,
+        "_MainTex": "",
+        "_Color": [
+          0.259999931,
+          0.159999937,
+          0.0849999562,
+          1.0
+        ],
+        "_GlossMapScale": 0.0,
+        "_Glossiness": 0.0,
+        "_GlossyReflections": 0.0,
+        "unity_Lightmaps": "",
+        "unity_LightmapsInd": "",
+        "unity_ShadowMasks": ""
+      }
+    },
+    {
+      "name": "AgedBronze",
+      "shader": "Universal Render Pipeline/Lit",
+      "properties": {
+        "_WorkflowMode": 1.0,
+        "_BaseMap": "",
+        "_BaseColor": [
+          0.269999951,
+          0.159999967,
+          0.0549999774,
+          1.0
+        ],
+        "_Cutoff": 0.5,
+        "_Smoothness": 0.55,
+        "_SmoothnessTextureChannel": 0.0,
+        "_Metallic": 0.72,
+        "_MetallicGlossMap": "",
+        "_SpecColor": [
+          0.199999928,
+          0.199999928,
+          0.199999928,
+          1.0
+        ],
+        "_SpecGlossMap": "",
+        "_SpecularHighlights": 1.0,
+        "_EnvironmentReflections": 1.0,
+        "_BumpScale": 1.0,
+        "_BumpMap": "",
+        "_Parallax": 0.005,
+        "_ParallaxMap": "",
+        "_OcclusionStrength": 1.0,
+        "_OcclusionMap": "",
+        "_EmissionColor": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "_EmissionMap": "",
+        "_DetailMask": "",
+        "_DetailAlbedoMapScale": 1.0,
+        "_DetailAlbedoMap": "",
+        "_DetailNormalMapScale": 1.0,
+        "_DetailNormalMap": "",
+        "_ClearCoatMask": 0.0,
+        "_ClearCoatSmoothness": 0.0,
+        "_Surface": 0.0,
+        "_Blend": 0.0,
+        "_Cull": 2.0,
+        "_AlphaClip": 0.0,
+        "_SrcBlend": 1.0,
+        "_DstBlend": 0.0,
+        "_SrcBlendAlpha": 1.0,
+        "_DstBlendAlpha": 0.0,
+        "_ZWrite": 1.0,
+        "_BlendModePreserveSpecular": 1.0,
+        "_AlphaToMask": 0.0,
+        "_AddPrecomputedVelocity": 0.0,
+        "_XRMotionVectorsPass": 1.0,
+        "_ReceiveShadows": 1.0,
+        "_QueueOffset": 0.0,
+        "_MainTex": "",
+        "_Color": [
+          0.269999921,
+          0.159999937,
+          0.054999955,
+          1.0
+        ],
+        "_GlossMapScale": 0.0,
+        "_Glossiness": 0.0,
+        "_GlossyReflections": 0.0,
+        "unity_Lightmaps": "",
+        "unity_LightmapsInd": "",
+        "unity_ShadowMasks": ""
+      }
+    },
+    {
+      "name": "LuminousRoseGlass",
+      "shader": "MVP04/Frosted Stained Glass",
+      "properties": {
+        "_BaseMap": "Assets/MVP04/Textures/RoseTransmission.png",
+        "_BaseColor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "_FrostTint": [
+          0.68,
+          0.8,
+          0.87,
+          1.0
+        ],
+        "_PaneSize": [
+          5.26,
+          5.26,
+          0.0,
+          0.0
+        ],
+        "_FrostAmount": 0.8,
+        "_FrostBlur": 2.4,
+        "_GrainStrength": 0.38,
+        "_Transmission": 1.0,
+        "_Smoothness": 0.24,
+        "_Cutoff": 0.5,
+        "_Cull": 2.0
+      }
+    },
+    {
+      "name": "LuminousSideGlass",
+      "shader": "MVP04/Frosted Stained Glass",
+      "properties": {
+        "_BaseMap": "Assets/MVP04/Textures/SideGlassTransmission.png",
+        "_BaseColor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "_FrostTint": [
+          0.68,
+          0.8,
+          0.87,
+          1.0
+        ],
+        "_PaneSize": [
+          2.44,
+          4.5,
+          0.0,
+          0.0
+        ],
+        "_FrostAmount": 0.8,
+        "_FrostBlur": 2.4,
+        "_GrainStrength": 0.38,
+        "_Transmission": 1.0,
+        "_Smoothness": 0.24,
+        "_Cutoff": 0.5,
+        "_Cull": 2.0
+      }
+    },
+    {
+      "name": "SubtlePixels",
+      "shader": "MVP03/Subtle Pixels",
+      "properties": {
+        "_PixelSize": 6.0,
+        "_Blend": 0.32
+      }
+    }
+  ],
+  "characterAtlas": {
+    "path": "Assets/MVP04/Textures/PilgrimWalk.png",
+    "width": 1536,
+    "height": 1024,
+    "spritePixelsPerUnit": 112.0,
+    "filter": "Point",
+    "mipmapEnabled": false,
+    "compression": "Uncompressed",
+    "sprites": 24
+  },
+  "lightCounts": [
+    {
+      "type": "Spot",
+      "total": 3,
+      "shadowed": 3
+    },
+    {
+      "type": "Point",
+      "total": 12,
+      "shadowed": 0
+    },
+    {
+      "type": "Directional",
+      "total": 1,
+      "shadowed": 0
+    }
+  ],
+  "standardVersion": "1.0",
+  "timezone": "Asia/Shanghai",
+  "postProcessing": {
+    "Bloom": {
+      "active": true,
+      "skipIterations": 1,
+      "threshold": 0.9,
+      "intensity": 0.28,
+      "scatter": 0.68,
+      "clamp": 65472.0,
+      "tint": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "highQualityFiltering": false,
+      "filter": "Gaussian",
+      "downscale": "Half",
+      "maxIterations": 6,
+      "dirtTexture": "",
+      "dirtIntensity": 0.0
+    },
+    "Tonemapping": {
+      "active": true,
+      "mode": "ACES",
+      "neutralHDRRangeReductionMode": "BT2390",
+      "acesPreset": "ACES1000Nits",
+      "hueShiftAmount": 0.0,
+      "detectPaperWhite": false,
+      "paperWhite": 300.0,
+      "detectBrightnessLimits": true,
+      "minNits": 0.005,
+      "maxNits": 1000.0
+    },
+    "ColorAdjustments": {
+      "active": true,
+      "postExposure": 0.15,
+      "contrast": 13.0,
+      "colorFilter": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "hueShift": 0.0,
+      "saturation": -12.0
+    },
+    "DepthOfField": {
+      "active": true,
+      "mode": "Bokeh",
+      "gaussianStart": 10.0,
+      "gaussianEnd": 30.0,
+      "gaussianMaxRadius": 1.0,
+      "highQualitySampling": false,
+      "focusDistance": 13.2594118,
+      "aperture": 5.6,
+      "focalLength": 55.0,
+      "bladeCount": 5,
+      "bladeCurvature": 1.0,
+      "bladeRotation": 0.0
+    },
+    "Vignette": {
+      "active": true,
+      "color": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "center": [
+        0.5,
+        0.5
+      ],
+      "intensity": 0.2,
+      "smoothness": 0.6,
+      "rounded": false
+    }
+  },
+  "magic": {
+    "chargeDuration": 0.6,
+    "cooldown": 0.48,
+    "castHeight": 1.6,
+    "BaroqueCast": {
+      "sourceAsset": "Assets/MVP04/Prefabs/BaroqueCast.prefab",
+      "diameter": 1.8,
+      "forwardOffset": 0.62,
+      "fadeDuration": 0.3
+    },
+    "AstralOrb": {
+      "sourceAsset": "Assets/MVP04/Prefabs/AstralOrb.prefab",
+      "speed": 3.0,
+      "acceleration": 16.0,
+      "maxSpeed": 15.0,
+      "hitRadius": 0.16,
+      "lifetime": 2.5,
+      "glowDiameter": 0.42,
+      "glowPulse": 0.012,
+      "lightIntensity": 3.6,
+      "lightPulse": 0.18
+    },
+    "AstralImpact": {
+      "sourceAsset": "Assets/MVP04/Prefabs/AstralImpact.prefab",
+      "duration": 0.35,
+      "flashDiameter": 0.75,
+      "ringScale": 1.55,
+      "lightIntensity": 3.5
+    }
+  }
+}

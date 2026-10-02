@@ -1,5 +1,7 @@
 # MVP04 | Nocturne Chapel
 
+**美术制作标准：** [MVP04 夜色教堂美术方案标准](ART_STANDARD.md) defines the visual direction, lighting, character style, technical art constraints and acceptance criteria. [ArtBaseline.json](ArtBaseline.json) records the current workspace tuning, including values that differ from builder defaults. Use these for visual reproduction; the sections below describe implementation and tools.
+
 Open `Scenes/MVP04_NocturneChapel.unity` and press Play. **WASD / arrow keys** move the sprite character in four directions; the camera follows and keeps the character centred. **Space** fires the existing 3D magic bolt. The chapel reuses MVP03 movement, focus, stone PBR and pixel finishing.
 
 ## Character and camera controls
