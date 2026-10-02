@@ -1,40 +1,55 @@
 # MVP04 | Nocturne Chapel
 
-Open `Scenes/MVP04_NocturneChapel.unity` and press Play. **WASD / arrow keys** move the pilgrim in four directions; the camera follows and keeps the character centred. **Space** fires the existing 3D light bolt in the last movement direction. Stone, pews and the altar block movement and projectiles.
+Open `Scenes/MVP04_NocturneChapel.unity` and press Play. **WASD / arrow keys** move the sprite character in four directions; the camera follows and keeps the character centred. **Space** fires the existing 3D magic bolt. The chapel reuses MVP03 movement, focus, stone PBR and pixel finishing.
 
-The dark interior is arranged symmetrically along the nave: bundled stone columns, transverse arches, ribbed vaults, oak pews, a raised altar and a large circular stained-glass window directly ahead. Cold window light contrasts with warm candle pools. Individual beveled masonry and floor pieces reuse MVP03's world-space stone PBR shader and limestone textures. The character, movement, camera, focus and magic prefab also reuse MVP03. Materials, meshes, volume profile and renderer settings for the new environment live in MVP04.
+## Light source and projection
 
-## Rendering
+There is now **one cold exterior spotlight**, positioned at **(-18, 18, 38) metres**, aimed at **(0, 4, 3)**. This is an elevated artificial source outside the front-left corner of the chapel. Its default intensity is 50000 in URP's relative light units, cone angle 75 degrees, and range 100 metres. This is not a calibrated photometric lumen value.
 
-### Interactive lighting controls
+`ChapelWindowLight` projects the actual rose and eight side-window apertures from this source into a 1024² linear RGB cookie. Rays intersect the nearest face of the room envelope first: opaque wall, roof and rear-face rays are blocked. Glass masks include their coloured transmission and dark leading. The stone reveals, columns, tracery, pews and other geometry also occlude the light through the source's shadow map. Moving the source recomputes the projection. The old eight independent window lights and the unrelated rose directional light are removed.
 
-Open **MVP04 > 体积光设置** for a dedicated settings window. Sliders update the Game and Scene views immediately, save to the MVP04 volume material after a short debounce, and support Undo/Redo. Changes made during Play Mode are persistent material edits. The **柔和 / 清晰 / 锐利** presets change edge softness, rose-beam spread, transmission contrast and shadow definition without changing brightness or density. The **立即保存** button also saves pending edits.
+The same URP light, RGB cookie and shadow map illuminate **both surfaces and air**. Window rays diverge from the source position; there is no independent beam direction, artificial widening, transmission contrast remapping, or per-window brightness. At the default position the rose beam crosses toward the right side of the nave. Side windows at grazing incidence admit less light because of their deep reveals. Windows facing away from the source do not generate direct shafts.
 
-- **边缘锐利度:** larger values narrow the aperture transition for both the rose and side windows.
-- **窗格分束对比 / 阴影锐利度:** strengthen the gaps between shafts and tighten the shadow penumbra.
-- **圆窗光束扩散:** smaller values keep the rose beam narrow along its length.
-- **光束亮度:** scales the scattering from all windows, independently of surface lighting.
-- **圆窗 / 侧窗雾中散射:** adjust the amount of scattering in the air; **尘雾纹理频率** adjusts its noise detail.
+## Participating medium
 
-The builder's sharp preset uses edge softness **0.008**, rose spread **0.001**, transmission contrast **2.05**, and shadow sharpness **0.9**. `Previews/MVP04_LightingSettings.png` shows the settings window. Its live values can differ from the builder defaults after editing.
+`WindowVolumeFeature` runs a depth-limited 96-step world-space ray march before post processing. Air occupies the chapel envelope from (-8.86, 0, -13) to (8.86, 13.6, 17.57); the exterior is assumed clear.
 
-### Shading
+- **Extinction:** a single density field covers the room, independent of how many lights or shadows are present. Default extinction is 0.028 per metre, scattering albedo 0.9, density noise amplitude 0.2, frequency 0.28.
+- **Beer–Lambert attenuation:** `T = exp(-integral(sigma_t ds))` is evaluated along the camera path and the interior portion of the path back to the light. The light path uses six density samples; uniform density has an analytic evaluation. Unity's previous global fog is disabled to avoid applying extinction twice.
+- **Incident light:** uses URP's actual inverse-square distance attenuation, finite-range taper, spotlight cone, glass transmission and geometric shadow visibility.
+- **Angular scattering:** normalized Henyey–Greenstein phase function, with default `g = 0.25`.
+- **Integration:** each segment adds `T_camera * albedo * (1 - T_segment) * incident_radiance * phase`, then updates camera transmittance once. No independent volume intensity gain is applied.
 
-- **Window light:** `WindowVolumeFeature` runs one bounded 72-step world-space ray march before post processing for the rose and eight side windows. Scene depth limits integration to visible air. Main and additional-light shadow maps account for architectural occlusion. Narrower beam edges, reduced spreading, stronger transmission contrast and remapped shadow penumbrae make the shafts more defined. Four arched windows on each side have actual wall openings, carved stone surrounds and blue/teal/amber glass. Each `SideWindowLight` associates a shadow-casting spotlight with its aperture; glass transmission and drifting 3D noise colour the diagonal shafts. Camera-specific visible-light indices select the correct shadow map. The volume is tailored to this chapel's fixed window dimensions.
-- **Frosted glass:** `FrostedGlass.shader` shades both rose and side panes with PBR, rough micro-normals, mottled scattering and fine grain that fades below pixel resolution. A short texture blur softens transmitted colour while the opaque lead remains dark. This approximates light diffusing through ground glass; it does not trace exterior refraction. The original transmission masks remain available to the light beams and projected cookies.
-- **Side illumination:** matching RGB spotlight cookies project the glass pattern onto stone and furniture. MVP04 uses Forward+ to keep window lights, ambient bounce and candles active together. The shared stone PBR shader supports clustered lights and cookies, while retaining the MVP03 forward variant.
-- **Surface light:** the real opening, physical stone frame and bronze tracery cast directional moonlight shadows. Local warm lights illuminate candle stands. A brighter three-colour ambient environment and broad cool bounce lights reveal stone, pews and paving in shadow while retaining the direct window light contrast. **MVP04 > Apply Readable Ambient Lighting** updates and saves only the open chapel's lighting without rebuilding its geometry.
-- **Finishing:** SSAO, ACES, bloom and restrained character-focused depth of field. The current MVP03 settings (**6-pixel cells / 32% blend** when this version was generated) process the complete scene and magic after these effects. MVP04 has a separate renderer and a copied pixel material, so later adjustments can be made independently.
-- **Controls:** edit `Materials/RoseWindowVolume.mat` to tune rose dust density, side-window dust density (default **0.11**), beam edge softness, spread, transmission contrast and shadow definition. Each side light's `SideWindowLight.scattering` controls its individual shaft strength. `LuminousRoseGlass.mat` and `LuminousSideGlass.mat` expose frost amount, transmission blur, etched grain, roughness and transmitted light. `Materials/SubtlePixels.mat` tunes pixel size and blend. `Rendering/NocturneAtmosphere.asset` controls bloom, exposure and focus. The beam origins and bounds are designed for this chapel layout.
+The implementation follows [Beer–Lambert transmittance](https://pbr-book.org/4ed/Volume_Scattering/Transmittance) and the [Henyey–Greenstein phase function](https://pbr-book.org/4ed/Volume_Scattering/Phase_Functions).
 
-## Rebuild and preview
+### Real-time approximations
 
-**MVP04 > Build Dark Rose Window Chapel** regenerates and opens this scene, registers its renderer with the PC URP asset and adds the scene to Build Settings. It uses the existing MVP03 assets as dependencies. Run it outside Play mode; it replaces the generated MVP04 scene and generated asset settings.
+This is single scattering with finite ray-march sampling and shadow-map resolution, not path tracing. The point emitter uses hard geometric shadows; finite source-size penumbrae are not integrated. Frosted glass uses a thin rough-pane approximation: 70% of its coloured transmission remains directional, and a complementary rough transmitted contribution shades the pane from the same source, including distance, incidence angle and cone falloff. Full angular diffusion from the glass into the room is not traced. Surface direct lighting uses URP's clear-air model; interior attenuation along the incoming path is evaluated in the volumetric integral, while the camera-path attenuation applies to the complete image. Ambient colours and local fill lights approximate bounced illumination; they do not generate additional volumetric shafts.
 
-**MVP04 > Capture Dark Chapel Preview** saves the active camera at 1600x1000 to `Previews/MVP04_DarkChapel.png`. The project uses Unity 6.3 / URP 17.3 Render Graph; the custom volume feature targets that render path.
+## Settings
 
-**MVP04 > Add Side Stained Glass Windows** updates the side walls, windows and their lights in the open chapel, preserving its furniture, player, camera and ambient settings. **MVP04 > Capture Side Window Preview** temporarily turns the camera towards the side aisle, writes `Previews/MVP04_SideWindows.png`, and restores the camera.
+Open **MVP04 > 体积光设置**.
 
-**MVP04 > Apply Frosted Glass and Sharper Beams** updates the three window materials without rebuilding the scene. **MVP04 > Capture Frosted Glass Detail** saves `Previews/MVP04_FrostedGlass.png` and restores the camera and focus afterwards.
+- **外部光源:** enable, position, aim target, intensity, colour, cone angle, range and the glass's direct-transmission fraction. The source should remain outside the chapel envelope. These settings are stored in `Rendering/ExteriorLight.asset`.
+- **空气介质:** extinction, scattering albedo, anisotropy and density noise, stored in `Materials/RoseWindowVolume.mat`.
+- **选中光源 / 查看光路:** selects the source; Scene-view gizmos connect it to the windows.
 
-Validate lighting in the actual Game window as well as the off-screen preview. `ChapelMesh.Box` supplies face normals for zero-bevel boxes: zero-length normals on the side-wall backing caused invalid HDR lighting that bloom and depth of field spread into large white regions. The repaired backing meshes retain the original light and post-processing settings. `Previews/MVP04_GameView.png` records the corrected Play Mode output.
+The saved live values can differ from the builder defaults above after tuning. Controls update the scene, support Undo/Redo, and automatically save. Adjustments made during Play Mode also persist. Source strength affects surfaces and volume together. The old artistic edge/spread controls have been replaced by source geometry and physical medium parameters.
+
+Frosted surface grain, roughness and short-range texture blur remain in `LuminousRoseGlass.mat` and `LuminousSideGlass.mat`. ACES, bloom, SSAO, focus and the subtle pixel effect are retained. `Rendering/NocturneAtmosphere.asset` and `Materials/SubtlePixels.mat` control the finishing.
+
+## Build, upgrade and preview
+
+- **MVP04 > Build Dark Rose Window Chapel:** regenerates the chapel and its generated assets. Existing exterior source settings are retained; medium defaults are reapplied.
+- **MVP04 > Apply Physical Window Lighting:** upgrades the open MVP04 scene without rebuilding its geometry. Removes legacy sources, configures the common source, replaces the medium defaults and saves.
+- **MVP04 > Add Side Stained Glass Windows:** rebuilds the side walls and apertures, reconnecting them to the common exterior source.
+- **MVP04 > Apply Frosted Glass:** updates the glass materials.
+- **Capture Dark Chapel Preview / Capture Side Window Preview / Capture Frosted Glass Detail:** write the corresponding images under the project-root `Previews/` directory.
+
+`Previews/MVP04_GameView.png` records the actual Play Mode output. Always check this in addition to offscreen `Camera.Render` previews. `Previews/MVP04_LightingSettings.png` shows the controls.
+
+## Validation
+
+The source was switched off and mirrored from left to right in Play Mode. Shafts and surface projections disappear or move together; unlit panes lose their source-driven transmission. No shader errors or invalid mesh normals were found.
+
+`Previews/MVP04_PhysicsValidation.json` records a 480×300 linear HDR comparison with post processing disabled and density noise temporarily set to zero. It compares source intensity 0 / 25000 / 50000 and scattering albedo 0 / 0.9, restoring all settings afterwards. The relative linearity error was approximately 2.6e-7; there were zero NaN/infinite colour components, nonzero volumetric energy with the source on, and zero scattering contribution with the source off. These checks validate the implemented single-scattering model, not full global illumination.

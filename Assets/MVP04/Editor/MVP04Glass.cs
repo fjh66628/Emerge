@@ -15,25 +15,34 @@ public static partial class MVP04Builder
         glass.SetVector("_PaneSize",new Vector4(paneSize.x,paneSize.y,0,0));
         glass.SetFloat("_FrostAmount",.8f);glass.SetFloat("_FrostBlur",2.4f);
         glass.SetFloat("_GrainStrength",.38f);glass.SetFloat("_Smoothness",.24f);
-        glass.SetFloat("_Transmission",transmission);glass.SetFloat("_Cutoff",.5f);glass.SetFloat("_Cull",2);
+        glass.SetFloat("_Transmission",1);glass.SetFloat("_Cutoff",.5f);glass.SetFloat("_Cull",2);
         glass.renderQueue=2450;EditorUtility.SetDirty(glass);return glass;
     }
 
-    private static void SharpenWindowBeams(Material volume)
+    private static void ConfigurePhysicalMedium(Material volume)
     {
-        MVP04LightingWindow.SetEdgePreset(volume,2);
-        volume.SetFloat("_BeamIntensity",1);
+        // Remove the former artistic beam controls when migrating an existing material.
+        var serialized=new SerializedObject(volume);
+        foreach(string group in new[]{"m_TexEnvs","m_Floats","m_Colors","m_Ints"})
+        {
+            var properties=serialized.FindProperty("m_SavedProperties."+group);
+            for(int i=properties.arraySize-1;i>=0;i--)
+                if(!volume.HasProperty(properties.GetArrayElementAtIndex(i).FindPropertyRelative("first").stringValue))
+                    properties.DeleteArrayElementAtIndex(i);
+        }
+        serialized.ApplyModifiedPropertiesWithoutUndo();
+        volume.SetFloat("_Density",.028f);volume.SetFloat("_ScatteringAlbedo",.9f);
+        volume.SetFloat("_Anisotropy",.25f);volume.SetFloat("_NoiseAmount",.2f);volume.SetFloat("_NoiseScale",.28f);
+        EditorUtility.SetDirty(volume);
     }
 
-    [MenuItem("MVP04/Apply Frosted Glass and Sharper Beams")]
+    [MenuItem("MVP04/Apply Frosted Glass")]
     public static void ApplyFrostedGlassAndBeams()
     {
         if(Application.isPlaying)throw new InvalidOperationException("Stop Play mode before editing chapel materials.");
         var rose=FrostedGlass("LuminousRoseGlass",AssetDatabase.LoadAssetAtPath<Texture2D>(Root+"/Textures/RoseTransmission.png"),2.05f,new Vector2(5.26f,5.26f));
         var side=FrostedGlass("LuminousSideGlass",AssetDatabase.LoadAssetAtPath<Texture2D>(Root+"/Textures/SideGlassTransmission.png"),1.65f,new Vector2(2.44f,4.5f));
-        var volume=AssetDatabase.LoadAssetAtPath<Material>(Root+"/Materials/RoseWindowVolume.mat");
-        SharpenWindowBeams(volume);
-        AssetDatabase.SaveAssetIfDirty(rose);AssetDatabase.SaveAssetIfDirty(side);AssetDatabase.SaveAssetIfDirty(volume);
+        AssetDatabase.SaveAssetIfDirty(rose);AssetDatabase.SaveAssetIfDirty(side);
     }
 
     [MenuItem("MVP04/Capture Frosted Glass Detail")]

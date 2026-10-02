@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace MVP04
 {
+    // Legacy marker retained so the upgrade can locate and remove the old per-window emitters.
     // Associates a real shadow-casting spotlight with the aperture used by the volume pass.
     [DisallowMultipleComponent, RequireComponent(typeof(Light))]
     public sealed class SideWindowLight : MonoBehaviour

@@ -44,6 +44,7 @@ public static partial class MVP04Builder
         BuildSideWindows(AssetDatabase.LoadAssetAtPath<Material>(Root+"/Materials/MidnightLimestone.mat"),
             AssetDatabase.LoadAssetAtPath<Material>(Root+"/Materials/WornCarvings.mat"),
             AssetDatabase.LoadAssetAtPath<Material>(Root+"/Materials/DeepMortar.mat"));
+        ConfigurePhysicalLighting();
         AssetDatabase.SaveAssets();
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
@@ -59,15 +60,12 @@ public static partial class MVP04Builder
         var texture=SideGlassTexture();
         var glass=FrostedGlass("LuminousSideGlass",texture,1.65f,new Vector2(2.44f,4.5f));
         var bronze=AssetDatabase.LoadAssetAtPath<Material>(Root+"/Materials/AgedBronze.mat");
-        var volume=AssetDatabase.LoadAssetAtPath<Material>(Root+"/Materials/RoseWindowVolume.mat");
-        if(volume!=null){volume.SetTexture("_SideMask",texture);volume.SetFloat("_SideDensity",.11f);SharpenWindowBeams(volume);}
-        // Clustered lighting retains nearby candle/bounce lights as the eight window spots are added.
+        // Clustered lighting retains nearby candle/bounce lights alongside the exterior emitter.
         var renderer=AssetDatabase.LoadAssetAtPath<UniversalRendererData>(Root+"/Rendering/NocturneRenderer.asset");
         var rendererSettings=new SerializedObject(renderer);rendererSettings.FindProperty("m_RenderingMode").intValue=2;
         rendererSettings.ApplyModifiedPropertiesWithoutUndo();renderer.SetDirty();
         for(int side=-1;side<=1;side+=2)
         {
-            var cookie=SideCookie(side,Quaternion.LookRotation(V(-side*4.74f,-2.95f,-1.2f)));
             var backing=new ChapelMesh();
             float cursor=-13;
             for(int bay=0;bay<4;bay++)
@@ -83,7 +81,7 @@ public static partial class MVP04Builder
                     Solid(z+a,z+b,top,13.6f);
                 }
                 cursor=z+SideHalfWidth;
-                MakeSideWindow(side,bay,z,root,trim,bronze,glass,cookie);
+                MakeSideWindow(side,bay,z,root,trim,bronze,glass);
             }
             Solid(cursor,19,0,13.6f);
             backing.Save("SideWallBacking"+side,mortar,true);
@@ -131,7 +129,7 @@ public static partial class MVP04Builder
         {if(b-a>.025f&&d-c>.025f)mesh.Box(V(side*8.73f,(c+d)*.5f,(a+b)*.5f),V(.25f,d-c,b-a),.018f,color);}
     }
 
-    private static void MakeSideWindow(int side,int bay,float z,Transform parent,Material stone,Material bronze,Material glass,Texture2D cookie)
+    private static void MakeSideWindow(int side,int bay,float z,Transform parent,Material stone,Material bronze,Material glass)
     {
         string suffix=side+"Bay"+bay;
         Vector3 spring=V(side*8.65f,SideSpring,z);Quaternion rotation=Quaternion.Euler(0,side*90,0);
@@ -154,17 +152,6 @@ public static partial class MVP04Builder
         pane.Quad(V(side*8.86f,SideBottom,a),V(side*8.86f,SideBottom,b),V(side*8.86f,7.5f,b),V(side*8.86f,7.5f,a),V(-side,0,0),Color.white);
         var go=pane.Save("SideStainedGlass"+suffix,glass);go.transform.SetParent(parent,true);
         go.GetComponent<Renderer>().shadowCastingMode=ShadowCastingMode.Off;
-        var lamp=new GameObject("Side window moonlight "+suffix).AddComponent<Light>();lamp.transform.SetParent(parent,true);
-        lamp.transform.position=V(side*13.6f,8.2f,z+1.2f);
-        Vector3 centre=V(side*8.86f,5.25f,z);
-        lamp.transform.rotation=Quaternion.LookRotation(centre-lamp.transform.position);
-        lamp.type=LightType.Spot;lamp.spotAngle=64;lamp.innerSpotAngle=60;lamp.range=23;lamp.intensity=220;
-        lamp.color=new Color(.72f,.83f,1);lamp.shadows=LightShadows.Soft;lamp.shadowBias=.035f;lamp.shadowNormalBias=.08f;
-        var lightSettings=new SerializedObject(lamp.GetUniversalAdditionalLightData());
-        lightSettings.FindProperty("m_AdditionalLightsShadowResolutionTier").intValue=1;
-        lightSettings.ApplyModifiedPropertiesWithoutUndo();
-        lamp.cookie=cookie;
-        var volume=lamp.gameObject.AddComponent<SideWindowLight>();volume.windowCentre=centre;
     }
 
     private static Color SideGlass(float u,float v)
@@ -190,28 +177,12 @@ public static partial class MVP04Builder
         return SaveWindowTexture(texture,"SideGlassTransmission",false);
     }
 
-    private static Texture2D SideCookie(int side,Quaternion rotation)
-    {
-        // Match the spotlight projection to the actual glass plane, including its arched silhouette.
-        string name="SideGlassCookie"+side;
-        var texture=new Texture2D(512,512,TextureFormat.RGBA32,false);
-        Vector3 source=V(side*13.6f,8.2f,1.2f);float spread=Mathf.Tan(32*Mathf.Deg2Rad);
-        for(int y=0;y<512;y++)for(int x=0;x<512;x++)
-        {
-            Vector3 ray=rotation*V(((x+.5f)/256-1)*spread,((y+.5f)/256-1)*spread,1);
-            Vector3 hit=source+ray*((side*8.86f-source.x)/ray.x);
-            Color c=SideGlass(.5f+side*hit.z/(2*SideHalfWidth),(hit.y-SideBottom)/4.5f);
-            c*=c.a;c.a=1;texture.SetPixel(x,y,c);
-        }
-        return SaveWindowTexture(texture,name,true);
-    }
-
     private static Texture2D SaveWindowTexture(Texture2D texture,string name,bool cookie)
     {
         texture.Apply();string path=Root+"/Textures/"+name+".png";
         File.WriteAllBytes(path,texture.EncodeToPNG());UnityEngine.Object.DestroyImmediate(texture);AssetDatabase.ImportAsset(path);
         var importer=(TextureImporter)AssetImporter.GetAtPath(path);importer.wrapMode=TextureWrapMode.Clamp;
-        importer.filterMode=FilterMode.Bilinear;importer.mipmapEnabled=true;importer.textureCompression=TextureImporterCompression.Uncompressed;
+        importer.filterMode=FilterMode.Bilinear;importer.mipmapEnabled=true;importer.isReadable=true;importer.textureCompression=TextureImporterCompression.Uncompressed;
         importer.alphaSource=cookie?TextureImporterAlphaSource.None:TextureImporterAlphaSource.FromInput;
         importer.SaveAndReimport();return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
     }

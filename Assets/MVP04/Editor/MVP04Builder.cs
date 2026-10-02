@@ -15,7 +15,6 @@ public static partial class MVP04Builder
     private const string Root="Assets/MVP04";
     private const string ScenePath=Root+"/Scenes/MVP04_NocturneChapel.unity";
     private static readonly Vector3 Window=new Vector3(0,8.4f,17.45f);
-    private static readonly Vector3 SunDirection=new Vector3(0,-.42f,-.91f).normalized;
     private static System.Random random;
     private static Vector3 V(float x,float y,float z)=>new Vector3(x,y,z);
     private static float R(float lo,float hi)=>Mathf.Lerp(lo,hi,(float)random.NextDouble());
@@ -225,16 +224,13 @@ public static partial class MVP04Builder
 
     private static void Lighting()
     {
-        Light sun=new GameObject("Moonlight / through the rose").AddComponent<Light>();
-        sun.type=LightType.Directional;sun.transform.rotation=Quaternion.LookRotation(SunDirection);
-        sun.color=new Color(.63f,.76f,1);sun.intensity=1.75f;sun.shadows=LightShadows.Soft;sun.shadowStrength=1;sun.shadowBias=.035f;sun.shadowNormalBias=.13f;
-        RenderSettings.sun=sun;
         RenderSettings.skybox=null;RenderSettings.reflectionIntensity=.25f;
-        RenderSettings.fog=true;RenderSettings.fogMode=FogMode.ExponentialSquared;RenderSettings.fogDensity=.011f;RenderSettings.fogColor=new Color(.025f,.036f,.06f);
+        RenderSettings.fog=false; // The volume pass owns extinction; avoid a second fog model.
         var fill=new GameObject("Rose interior bounce").AddComponent<Light>();fill.type=LightType.Point;fill.transform.position=V(0,7,15.1f);
         var air=new GameObject("Soft nave bounce").AddComponent<Light>();air.type=LightType.Directional;air.transform.rotation=Quaternion.LookRotation(V(.25f,-.55f,1));air.shadows=LightShadows.None;
         var entrance=new GameObject("Moonlight reflected into entrance").AddComponent<Light>();entrance.type=LightType.Point;entrance.transform.position=V(0,4.2f,-7);
         ConfigureAmbientLighting();
+        ConfigurePhysicalLighting();
     }
 
     [MenuItem("MVP04/Apply Readable Ambient Lighting")]
@@ -313,8 +309,7 @@ public static partial class MVP04Builder
         foreach(var feature in renderer.rendererFeatures)
             if(feature is FullScreenPassRendererFeature full && full.passMaterial!=null && full.passMaterial.shader.name=="MVP03/Subtle Pixels")
             {full.passMaterial=AssetDatabase.LoadAssetAtPath<Material>(pixelsPath);EditorUtility.SetDirty(full);}
-        Material volume=Material("RoseWindowVolume","MVP04/Window Volume");volume.SetTexture("_RoseMask",rose);volume.SetVector("_WindowOrigin",Window);volume.SetVector("_LightDirection",SunDirection);volume.SetFloat("_Radius",2.6f);volume.SetFloat("_Density",.045f);volume.SetFloat("_Length",26);volume.SetColor("_ScatterColor",new Color(1.3f,1.5f,1.9f));EditorUtility.SetDirty(volume);
-        SharpenWindowBeams(volume);
+        Material volume=Material("RoseWindowVolume","MVP04/Window Volume");ConfigurePhysicalMedium(volume);
         var light=renderer.rendererFeatures.OfType<WindowVolumeFeature>().FirstOrDefault();
         if(light==null){light=ScriptableObject.CreateInstance<WindowVolumeFeature>();light.name="Rose window / shadowed dust volume";AssetDatabase.AddObjectToAsset(light,renderer);renderer.rendererFeatures.Add(light);}
         light.material=volume;light.Create();EditorUtility.SetDirty(light);renderer.SetDirty();EditorUtility.SetDirty(renderer);
@@ -344,7 +339,7 @@ public static partial class MVP04Builder
             if(r>1)color=Color.black;texture.SetPixel(x,y,color);
         }
         texture.Apply();string path=Root+"/Textures/RoseTransmission.png";File.WriteAllBytes(path,texture.EncodeToPNG());UnityEngine.Object.DestroyImmediate(texture);AssetDatabase.ImportAsset(path);
-        var importer=(TextureImporter)AssetImporter.GetAtPath(path);importer.wrapMode=TextureWrapMode.Clamp;importer.filterMode=FilterMode.Bilinear;importer.mipmapEnabled=true;importer.textureCompression=TextureImporterCompression.Uncompressed;importer.SaveAndReimport();
+        var importer=(TextureImporter)AssetImporter.GetAtPath(path);importer.wrapMode=TextureWrapMode.Clamp;importer.filterMode=FilterMode.Bilinear;importer.mipmapEnabled=true;importer.isReadable=true;importer.textureCompression=TextureImporterCompression.Uncompressed;importer.SaveAndReimport();
         return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
     }
 
