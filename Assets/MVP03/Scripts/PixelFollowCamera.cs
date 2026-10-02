@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace MVP03
 {
@@ -10,6 +11,23 @@ namespace MVP03
         [SerializeField] private Transform subject;
         [SerializeField] private Vector3 offset;
         [SerializeField] private float focusHeight = 1f;
+        [Header("Distance zoom (Q / E and mouse wheel)")]
+        [SerializeField] private bool allowZoom;
+        [SerializeField, Min(1f)] private float minimumDistance = 5f;
+        [SerializeField, Min(1f)] private float maximumDistance = 15f;
+        [SerializeField, Min(.1f)] private float keyboardZoomSpeed = 8f;
+        [SerializeField, Min(.1f)] private float wheelZoomStep = 1.4f;
+        [SerializeField, Min(.01f)] private float zoomSmoothTime = .12f;
+
+        private Vector3 viewDirection;
+        private float currentDistance;
+        private float targetDistance;
+        private float zoomVelocity;
+
+        public float Distance => currentDistance;
+        public float TargetDistance => targetDistance;
+
+        private void Awake() => InitializeZoom();
 
         public void Configure(Transform target)
         {
@@ -18,16 +36,57 @@ namespace MVP03
             float distance = Mathf.Max(2f, Vector3.Dot(focus - transform.position, transform.forward));
             // Retain the established viewing angle while putting the character at screen centre.
             offset = Vector3.up * focusHeight - transform.forward * distance;
+            InitializeZoom();
             Follow();
         }
 
-        private void LateUpdate() => Follow();
+        public void ConfigureZoom(float nearDistance = 5f, float farDistance = 15f)
+        {
+            allowZoom = true;
+            minimumDistance = Mathf.Max(1f, nearDistance);
+            maximumDistance = Mathf.Max(minimumDistance, farDistance);
+            InitializeZoom();
+            Follow();
+        }
+
+        private void InitializeZoom()
+        {
+            Vector3 displacement = offset - Vector3.up * focusHeight;
+            currentDistance = Mathf.Max(.01f, displacement.magnitude);
+            viewDirection = displacement.sqrMagnitude > .0001f ? displacement.normalized : -transform.forward;
+            if (allowZoom) currentDistance = Mathf.Clamp(currentDistance, minimumDistance, maximumDistance);
+            targetDistance = currentDistance;
+            zoomVelocity = 0f;
+        }
+
+        private void Update()
+        {
+            if (!allowZoom || subject == null || Time.timeScale == 0f) return;
+            Keyboard keys = Keyboard.current;
+            float axis = keys == null ? 0f : (keys.eKey.isPressed ? 1f : 0f) - (keys.qKey.isPressed ? 1f : 0f);
+            float wheel = Mouse.current != null ? Mouse.current.scroll.ReadValue().y : 0f;
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            // Current Input System defaults to normalized ticks; legacy Windows input uses 120 units per tick.
+            if (InputSystem.settings.scrollDeltaBehavior == InputSettings.ScrollDeltaBehavior.KeepPlatformSpecificInputRange)
+                wheel /= 120f;
+#endif
+            targetDistance = Mathf.Clamp(targetDistance + axis * keyboardZoomSpeed * Time.deltaTime - wheel * wheelZoomStep,
+                minimumDistance, maximumDistance);
+        }
+
+        private void LateUpdate()
+        {
+            if (allowZoom)
+                currentDistance = Mathf.SmoothDamp(currentDistance, targetDistance, ref zoomVelocity, zoomSmoothTime);
+            Follow();
+        }
 
         private void Follow()
         {
             if (subject == null) return;
-            transform.SetPositionAndRotation(subject.position + offset,
-                Quaternion.LookRotation(Vector3.up * focusHeight - offset, Vector3.up));
+            Vector3 followOffset = allowZoom ? Vector3.up * focusHeight + viewDirection * currentDistance : offset;
+            transform.SetPositionAndRotation(subject.position + followOffset,
+                Quaternion.LookRotation(Vector3.up * focusHeight - followOffset, Vector3.up));
         }
     }
 }

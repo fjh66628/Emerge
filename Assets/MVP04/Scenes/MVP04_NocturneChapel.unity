@@ -6308,6 +6308,7 @@ GameObject:
   - component: {fileID: 858206739}
   - component: {fileID: 858206738}
   - component: {fileID: 858206737}
+  - component: {fileID: 858206742}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -6394,8 +6395,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MVP03.PixelFollowCamera
   subject: {fileID: 1476440609}
-  offset: {x: 0, y: 3.6196098, z: -12.998063}
+  offset: {x: 0, y: 3.61961, z: -12.998063}
   focusHeight: 1
+  allowZoom: 1
+  minimumDistance: 5
+  maximumDistance: 15
+  keyboardZoomSpeed: 8
+  wheelZoomStep: 1.4
+  zoomSmoothTime: 0.12
 --- !u!81 &858206739
 AudioListener:
   m_ObjectHideFlags: 0
@@ -6456,13 +6463,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 858206735}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.09927343, y: 0, z: 0, w: 0.9950602}
-  m_LocalPosition: {x: 0, y: 3.7096097, z: -15.998063}
+  m_LocalRotation: {x: 0.099273436, y: 0, z: 0, w: 0.9950602}
+  m_LocalPosition: {x: 0, y: 3.70961, z: -15.998063}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &858206742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 858206735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7979c67ef0160dd4c8604b5c6e95417a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.ChapelControlsHint
 --- !u!1 &862615510
 GameObject:
   m_ObjectHideFlags: 0

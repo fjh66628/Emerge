@@ -50,7 +50,7 @@ public static partial class MVP04Builder
         var hero=Player(camera);
         var atmosphere=new GameObject("Nocturne / exposure bloom and focus").AddComponent<Volume>();
         atmosphere.isGlobal=true;atmosphere.sharedProfile=Atmosphere();
-        camera.gameObject.AddComponent<PixelFollowCamera>().Configure(hero.transform);
+        ConfigurePlayerCamera(camera, hero.transform);
         camera.gameObject.AddComponent<PixelFocus>().Configure(camera,hero.transform,atmosphere);
         if(atmosphere.sharedProfile.TryGet(out DepthOfField focus))
             focus.focusDistance.Override(Vector3.Dot(hero.transform.position+Vector3.up-camera.transform.position,camera.transform.forward));

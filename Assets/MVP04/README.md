@@ -2,6 +2,23 @@
 
 Open `Scenes/MVP04_NocturneChapel.unity` and press Play. **WASD / arrow keys** move the sprite character in four directions; the camera follows and keeps the character centred. **Space** fires the existing 3D magic bolt. The chapel reuses MVP03 movement, focus, stone PBR and pixel finishing.
 
+## Character and camera controls
+
+Click the **Game** view after entering Play Mode so it receives keyboard input. A small bar along the bottom displays the controls.
+
+| Input | Action |
+| --- | --- |
+| WASD / arrow keys | Walk forward, backward, left or right relative to the camera. The most recently pressed axis wins; movement stays in four directions. |
+| Hold Q / E | Smoothly move the camera closer / farther away. |
+| Mouse wheel up / down | Move the camera closer / farther away in steps. |
+| Space | Cast a 3D magic bolt in the character's facing direction. |
+
+Camera distance is clamped to **5–15 metres**. Zoom preserves the viewing angle, keeps the character centred and updates depth-of-field focus with the character. The camera follows movement directly; only zoom distance is smoothed. Zoom is opt-in on the shared `PixelFollowCamera`, so existing MVP03 scenes keep their previous behaviour.
+
+**MVP04 > Apply Player Controls** reconnects the existing character and camera and adds zoom and the control hint without rebuilding the chapel or changing its lighting. New chapel builds include these controls automatically.
+
+Play Mode input checks cover all four directions, axis priority, camera centring, both zoom limits, opposing zoom keys, wheel steps and depth-of-field tracking. Results are saved in `Previews/MVP04_ControlsValidation.json`; `MVP04_ZoomNear.png` and `MVP04_ZoomFar.png` show the actual Game output at the two limits.
+
 ## Light sources and projection
 
 There are three real exterior spotlights: the existing front source plus a source outside each side wall. The front source retains the user's saved position and intensity in `Rendering/ExteriorLight.asset`. The left and right sources are at **(-24, 14, 12)** and **(24, 14, 12)** metres, aimed at **(0, 1, 1)**, each with intensity **18000**, an **82-degree** cone and **65-metre** range. They are elevated artificial lights; the intensity uses URP relative units rather than calibrated lumens.
