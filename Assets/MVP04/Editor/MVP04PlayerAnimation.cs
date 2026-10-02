@@ -40,6 +40,7 @@ public static partial class MVP04Builder
             AssetDatabase.CreateAsset(material, materialPath);
         }
         material.SetTexture("_BaseMap", portrait.sprite.texture);
+        ConfigureCharacterLighting(material);
         portrait.sharedMaterial = material;
         EditorUtility.SetDirty(material);
         EditorUtility.SetDirty(animation);
