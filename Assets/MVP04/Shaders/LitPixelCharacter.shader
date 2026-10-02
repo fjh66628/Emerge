@@ -9,6 +9,7 @@ Shader "MVP04/Lit Pixel Character"
         _NormalBend ("Rounded sprite normals", Range(0,3)) = 1.5
         _BackLight ("Back-facing diffuse response", Range(0,1)) = .35
         _AmbientStrength ("Environment light multiplier", Range(0,2)) = 1
+        [Toggle] _LightFacingShadow ("Light-facing sprite shadow", Float) = 1
     }
     SubShader
     {
@@ -21,7 +22,7 @@ Shader "MVP04/Lit Pixel Character"
         TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
         CBUFFER_START(UnityPerMaterial)
             float4 _BaseMap_ST, _BaseColor;
-            float _Cutoff, _Smoothness, _NormalBend, _BackLight, _AmbientStrength;
+            float _Cutoff, _Smoothness, _NormalBend, _BackLight, _AmbientStrength, _LightFacingShadow;
         CBUFFER_END
         struct Attributes
         {
@@ -159,12 +160,33 @@ Shader "MVP04/Lit Pixel Character"
             Varyings ShadowVertex(Attributes input)
             {
                 Varyings output = CharacterVertex(input);
+                float3 normal = TransformObjectToWorldNormal(float3(0,0,-1));
+                if (_LightFacingShadow > .5)
+                {
+                    // A camera-facing card otherwise collapses under side illumination.
+                    // Rotate only its shadow silhouette about the foot pivot for each light.
+                    float3 pivot = TransformObjectToWorld(float3(0,0,0));
+                    #if defined(_CASTING_PUNCTUAL_LIGHT_SHADOW)
+                        float3 towardsLight = _LightPosition - pivot;
+                    #else
+                        float3 towardsLight = _LightDirection;
+                    #endif
+                    float3 horizontal = float3(towardsLight.x, 0, towardsLight.z);
+                    float lengthSquared = dot(horizontal, horizontal);
+                    float3 facing = lengthSquared > 1e-6 ? horizontal * rsqrt(lengthSquared)
+                        : normalize(float3(normal.x, 0, normal.z));
+                    float3 right = cross(facing, float3(0,1,0));
+                    float scaleX = length(TransformObjectToWorldDir(float3(1,0,0), false));
+                    float scaleY = length(TransformObjectToWorldDir(float3(0,1,0), false));
+                    output.positionWS = pivot + right * input.positionOS.x * scaleX
+                        + float3(0,1,0) * input.positionOS.y * scaleY;
+                    normal = facing;
+                }
                 #if defined(_CASTING_PUNCTUAL_LIGHT_SHADOW)
                     float3 direction = normalize(_LightPosition - output.positionWS);
                 #else
                     float3 direction = _LightDirection;
                 #endif
-                float3 normal = TransformObjectToWorldNormal(float3(0,0,-1));
                 normal = dot(normal, direction) < 0 ? -normal : normal;
                 output.positionCS = TransformWorldToHClip(ApplyShadowBias(output.positionWS, normal, direction));
                 output.positionCS = ApplyShadowClamping(output.positionCS);

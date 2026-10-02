@@ -182,7 +182,8 @@
         "_Smoothness": 0.12,
         "_NormalBend": 1.5,
         "_BackLight": 0.35,
-        "_AmbientStrength": 1.0
+        "_AmbientStrength": 1.0,
+        "_LightFacingShadow": 1.0
       }
     },
     {
@@ -494,7 +495,7 @@
       "shadowed": 0
     }
   ],
-  "standardVersion": "1.0",
+  "standardVersion": "1.1",
   "timezone": "Asia/Shanghai",
   "postProcessing": {
     "Bloom": {
@@ -602,5 +603,20 @@
       "ringScale": 1.55,
       "lightIntensity": 3.5
     }
-  }
+  },
+  "characterShadow": {
+    "component": "Assets/MVP04/Scripts/PixelCharacterShadow.cs",
+    "castShadows": "TwoSided",
+    "receiveShadows": true,
+    "geometry": "Light-facing alpha silhouette rotated horizontally around the foot pivot in ShadowCaster only",
+    "bounds": "Per-frame full horizontal rotation bounds",
+    "usesExistingSourceShadowMaps": true
+  },
+  "amendments": [
+    {
+      "standardVersion": "1.1",
+      "dateLocal": "2026-10-03",
+      "description": "Added light-facing sprite shadows and conservative bounds after the altar side-light regression. Other parameters retain the original capture."
+    }
+  ]
 }

@@ -1,5 +1,6 @@
 using System;
 using MVP03;
+using MVP04;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,8 +16,22 @@ public static partial class MVP04Builder
         Material material = portrait.sharedMaterial;
         Undo.RecordObject(material, "Enable character scene lighting");
         ConfigureCharacterLighting(material);
+        ConfigureCharacterShadow(portrait);
         AssetDatabase.SaveAssetIfDirty(material);
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(hero.gameObject.scene);
+        if (!Application.isPlaying)
+            UnityEditor.SceneManagement.EditorSceneManager.SaveScene(hero.gameObject.scene);
         SceneView.RepaintAll();
+    }
+
+    private static void ConfigureCharacterShadow(SpriteRenderer portrait)
+    {
+        if (!portrait.TryGetComponent<PixelCharacterShadow>(out var shadow))
+            shadow = Undo.AddComponent<PixelCharacterShadow>(portrait.gameObject);
+        shadow.enabled = true;
+        portrait.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
+        portrait.receiveShadows = true;
+        EditorUtility.SetDirty(portrait);
     }
 
     private static void ConfigureCharacterLighting(Material material)

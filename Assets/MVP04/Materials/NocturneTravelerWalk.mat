@@ -33,6 +33,7 @@ Material:
     - _BackLight: 0.35
     - _Cull: 0
     - _Cutoff: 0.5
+    - _LightFacingShadow: 1
     - _NormalBend: 1.5
     - _Smoothness: 0.12
     m_Colors:
