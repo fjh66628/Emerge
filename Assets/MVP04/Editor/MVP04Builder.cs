@@ -281,6 +281,7 @@ public static partial class MVP04Builder
         var sr=portrait.AddComponent<SpriteRenderer>();sr.sprite=AssetDatabase.LoadAssetAtPath<Sprite>("Assets/MVP03/Textures/RebuiltTraveler1.png");sr.sortingOrder=2;
         Material material=Material("NocturneTraveler","MVP03/Pixel Cutout");material.SetTexture("_BaseMap",sr.sprite.texture);material.SetColor("_BaseColor",new Color(.62f,.68f,.78f));material.SetFloat("_Cutoff",.5f);material.SetFloat("_Cull",0);material.EnableKeyword("_ALPHATEST_ON");material.renderQueue=2450;EditorUtility.SetDirty(material);
         sr.sharedMaterial=material;sr.shadowCastingMode=ShadowCastingMode.TwoSided;portrait.transform.rotation=Quaternion.LookRotation(Vector3.back);
+        ConfigurePlayerAnimation(sr);
         var cc=root.AddComponent<CharacterController>();cc.height=1.7f;cc.radius=.28f;cc.center=V(0,.85f,0);cc.stepOffset=.30f;cc.skinWidth=.015f;
         root.AddComponent<PixelPilgrim>().Configure(camera,sr);
         root.AddComponent<MagicBoltCaster>().Configure(AssetDatabase.LoadAssetAtPath<MagicBolt>("Assets/MVP03/Prefabs/MagicBolt.prefab"));

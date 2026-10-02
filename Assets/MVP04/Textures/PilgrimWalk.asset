@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44e919607d75bc84097279d3ea2b9bb1, type: 3}
+  m_Name: PilgrimWalk
+  m_EditorClassIdentifier: Assembly-CSharp::MVP03.PixelWalkSet
+  front:
+  - {fileID: -1392609951556215607, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -6000883016678649598, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -812221389174349380, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -7869919502632672164, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -3226659845686801832, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: 5882134392269405654, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  left:
+  - {fileID: -7147380424254142629, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -7898601805705145698, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -8412503708465750322, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -247670839331206437, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -3048117522453107037, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -9098979324127864113, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  right:
+  - {fileID: -808430693848567303, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: 4075655989190298703, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -77731488638348320, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -4097835660180526940, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -642675635827784215, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -6705365602174312768, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  back:
+  - {fileID: -7528493520053627270, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -6325769948764857197, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: 560805058305384418, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -4996884085730052516, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: 6652508152416740215, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  - {fileID: -6566400673122348608, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
+  metresPerCycle: 2.25

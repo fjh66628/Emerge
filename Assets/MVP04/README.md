@@ -17,6 +17,16 @@ Camera distance is clamped to **5–15 metres**. Zoom preserves the viewing angl
 
 **MVP04 > Apply Player Controls** reconnects the existing character and camera and adds zoom and the control hint without rebuilding the chapel or changing its lighting. New chapel builds include these controls automatically.
 
+### Four-direction character animation
+
+The chapel pilgrim now uses a **24-frame atlas**: six frames each for front, left, right and back. **W / Up** shows the back, **S / Down** the front, **A / Left** the left profile and **D / Right** the right profile. On release the character keeps its last facing and returns to that row's standing frame. Initial facing is back, matching the existing forward-facing magic attack.
+
+`PixelWalkAnimation` advances the walk cycle by actual horizontal displacement after `CharacterController.SimpleMove`. The default cycle spans **2.25 metres**, about nine frames per second at the normal 3.4 m/s walk speed. Stopping or pressing into an obstacle with no displacement holds idle. The frames supply body, arm, boot and robe movement; the old whole-sprite bob is bypassed when a walk set is assigned. Each direction has a shared foot pivot, and the billboard's horizontal axis matches the camera to avoid left/right mirroring.
+
+The atlas is `Textures/PilgrimWalk.png`, with point filtering, no mipmaps, no compression and alpha cutout. `Textures/PilgrimWalk.asset` contains the directional sprite arrays and cycle distance. `NocturneTravelerWalk.mat` keeps the chapel character tint and depth/shadow settings. The shared MVP03 movement script falls back to its existing static portrait behaviour when no animation component is present.
+
+**MVP04 > Apply Four Direction Walk Animation** imports the atlas and connects the current character; new chapel builds include it. The built-in image generation tool created the atlas using the existing traveler as a reference. Its exact prompt is saved in `Previews/MVP04_WalkAnimationPrompt.txt`. `Previews/MVP04_WalkValidation.json` records direction, frame coverage, idle, movement and texture checks; the four `MVP04_Walk_*.png` previews show the chapel renderer output.
+
 Automated Play Mode checks use simulated input to cover all four directions, axis priority, camera centring, both zoom limits, opposing zoom keys, wheel steps and depth-of-field tracking. Results are saved in `Previews/MVP04_ControlsValidation.json`; these checks do not establish that a physical keyboard is registered or receiving events. `MVP04_ZoomNear.png` and `MVP04_ZoomFar.png` show the actual Game output at the two limits.
 
 Movement, zoom and casting prefer an enabled, registered hardware keyboard over a virtual test keyboard and ignore removed devices. If mouse input works but every keyboard key is unresponsive in the Editor, check **Window > Analysis > Input Debugger > Devices** for a native keyboard. An orphaned virtual keyboard cannot receive hardware key presses; save and restart the Editor to rediscover a missing native device. Input tests must preserve hardware devices and verify their presence after cleanup.

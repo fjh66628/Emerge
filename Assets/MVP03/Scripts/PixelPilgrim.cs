@@ -11,6 +11,7 @@ namespace MVP03
         [SerializeField] private float moveSpeed = 3.4f;
 
         private CharacterController controller;
+        private PixelWalkAnimation walkAnimation;
         private Vector3 portraitRestPosition;
         private float walkTime;
         private bool preferVertical;
@@ -26,12 +27,17 @@ namespace MVP03
             worldCamera = camera;
             portrait = sprite;
             portraitRestPosition = sprite.transform.localPosition;
+            walkAnimation = sprite.GetComponent<PixelWalkAnimation>();
         }
 
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
-            if (portrait != null) portraitRestPosition = portrait.transform.localPosition;
+            if (portrait != null)
+            {
+                portraitRestPosition = portrait.transform.localPosition;
+                walkAnimation = portrait.GetComponent<PixelWalkAnimation>();
+            }
         }
 
         private void Update()
@@ -40,14 +46,26 @@ namespace MVP03
             if (worldCamera == null) return;
 
             Vector2 input = ReadCardinalInput(keys);
+            Move(input);
+        }
 
+        private void Move(Vector2 input)
+        {
             Vector3 forward = Vector3.ProjectOnPlane(worldCamera.transform.forward, Vector3.up).normalized;
             Vector3 right = Vector3.ProjectOnPlane(worldCamera.transform.right, Vector3.up).normalized;
             Vector3 movement = (forward * input.y + right * input.x) * moveSpeed;
             if (movement.sqrMagnitude > .01f) facingDirection = movement.normalized;
+            Vector3 before = transform.position;
             controller.SimpleMove(movement);
 
             if (portrait == null) return;
+            if (walkAnimation != null && walkAnimation.isActiveAndEnabled && walkAnimation.IsConfigured)
+            {
+                float distance = Vector3.ProjectOnPlane(transform.position - before, Vector3.up).magnitude;
+                walkAnimation.Advance(input, distance);
+                portrait.transform.localPosition = portraitRestPosition;
+                return;
+            }
             if (input.sqrMagnitude > 0.01f)
             {
                 walkTime += Time.deltaTime * 12f;
@@ -93,7 +111,10 @@ namespace MVP03
             if (portrait == null || worldCamera == null) return;
             Vector3 toCamera = worldCamera.transform.position - portrait.transform.position;
             toCamera.y = 0f;
-            portrait.transform.rotation = Quaternion.LookRotation(toCamera, Vector3.up);
+            // Keep atlas +X aligned with screen right; the legacy portrait faced the
+            // opposite plane normal and relied on flipX for its single side view.
+            bool directional = walkAnimation != null && walkAnimation.IsConfigured;
+            portrait.transform.rotation = Quaternion.LookRotation(directional ? -toCamera : toCamera, Vector3.up);
         }
     }
 }
