@@ -10,7 +10,6 @@ namespace MVP03
         [SerializeField] private float forwardOffset = .62f;
         [SerializeField] private float fadeDuration = .3f;
         private Transform owner;
-        private Camera view;
         private Vector3 direction;
         private float height, duration, started, releasedAt;
         private bool released, begun;
@@ -23,11 +22,16 @@ namespace MVP03
         public void Configure(MeshRenderer ornament, Light light)
         { pattern = ornament; castLight = light; }
 
+        public void SetDirection(Vector3 heading)
+        {
+            if (!released && heading.sqrMagnitude > .0001f) direction = heading.normalized;
+        }
+
         public void Begin(Transform caster, Vector3 heading, float castHeight, float chargeDuration)
         {
             owner = caster; direction = heading.normalized; height = castHeight;
             duration = Mathf.Max(.05f, chargeDuration); started = Time.time;
-            view = Camera.main; begun = true; released = false;
+            begun = true; released = false;
             properties = new MaterialPropertyBlock();
             Animate();
         }
@@ -55,9 +59,8 @@ namespace MVP03
             if (!released) transform.position = LaunchPosition;
             if (pattern != null)
             {
-                // Remain legible during side casts, with a small turn toward the firing direction.
-                Vector3 normal = view != null ? (view.transform.forward + direction * .22f).normalized : direction;
-                pattern.transform.rotation = Quaternion.LookRotation(normal, Vector3.up) * Quaternion.Euler(0, 0, 12 * t);
+                // The ornament is a vertical plane perpendicular to the cast direction.
+                pattern.transform.rotation = Quaternion.LookRotation(direction, Vector3.up) * Quaternion.Euler(0, 0, 12 * t);
                 float scale = diameter * Mathf.Lerp(.2f, 1, 1 - Mathf.Pow(1 - t, 3));
                 pattern.transform.localScale = Vector3.one * scale * (1 + (1 - fade) * .16f);
                 properties.SetFloat("_Reveal", reveal);

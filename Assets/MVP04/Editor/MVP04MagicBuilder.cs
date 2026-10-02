@@ -89,6 +89,7 @@ public static partial class MVP04Builder
         bolt.Configure(impactAsset, shell, null, trail, motes,
             MagicLight(orbObject.transform, new Color(.55f, .7f, 1), 3.6f, 3.2f));
         bolt.ConfigureOrb(.42f, 3.6f, 9f);
+        bolt.ConfigureAcceleration(3f, 16f, 15f);
         var orbAsset = SaveMagicPrefab<MagicBolt>(orbObject, "AstralOrb");
         caster.Configure(orbAsset, sigilAsset, .6f, .48f, 1.6f);
         EditorUtility.SetDirty(caster);

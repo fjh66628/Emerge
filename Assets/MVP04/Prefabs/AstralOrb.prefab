@@ -152,7 +152,9 @@ MonoBehaviour:
   ribbon: {fileID: 5802908443276715914}
   motes: {fileID: 4236387843662679771}
   glowLight: {fileID: 7103002455833185522}
-  speed: 9
+  speed: 3
+  acceleration: 16
+  maxSpeed: 15
   hitRadius: 0.16
   lifetime: 2.5
   collisionLayers:

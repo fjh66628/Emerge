@@ -10,7 +10,11 @@ namespace MVP03
         [SerializeField] private TrailRenderer ribbon;
         [SerializeField] private ParticleSystem motes;
         [SerializeField] private Light glowLight;
-        [SerializeField, Min(.1f)] private float speed = 9f;
+        [SerializeField, Min(.1f), Tooltip("Initial flight speed in metres per second.")]
+        private float speed = 9f;
+        [SerializeField, Min(0), Tooltip("Speed gained per second; zero keeps constant flight speed.")]
+        private float acceleration;
+        [SerializeField, Min(.1f)] private float maxSpeed = 15f;
         [SerializeField, Min(.01f)] private float hitRadius = .16f;
         [SerializeField, Min(.1f)] private float lifetime = 2.5f;
         [SerializeField] private LayerMask collisionLayers = ~0;
@@ -20,6 +24,8 @@ namespace MVP03
         private Vector3 direction;
         private float age;
         private bool launched, finished;
+        public float CurrentSpeed => acceleration > 0
+            ? Mathf.Min(speed + acceleration * age, Mathf.Max(speed, maxSpeed)) : speed;
 
         public void Configure(MagicImpact impact, Transform shell, Transform rings,
             TrailRenderer trail, ParticleSystem particles, Light pointLight)
@@ -34,10 +40,14 @@ namespace MVP03
         public void ConfigureOrb(float diameter, float brightness, float travelSpeed)
         { glowDiameter = diameter; glowPulse = .012f; lightIntensity = brightness; lightPulse = .18f; speed = travelSpeed; }
 
+        public void ConfigureAcceleration(float initialSpeed, float gainPerSecond, float terminalSpeed)
+        { speed = Mathf.Max(.1f, initialSpeed); acceleration = Mathf.Max(0, gainPerSecond); maxSpeed = Mathf.Max(speed, terminalSpeed); }
+
         public void Launch(Transform caster, Vector3 heading, Vector3 castOrigin)
         {
             owner = caster;
             direction = heading.normalized;
+            age = 0;
             launched = true;
             if (ribbon != null) ribbon.Clear();
             Vector3 destination = transform.position;
@@ -67,8 +77,10 @@ namespace MVP03
         private void Update()
         {
             if (!launched || finished) return;
-            age += Time.deltaTime;
-            float distance = speed * Time.deltaTime;
+            float previousAge = age;
+            age = Mathf.Min(age + Time.deltaTime, lifetime);
+            // Integrate the capped acceleration exactly, including frames crossing the speed cap.
+            float distance = FlightDistance(age) - FlightDistance(previousAge);
             if (Sweep(direction, distance, out var nearest))
             {
                 transform.position += direction * nearest.distance;
@@ -80,6 +92,15 @@ namespace MVP03
             if (orbit != null) orbit.Rotate(72f * Time.deltaTime, 135f * Time.deltaTime, 210f * Time.deltaTime, Space.Self);
             if (glowLight != null) glowLight.intensity = lightIntensity + Mathf.Sin(age * 19f) * lightPulse;
             if (age >= lifetime) Finish(transform.position, -direction, false);
+        }
+
+        private float FlightDistance(float elapsed)
+        {
+            if (acceleration <= 0) return speed * elapsed;
+            float terminalSpeed = Mathf.Max(speed, maxSpeed);
+            float acceleratingTime = Mathf.Min(elapsed, (terminalSpeed - speed) / acceleration);
+            return speed * acceleratingTime + .5f * acceleration * acceleratingTime * acceleratingTime
+                + terminalSpeed * (elapsed - acceleratingTime);
         }
 
         private bool Sweep(Vector3 heading, float distance, out RaycastHit nearest)

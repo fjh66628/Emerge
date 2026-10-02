@@ -27,11 +27,16 @@ namespace MVP03
 
         private void Update()
         {
-            if (pendingSigil != null && pendingSigil.IsReady)
+            if (pendingSigil != null)
             {
-                Fire(pendingSigil.CastOrigin, pendingSigil.LaunchPosition, pendingDirection);
-                pendingSigil.Release();
-                pendingSigil = null;
+                pendingDirection = pilgrim.FacingDirection;
+                pendingSigil.SetDirection(pendingDirection);
+                if (pendingSigil.IsReady)
+                {
+                    Fire(pendingSigil.CastOrigin, pendingSigil.LaunchPosition, pendingDirection);
+                    pendingSigil.Release();
+                    pendingSigil = null;
+                }
             }
             Keyboard keys = PlayerKeyboard.Current;
             bool pressed = keys != null && keys.spaceKey.isPressed;

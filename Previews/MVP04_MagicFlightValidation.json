@@ -1,0 +1,70 @@
+{
+  "accepted": true,
+  "noProjectileBeforeCharge": true,
+  "observedChargeSeconds": 0.6049516,
+  "orientationChecks": [
+    {
+      "direction": "forward",
+      "normalAlignment": 1.0,
+      "positionErrorMetres": 0.0,
+      "passed": true
+    },
+    {
+      "direction": "left",
+      "normalAlignment": 1.00000012,
+      "positionErrorMetres": 0.0,
+      "passed": true
+    },
+    {
+      "direction": "back",
+      "normalAlignment": 1.00000012,
+      "positionErrorMetres": 0.0,
+      "passed": true
+    },
+    {
+      "direction": "right",
+      "normalAlignment": 1.00000012,
+      "positionErrorMetres": 0.0,
+      "passed": true
+    }
+  ],
+  "releaseUsesCurrentFacing": true,
+  "speedSamples": [
+    {
+      "ageSeconds": 0.0,
+      "speedMetresPerSecond": 3.0,
+      "travelMetres": 0.0
+    },
+    {
+      "ageSeconds": 0.2517979,
+      "speedMetresPerSecond": 7.02876663,
+      "travelMetres": 1.26261139
+    },
+    {
+      "ageSeconds": 0.501627445,
+      "speedMetresPerSecond": 11.0260391,
+      "travelMetres": 3.51792336
+    },
+    {
+      "ageSeconds": 0.7524269,
+      "speedMetresPerSecond": 15.0,
+      "travelMetres": 6.786404
+    },
+    {
+      "ageSeconds": 1.001523,
+      "speedMetresPerSecond": 15.0,
+      "travelMetres": 10.5228462
+    }
+  ],
+  "monotonicAcceleration": true,
+  "observedMinSpeed": 3.0,
+  "observedMaxSpeed": 15.0,
+  "capReached": true,
+  "positionSamples": 119,
+  "maxPositionErrorMetres": 9.536743E-07,
+  "analyticFlightMatchesLiveMotion": true,
+  "thinWallHitAtAcceleratedSpeed": true,
+  "temporaryEffectsExpired": true,
+  "inputDevicesUnchanged": true,
+  "note": "Temporary offscreen actor turns through all four directions during the charge. Per-frame projectile position is compared to the analytical 3 m/s + 16 m/s² law capped at 15 m/s, then strikes a 2 cm wall. No input simulation or player/camera changes."
+}
