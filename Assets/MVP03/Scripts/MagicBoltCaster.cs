@@ -20,7 +20,8 @@ namespace MVP03
 
         private void Update()
         {
-            bool pressed = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
+            Keyboard keys = PlayerKeyboard.Current;
+            bool pressed = keys != null && keys.spaceKey.isPressed;
             if (pressed && !heldCast) TryCast();
             heldCast = pressed;
         }

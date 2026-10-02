@@ -17,7 +17,11 @@ Camera distance is clamped to **5–15 metres**. Zoom preserves the viewing angl
 
 **MVP04 > Apply Player Controls** reconnects the existing character and camera and adds zoom and the control hint without rebuilding the chapel or changing its lighting. New chapel builds include these controls automatically.
 
-Play Mode input checks cover all four directions, axis priority, camera centring, both zoom limits, opposing zoom keys, wheel steps and depth-of-field tracking. Results are saved in `Previews/MVP04_ControlsValidation.json`; `MVP04_ZoomNear.png` and `MVP04_ZoomFar.png` show the actual Game output at the two limits.
+Automated Play Mode checks use simulated input to cover all four directions, axis priority, camera centring, both zoom limits, opposing zoom keys, wheel steps and depth-of-field tracking. Results are saved in `Previews/MVP04_ControlsValidation.json`; these checks do not establish that a physical keyboard is registered or receiving events. `MVP04_ZoomNear.png` and `MVP04_ZoomFar.png` show the actual Game output at the two limits.
+
+Movement, zoom and casting prefer an enabled, registered hardware keyboard over a virtual test keyboard and ignore removed devices. If mouse input works but every keyboard key is unresponsive in the Editor, check **Window > Analysis > Input Debugger > Devices** for a native keyboard. An orphaned virtual keyboard cannot receive hardware key presses; save and restart the Editor to rediscover a missing native device. Input tests must preserve hardware devices and verify their presence after cleanup.
+
+`Previews/MVP04_KeyboardRoutingValidation.json` checks hardware selection with a virtual or removed current device and verifies the device list is preserved. `Previews/MVP04_PhysicalInputValidation.json` records movement observed from the native keyboard after recovery, without injecting input.
 
 ## Light sources and projection
 

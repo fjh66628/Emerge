@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "physicalKeyPressVerified": true,
+  "nativeKeyboard": true,
+  "deviceId": 1,
+  "keyboardRegistered": true,
+  "maximumMovement": 0.167482615,
+  "position": {
+    "x": 0.0,
+    "y": 0.0150000155,
+    "z": -2.83251739
+  },
+  "elapsed": 21.744359099999997
+}

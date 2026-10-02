@@ -62,7 +62,7 @@ namespace MVP03
         private void Update()
         {
             if (!allowZoom || subject == null || Time.timeScale == 0f) return;
-            Keyboard keys = Keyboard.current;
+            Keyboard keys = PlayerKeyboard.Current;
             float axis = keys == null ? 0f : (keys.eKey.isPressed ? 1f : 0f) - (keys.qKey.isPressed ? 1f : 0f);
             float wheel = Mouse.current != null ? Mouse.current.scroll.ReadValue().y : 0f;
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN

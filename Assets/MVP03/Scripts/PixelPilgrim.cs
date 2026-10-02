@@ -36,8 +36,8 @@ namespace MVP03
 
         private void Update()
         {
-            Keyboard keys = Keyboard.current;
-            if (keys == null || worldCamera == null) return;
+            Keyboard keys = PlayerKeyboard.Current;
+            if (worldCamera == null) return;
 
             Vector2 input = ReadCardinalInput(keys);
 
@@ -60,6 +60,11 @@ namespace MVP03
 
         private Vector2 ReadCardinalInput(Keyboard keys)
         {
+            if (keys == null)
+            {
+                heldForward = heldBackward = heldLeft = heldRight = false;
+                return Vector2.zero;
+            }
             bool forward = keys.wKey.isPressed || keys.upArrowKey.isPressed;
             bool backward = keys.sKey.isPressed || keys.downArrowKey.isPressed;
             bool left = keys.aKey.isPressed || keys.leftArrowKey.isPressed;

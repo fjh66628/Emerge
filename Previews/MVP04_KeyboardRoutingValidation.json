@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "hardwareWins": true,
+  "removedCurrentIgnored": true,
+  "deviceListPreserved": true,
+  "keyboard": {
+    "name": "Keyboard",
+    "deviceId": 1,
+    "native": true,
+    "enabled": true,
+    "added": true,
+    "interfaceName": "RawInput"
+  },
+  "physicalKeyPressVerified": false
+}
