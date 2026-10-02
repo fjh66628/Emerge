@@ -179,6 +179,21 @@ public static class MVP03HDBuilder
             Sphere("Flower head " + i, new Vector3(x, h, z), new Vector3(.13f, .1f, .13f),
                 flowers[i % flowers.Length], garden);
         }
+        // The courtyard lies under another tree just outside the camera view.
+        // Shadow-only leaves put a real, moving-with-the-sun dapple on the paving and sprites.
+        Transform canopy = Group("05  OFFSCREEN TREE SHADOW CASTERS");
+        for (int i = 0; i < 170; i++)
+        {
+            float x = -8.5f + (float)Random.NextDouble() * 10.5f;
+            float z = -29.5f + (float)Random.NextDouble() * 4.5f;
+            float y = 6.2f + (float)Random.NextDouble() * 2.7f;
+            float size = .25f + (float)Random.NextDouble() * .53f;
+            GameObject leaf = Sphere("Out-of-frame canopy leaf " + i, new Vector3(x, y, z),
+                new Vector3(size, size * .65f, size * .8f), leaves[i % leaves.Length], canopy);
+            Renderer r = leaf.GetComponent<Renderer>();
+            r.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
+            r.receiveShadows = false;
+        }
 
         Camera camera = MakeCamera();
         Actor("Pilgrim / playable pixel sprite", new Vector3(-2.4f, .04f, -18.1f), heroSprite, camera, true);
@@ -186,15 +201,15 @@ public static class MVP03HDBuilder
         Light sun = new GameObject("Late afternoon sun / hard stone shadows").AddComponent<Light>();
         sun.type = LightType.Directional;
         sun.color = new Color(1f, .9f, .72f);
-        sun.intensity = 1.85f;
+        sun.intensity = 2.25f;
         sun.shadows = LightShadows.Soft;
-        sun.shadowStrength = .92f;
-        sun.transform.rotation = Quaternion.Euler(43, -36, 0);
+        sun.shadowStrength = 1f;
+        sun.transform.rotation = Quaternion.Euler(35, -20, 0);
         RenderSettings.sun = sun;
         RenderSettings.ambientMode = AmbientMode.Trilight;
-        RenderSettings.ambientSkyColor = new Color(.58f, .68f, .78f);
-        RenderSettings.ambientEquatorColor = new Color(.35f, .4f, .41f);
-        RenderSettings.ambientGroundColor = new Color(.18f, .19f, .18f);
+        RenderSettings.ambientSkyColor = new Color(.37f, .46f, .53f);
+        RenderSettings.ambientEquatorColor = new Color(.22f, .27f, .31f);
+        RenderSettings.ambientGroundColor = new Color(.09f, .11f, .13f);
         RenderSettings.fog = false;
         Volume volume = new GameObject("Subtle full-resolution grading").AddComponent<Volume>();
         volume.isGlobal = true;
