@@ -105,9 +105,28 @@ public static class MVP03ReferenceBuilder
         var volume=new GameObject("MVP03 optical focus and filmic exposure").AddComponent<Volume>();
         volume.isGlobal=true; volume.sharedProfile=Atmosphere();
         camera.gameObject.AddComponent<PixelFocus>().Configure(camera,UnityEngine.Object.FindFirstObjectByType<PixelPilgrim>().transform,volume);
+        ConfigureFollowCamera();
         EditorSceneManager.SaveScene(scene,Root+"/Scenes/MVP03_StainedGlassChapel.unity");
         AssetDatabase.SaveAssets();
         Debug.Log("Rebuilt MVP03: beveled masonry, leaf meshes, imported pixel travelers, dedicated SSAO and optical focus.");
+    }
+
+    public static void ConfigureFollowCamera()
+    {
+        Camera camera=Camera.main;
+        PixelPilgrim player=UnityEngine.Object.FindFirstObjectByType<PixelPilgrim>();
+        if(camera==null || player==null)throw new InvalidOperationException("Open the MVP03 courtyard first.");
+        var follow=camera.GetComponent<PixelFollowCamera>();
+        if(follow==null)follow=camera.gameObject.AddComponent<PixelFollowCamera>();
+        follow.Configure(player.transform);
+        var volume=UnityEngine.Object.FindFirstObjectByType<Volume>();
+        if(volume!=null && volume.sharedProfile.TryGet(out DepthOfField depth))
+        {
+            depth.focusDistance.Override(Vector3.Dot(player.transform.position+Vector3.up-camera.transform.position,camera.transform.forward));
+            EditorUtility.SetDirty(depth);
+        }
+        EditorUtility.SetDirty(follow);
+        EditorSceneManager.MarkSceneDirty(camera.gameObject.scene);
     }
 
     static void Wall(Batch b,Vector3 basePos,Vector3 size,bool alongX)

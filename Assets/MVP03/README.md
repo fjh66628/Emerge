@@ -1,6 +1,6 @@
 # MVP03 | HD2D Church Courtyard
 
-Open `Scenes/MVP03_StainedGlassChapel.unity` and press Play. Move the light-clothed pixel character with WASD or the arrow keys. The dark-clothed companion stays in the courtyard and faces the camera.
+Open `Scenes/MVP03_StainedGlassChapel.unity` and press Play. Move the light-clothed pixel character with WASD or the arrow keys. Movement is limited to four directions relative to the camera; when two axes are held, the most recently pressed axis takes priority. Opposing keys on one axis cancel. The camera follows at a fixed angle and distance, keeping the character's torso at screen centre, including when climbing stairs. The dark-clothed companion stays in the courtyard and faces the camera.
 
 The courtyard is rebuilt around the supplied reference: close stone piers and a staircase frame a compact playable route. Beveled blocks, irregular pavers and carved arches use a weathered limestone albedo with normal relief. The `World Stone PBR` shader projects that material in world space so it retains the same scale on walls, stairs and pillars. Geometry is combined into saved mesh assets for a small number of renderers.
 

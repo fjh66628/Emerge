@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 14381331}
   - component: {fileID: 14381330}
+  - component: {fileID: 14381332}
   m_Layer: 0
   m_Name: Sun / warm diagonal daylight
   m_TagString: Untagged
@@ -216,6 +217,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &14381332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14381329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &47034289
 GameObject:
   m_ObjectHideFlags: 0
@@ -3475,6 +3505,7 @@ GameObject:
   - component: {fileID: 1646015943}
   - component: {fileID: 1646015942}
   - component: {fileID: 1646015941}
+  - component: {fileID: 1646015945}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3608,13 +3639,28 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1646015939}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.1441067, y: -0.2494624, z: 0.037569784, w: 0.95686483}
-  m_LocalPosition: {x: 5.3, y: 7.1, z: -29.8}
+  m_LocalRotation: {x: 0.1441067, y: -0.2494624, z: 0.037569787, w: 0.95686483}
+  m_LocalPosition: {x: 4.5605574, y: 5.4322896, z: -30.80262}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1646015945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1646015939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c66a19fbbfc07474f8717f80e84a8bbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP03.PixelFollowCamera
+  subject: {fileID: 494170374}
+  offset: {x: 6.9105573, y: 5.3622894, z: -12.35262}
+  focusHeight: 1
 --- !u!1 &1755286116
 GameObject:
   m_ObjectHideFlags: 0

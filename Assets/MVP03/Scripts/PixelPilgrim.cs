@@ -13,6 +13,8 @@ namespace MVP03
         private CharacterController controller;
         private Vector3 portraitRestPosition;
         private float walkTime;
+        private bool preferVertical;
+        private bool heldForward, heldBackward, heldLeft, heldRight;
 
         public void Configure(Camera camera, SpriteRenderer sprite)
         {
@@ -32,12 +34,7 @@ namespace MVP03
             Keyboard keys = Keyboard.current;
             if (keys == null || worldCamera == null) return;
 
-            Vector2 input = Vector2.zero;
-            if (keys.wKey.isPressed || keys.upArrowKey.isPressed) input.y += 1;
-            if (keys.sKey.isPressed || keys.downArrowKey.isPressed) input.y -= 1;
-            if (keys.aKey.isPressed || keys.leftArrowKey.isPressed) input.x -= 1;
-            if (keys.dKey.isPressed || keys.rightArrowKey.isPressed) input.x += 1;
-            input = Vector2.ClampMagnitude(input, 1);
+            Vector2 input = ReadCardinalInput(keys);
 
             Vector3 forward = Vector3.ProjectOnPlane(worldCamera.transform.forward, Vector3.up).normalized;
             Vector3 right = Vector3.ProjectOnPlane(worldCamera.transform.right, Vector3.up).normalized;
@@ -53,6 +50,31 @@ namespace MVP03
             else walkTime = 0f;
             portrait.transform.localPosition = portraitRestPosition +
                 Vector3.up * (walkTime == 0 ? 0 : Mathf.Abs(Mathf.Sin(walkTime)) * 0.045f);
+        }
+
+        private Vector2 ReadCardinalInput(Keyboard keys)
+        {
+            bool forward = keys.wKey.isPressed || keys.upArrowKey.isPressed;
+            bool backward = keys.sKey.isPressed || keys.downArrowKey.isPressed;
+            bool left = keys.aKey.isPressed || keys.leftArrowKey.isPressed;
+            bool right = keys.dKey.isPressed || keys.rightArrowKey.isPressed;
+            int horizontal = (right ? 1 : 0) - (left ? 1 : 0);
+            int vertical = (forward ? 1 : 0) - (backward ? 1 : 0);
+
+            if ((forward && !heldForward) || (backward && !heldBackward))
+                preferVertical = true;
+            if ((left && !heldLeft) || (right && !heldRight))
+                preferVertical = false;
+            heldForward = forward;
+            heldBackward = backward;
+            heldLeft = left;
+            heldRight = right;
+
+            // A newly pressed axis wins; releasing it resumes the other held direction.
+            // Opposite keys on the same axis cancel, and diagonals are never emitted.
+            if (horizontal != 0 && vertical != 0)
+                return preferVertical ? new Vector2(0, vertical) : new Vector2(horizontal, 0);
+            return new Vector2(horizontal, vertical);
         }
 
         private void LateUpdate()
