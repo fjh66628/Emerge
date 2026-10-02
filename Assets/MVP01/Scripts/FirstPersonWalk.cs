@@ -19,6 +19,8 @@ namespace MVP01
         {
             controller = GetComponent<CharacterController>();
             if (viewCamera == null) viewCamera = GetComponentInChildren<Camera>();
+            if (viewCamera != null)
+                pitch = Mathf.DeltaAngle(0f, viewCamera.transform.localEulerAngles.x);
         }
 
         private void OnDisable()
