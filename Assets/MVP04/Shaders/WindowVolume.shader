@@ -7,7 +7,11 @@ Shader "MVP04/Window Volume"
         _Anisotropy ("Henyey Greenstein g", Range(-.8,.8)) = .25
         _NoiseAmount ("Density variation", Range(0,1)) = .2
         _NoiseScale ("Density noise frequency", Range(.05,2)) = .28
-        _DensityNoise ("Cached density noise", 3D) = "white" {}
+        _FlowSpeed ("Air flow speed / metres per second", Range(0,2)) = .28
+        _FlowDirection ("Air flow direction", Vector) = (.8,.2,.35,0)
+        _FlowWarp ("Air flow warp / metres", Range(0,3)) = 1.1
+        _FlowDetail ("Fine air layers", Range(0,1)) = .45
+        _DensityNoise ("Cached air flow RGB / density A", 3D) = "gray" {}
     }
     SubShader
     {
@@ -29,17 +33,39 @@ Shader "MVP04/Window Volume"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             CBUFFER_START(UnityPerMaterial)
                 float _Density, _ScatteringAlbedo, _Anisotropy, _NoiseAmount, _NoiseScale;
+                float _FlowSpeed, _FlowWarp, _FlowDetail;
+                float4 _FlowDirection;
             CBUFFER_END
             TEXTURE3D(_DensityNoise); SAMPLER(sampler_DensityNoise);
             int _SourceCount, _ViewSteps, _LightSteps;
             float4 _Sources[3];
+            float3 _AirFlowOffset;
             float3 _RoomMin, _RoomMax;
-            float SigmaT(float3 p)
+            float4 AirNoise(float3 grid,float footprint)
             {
-                // One hardware-filtered lookup replaces repeated eight-corner noise hashing.
-                float noise=SAMPLE_TEXTURE3D_LOD(_DensityNoise,sampler_DensityNoise,
-                    (p*_NoiseScale+float3(_Time.y*.015,0,0))/32,0).r;
-                return max(0,_Density)*(1+saturate(_NoiseAmount)*(2*noise-1));
+                // Average sub-step structures rather than undersampling them into sparkling dots.
+                float lod=clamp(log2(max(1,footprint)),0,5);
+                return SAMPLE_TEXTURE3D_LOD(_DensityNoise,sampler_DensityNoise,grid/32,lod);
+            }
+            float SigmaT(float3 p,float footprint)
+            {
+                float density=max(0,_Density);
+                if(_NoiseAmount<.001)return density;
+                float frequency=max(.05,_NoiseScale);
+                // Integrated on the renderer so changing speed/direction never jumps the field.
+                float3 drift=_AirFlowOffset;
+                float3 advected=p-drift;
+                // A slower, broad vector field bends the drifting density into evolving wisps.
+                // RGB and A are independent cached noise channels; no screen-space animation.
+                float3 warp=AirNoise((p-drift*.38)*frequency*.4+float3(7,13,3),footprint*frequency*.4).rgb*2-1;
+                float3 grid=(advected+warp*max(0,_FlowWarp))*frequency*float3(.8,1.35,.9);
+                float baseNoise=AirNoise(grid,footprint*frequency*1.35).a;
+                float detail=baseNoise;
+                if(_FlowDetail>.001)
+                    detail=AirNoise(grid.zxy*2.03+float3(17,5,11)+drift.zxy*frequency*.17,
+                        footprint*frequency*2.75).a;
+                float variation=(lerp(baseNoise,detail,saturate(_FlowDetail)*.45)-.5)*2.4;
+                return density*max(0,1+saturate(_NoiseAmount)*variation);
             }
             float2 Bounds(float3 origin,float3 ray)
             {
@@ -54,7 +80,7 @@ Shader "MVP04/Window Volume"
                 float lengthInAir=max(0,min(distanceToLight,Bounds(p,toLight).y));
                 if(_NoiseAmount<.001)return exp(-max(0,_Density)*lengthInAir);
                 float stepSize=lengthInAir/_LightSteps,depth=0;
-                [loop] for(int i=0;i<_LightSteps;i++)depth+=SigmaT(p+toLight*((i+.5)*stepSize))*stepSize;
+                [loop] for(int i=0;i<_LightSteps;i++)depth+=SigmaT(p+toLight*((i+.5)*stepSize),stepSize)*stepSize;
                 return exp(-depth);
             }
             float Phase(float cosine)
@@ -89,7 +115,7 @@ Shader "MVP04/Window Volume"
                 [loop] for(int s=0;s<steps;s++)
                 {
                     float3 p=origin+ray*(begin+(s+jitter)*stepSize);
-                    float segmentT=exp(-SigmaT(p)*stepSize);
+                    float segmentT=exp(-SigmaT(p,stepSize)*stepSize);
                     float3 incident=0;
                     [loop] for(int source=0;source<_SourceCount;source++)
                     {

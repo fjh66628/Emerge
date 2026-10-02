@@ -85,8 +85,21 @@ public sealed class MVP04LightingWindow : EditorWindow
         AddSlider(air,"消光系数 / 米","density","_Density",0,.2f,"吸收与散射之和；数值过高时，光在到达深处前就会衰减。");
         AddSlider(air,"散射反照率","albedo","_ScatteringAlbedo",0,1,"散射占消光的比例。0 表示纯吸收，1 表示不吸收。");
         AddSlider(air,"前向散射 g","anisotropy","_Anisotropy",-.8f,.8f,"0 为各向同性；正值使朝观察者传播的光更亮。");
-        AddSlider(air,"密度起伏","noise-amount","_NoiseAmount",0,1,"噪声只改变空气密度，不修改光路。");
-        AddSlider(air,"密度噪声频率","dust-scale","_NoiseScale",.05f,2,"单位空间内空气密度变化的频率。");
+        AddSlider(air,"密度起伏","noise-amount","_NoiseAmount",0,1,"空气疏密的对比度；0 为均匀空气。扰动同时参与散射和光路消光。");
+        AddSlider(air,"密度噪声频率","dust-scale","_NoiseScale",.05f,2,"越低雾团越大；细于步进间隔的结构会自动平滑，减少采样颗粒。");
+        var motion=Section(scroll,"空气流动 · 世界空间");
+        AddSlider(motion,"流速 / 米每秒","flow-speed","_FlowSpeed",0,2,"整体漂移与雾丝演化速度。0 冻结空气流动。");
+        var direction=new Vector3Field("风向 XYZ"){name="flow-direction",
+            tooltip="只使用方向；Y 为向上。默认斜向缓慢上升。零向量停止漂移。"};
+        direction.style.marginTop=9;motion.Add(direction);
+        refreshers.Add(()=>direction.SetValueWithoutNotify((Vector3)volume.GetVector("_FlowDirection")));
+        direction.RegisterValueChangedCallback(evt=>
+        {
+            Undo.RecordObject(volume,"调整空气风向");
+            Vector3 value=evt.newValue;volume.SetVector("_FlowDirection",new Vector4(value.x,value.y,value.z,0));Changed();
+        });
+        AddSlider(motion,"扭曲幅度 / 米","flow-warp","_FlowWarp",0,3,"大尺度流场使雾团轻微变形；0 关闭这层扭曲。");
+        AddSlider(motion,"细层雾丝","flow-detail","_FlowDetail",0,1,"叠加第二层较细的密度变化。体积光降噪继续保留平滑轮廓。");
         var footer=Section(scroll,"实时预览与保存");
         var help=new Label("编辑后实时预览，自动保存，支持 Ctrl+Z。\n运行中调整也会保留。光源位置变化会重新计算玻璃投影。\n实时模型：单次散射 + 阴影贴图；环境补光近似反弹光。");
         help.style.whiteSpace=WhiteSpace.Normal;footer.Add(help);

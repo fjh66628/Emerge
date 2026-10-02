@@ -14,6 +14,9 @@ namespace MVP04
         [Range(1,6)] public int lightSteps=2;
         [Range(0,1)] public float denoiseStrength=.9f;
         private WindowPass pass;
+        private Vector3 airOffset;
+        private double lastAirTime=-1;
+        private bool airWasPlaying;
 
         public override void Create()
         {
@@ -30,7 +33,22 @@ namespace MVP04
             pass.viewSteps = viewSteps;
             pass.lightSteps = lightSteps;
             pass.denoiseStrength = denoiseStrength;
+            AdvanceAirFlow();
+            pass.airOffset = airOffset;
             renderer.EnqueuePass(pass);
+        }
+
+        private void AdvanceAirFlow()
+        {
+            bool playing=Application.isPlaying;
+            double now=playing?Time.timeAsDouble:Time.realtimeSinceStartupAsDouble;
+            if(lastAirTime>=0 && playing==airWasPlaying)
+            {
+                float elapsed=Mathf.Clamp((float)(now-lastAirTime),0,.1f);
+                Vector3 direction=material.GetVector("_FlowDirection");
+                airOffset+=direction.normalized*(Mathf.Max(0,material.GetFloat("_FlowSpeed"))*elapsed);
+            }
+            lastAirTime=now;airWasPlaying=playing;
         }
 
         private sealed class WindowPass : ScriptableRenderPass
@@ -38,6 +56,7 @@ namespace MVP04
             public Material material;
             public int resolutionDivisor,viewSteps,lightSteps;
             public float denoiseStrength;
+            public Vector3 airOffset;
             private readonly Vector4[] sources=new Vector4[3];
             private static readonly int VolumeTexture=Shader.PropertyToID("_ChapelVolumeTexture");
             public WindowPass() => requiresIntermediateTexture = true;
@@ -69,6 +88,7 @@ namespace MVP04
                 properties.SetVectorArray("_Sources", sources);
                 properties.SetInteger("_ViewSteps", Mathf.Clamp(viewSteps,16,96));
                 properties.SetInteger("_LightSteps", Mathf.Clamp(lightSteps,1,6));
+                properties.SetVector("_AirFlowOffset",airOffset);
                 properties.SetVector("_RoomMin", ChapelWindowLight.RoomMin);
                 properties.SetVector("_RoomMax", ChapelWindowLight.RoomMax);
                 var source = resources.activeColorTexture;

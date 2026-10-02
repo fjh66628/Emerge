@@ -33,6 +33,7 @@ public static partial class MVP04Builder
         serialized.ApplyModifiedPropertiesWithoutUndo();
         volume.SetFloat("_Density",.028f);volume.SetFloat("_ScatteringAlbedo",.9f);
         volume.SetFloat("_Anisotropy",.25f);volume.SetFloat("_NoiseAmount",.2f);volume.SetFloat("_NoiseScale",.28f);
+        ConfigureAirMotionParameters(volume);
         EditorUtility.SetDirty(volume);
     }
 

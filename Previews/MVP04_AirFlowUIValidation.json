@@ -1,0 +1,13 @@
+{
+  "speedUpdates": true,
+  "directionUpdates": true,
+  "undoWorks": true,
+  "allFourControlsPresent": true,
+  "materialPreserved": true,
+  "heroEnabled": true,
+  "followEnabled": true,
+  "casterEnabled": true,
+  "nativeKeyboard": true,
+  "playing": true,
+  "airValidationRunning": false
+}

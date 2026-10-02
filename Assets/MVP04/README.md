@@ -41,6 +41,23 @@ Each side source lights the entire corresponding row of four windows. `ChapelWin
 
 The implementation follows [Beer–Lambert transmittance](https://pbr-book.org/4ed/Volume_Scattering/Transmittance) and the [Henyey–Greenstein phase function](https://pbr-book.org/4ed/Volume_Scattering/Phase_Functions).
 
+### Moving air
+
+The **空气流动 · 世界空间** section in **MVP04 > 体积光设置** controls slowly drifting density inside the shafts:
+
+| Control | Default | Effect |
+| --- | --- | --- |
+| 流速 / 米每秒 | 0.28 | Advection speed; zero freezes the field at its current position. |
+| 风向 XYZ | (0.8, 0.2, 0.35) | Normalized world-space direction; positive Y rises. A zero vector stops motion. |
+| 扭曲幅度 / 米 | 1.1 | A broad, slower vector field bends the moving density. |
+| 细层雾丝 | 0.45 | Adds a second, finer density layer. Zero skips that lookup. |
+
+**密度起伏** sets the contrast and **密度噪声频率** sets the size of the formations (lower means larger). Both camera and incoming-light extinction sample this shared field, so the variation affects actual scattering and attenuation. CPU-integrated displacement keeps speed and direction edits continuous; Play Mode pause also freezes motion. The density is anchored in world space rather than to the camera.
+
+`AirFlowNoise.asset` is a repeating 32x32x32 linear RGBA volume with six mip levels: RGB supplies independent warp components and A supplies density. Broad warp, base density and fine density use three filtered texture samples. The integration segment length selects a mip level so structures smaller than the sampling interval average out. Existing spatial denoising remains active. This is procedural advection and domain warping; it does not solve fluid dynamics or react to character motion.
+
+`Previews/MVP04_AirFlow_0s.png` and `MVP04_AirFlow_6s.png` show the same view six seconds apart. `MVP04_AirFlowValidation.json` records motion, zero-speed freezing, shader checks and Editor frame timings with the user's current quality settings.
+
 ### Real-time approximations
 
 This is single scattering with finite ray-march sampling and shadow-map resolution, not path tracing. The point emitters use hard geometric shadows; finite source-size penumbrae are not integrated. Frosted glass uses a thin rough-pane approximation: each emitter?s direct-transmission setting divides coloured direct transmission from a complementary rough transmitted contribution on the pane, including distance, incidence angle and cone falloff. Full angular diffusion from the glass into the room is not traced. Surface direct lighting uses URP's clear-air model; interior attenuation along the incoming path is evaluated in the volumetric integral, while the camera-path attenuation applies to the complete image. Ambient colours and local fill lights approximate bounced illumination; they do not generate additional volumetric shafts.
@@ -63,7 +80,7 @@ A four-tap, depth-weighted upsample combines the filtered volume with the origin
 
 `Previews/MVP04_DenoiseOff.png` and `MVP04_DenoiseOn.png` compare filtering at the same camera pose, both using the interleaved sampling pattern. At 2560x1440 with the performance preset and unchanged light/medium settings, 120-frame Editor averages were **5.73 ms off / 5.85 ms on**. This is a frame-time comparison, not an isolated GPU timing or frame-rate guarantee. See `Previews/MVP04_DenoiseValidation.json`.
 
-A reusable 32? R8 texture replaces repeated procedural density hashing. Light components no longer rewrite unchanged transforms, properties and shader globals every frame; projection cookies rebuild only when needed.
+A reusable 32x32x32 RGBA texture with mipmaps replaces repeated procedural density hashing and supplies the air-motion layers. Light components no longer rewrite unchanged transforms, properties and shader globals every frame; projection cookies rebuild only when needed.
 
 In the same **2560?1440 Editor view**, 120-frame averages measured **48.13 ms / 20.8 FPS** before the change and **9.59 ms / 104.3 FPS** after it, with all three emitters enabled in the new version. Disabling only the volume pass measured 5.64 ms before and 7.78 ms after; these are frame-time comparisons, not isolated GPU profiler timings or a frame-rate guarantee. See `Previews/MVP04_Performance.json`.
 
@@ -76,6 +93,7 @@ The air controls use `Materials/RoseWindowVolume.mat`; the three source profiles
 - **MVP04 > Apply Physical Window Lighting:** upgrades the open MVP04 scene without rebuilding its geometry. Removes legacy sources, configures the three sources, replaces the medium defaults and saves.
 - **MVP04 > Add Side Stained Glass Windows:** rebuilds the side walls and apertures, reconnecting them to the exterior sources.
 - **MVP04 > Apply Frosted Glass:** updates the glass materials.
+- **MVP04 > Apply Air Motion:** installs the cached flow texture and the four motion defaults while retaining existing density, colour, source and quality settings.
 - **Capture Dark Chapel Preview / Capture Side Window Preview / Capture Left Window Preview / Capture Frosted Glass Detail:** write the corresponding images under the project-root `Previews/` directory.
 
 `Previews/MVP04_GameView.png` records the actual Play Mode output. Always check this in addition to offscreen `Camera.Render` previews. `Previews/MVP04_LightingSettings.png` shows the controls.

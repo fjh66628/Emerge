@@ -88,15 +88,17 @@ public static partial class MVP04Builder
 
     private static void ConfigureDensityNoise()
     {
-        string path=Root+"/Textures/DensityNoise.asset";
+        string path=Root+"/Textures/AirFlowNoise.asset";
         var texture=AssetDatabase.LoadAssetAtPath<Texture3D>(path);
         if(texture==null)
         {
             const int size=32;
-            texture=new Texture3D(size,size,size,TextureFormat.R8,false){name="Cached air density",wrapMode=TextureWrapMode.Repeat,filterMode=FilterMode.Bilinear};
-            var bytes=new byte[size*size*size];uint state=20261003;
+            texture=new Texture3D(size,size,size,UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm,
+                UnityEngine.Experimental.Rendering.TextureCreationFlags.MipChain)
+                {name="Air flow RGB and density A",wrapMode=TextureWrapMode.Repeat,filterMode=FilterMode.Trilinear};
+            var bytes=new byte[size*size*size*4];uint state=20261003;
             for(int i=0;i<bytes.Length;i++){state^=state<<13;state^=state>>17;state^=state<<5;bytes[i]=(byte)(state>>24);}
-            texture.SetPixelData(bytes,0);texture.Apply(false,true);AssetDatabase.CreateAsset(texture,path);
+            texture.SetPixelData(bytes,0);texture.Apply(true,true);AssetDatabase.CreateAsset(texture,path);
         }
         var volume=AssetDatabase.LoadAssetAtPath<Material>(Root+"/Materials/RoseWindowVolume.mat");
         volume.SetTexture("_DensityNoise",texture);EditorUtility.SetDirty(volume);AssetDatabase.SaveAssetIfDirty(volume);
