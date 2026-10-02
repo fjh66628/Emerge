@@ -8,6 +8,7 @@ namespace MVP03
         [SerializeField] private Transform ring;
         [SerializeField] private Light glowLight;
         [SerializeField] private float duration = .48f;
+        [SerializeField] private float flashDiameter = 1.4f, ringScale = 2.8f, lightIntensity = 9f;
         private Renderer[] surfaces;
         private MaterialPropertyBlock properties;
         private float age;
@@ -15,6 +16,9 @@ namespace MVP03
 
         public void Configure(Transform sphere, Transform halo, Light pointLight)
         { flash = sphere; ring = halo; glowLight = pointLight; }
+
+        public void ConfigureSmallBurst()
+        { duration = .35f; flashDiameter = .75f; ringScale = 1.55f; lightIntensity = 3.5f; }
 
         private void Awake()
         {
@@ -27,11 +31,11 @@ namespace MVP03
             age += Time.deltaTime;
             float t = Mathf.Clamp01(age / duration);
             float fade = (1f - t) * (1f - t);
-            if (flash != null) flash.localScale = Vector3.one * Mathf.Lerp(.28f, 1.4f, t);
-            if (ring != null) ring.localScale = Vector3.one * Mathf.Lerp(.4f, 2.8f, t);
+            if (flash != null) flash.localScale = Vector3.one * Mathf.Lerp(.28f, flashDiameter, t);
+            if (ring != null) ring.localScale = Vector3.one * Mathf.Lerp(.4f, ringScale, t);
             properties.SetFloat(Opacity, fade);
             foreach (Renderer surface in surfaces) surface.SetPropertyBlock(properties);
-            if (glowLight != null) glowLight.intensity = 9f * fade;
+            if (glowLight != null) glowLight.intensity = lightIntensity * fade;
             // Give the detached burst enough time to finish its final particles.
             if (age >= duration + .25f) Destroy(gameObject);
         }

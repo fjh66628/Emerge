@@ -11105,9 +11105,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f83681fefdcdc1f46a7c59382c68f423, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MVP03.MagicBoltCaster
-  projectilePrefab: {fileID: 8954629239744310947, guid: 54ec6b920a10f544c8898da8758cc28e, type: 3}
-  cooldown: 0.35
-  castHeight: 1.05
+  projectilePrefab: {fileID: 2494486819265388095, guid: a508dc1298098ea4c8d5a5272217b0b6, type: 3}
+  sigilPrefab: {fileID: 1862669071339832416, guid: 268fc262b5fdb0e49be643fece4c83be, type: 3}
+  chargeDuration: 0.6
+  cooldown: 0.48
+  castHeight: 1.6
 --- !u!114 &1476440607
 MonoBehaviour:
   m_ObjectHideFlags: 0

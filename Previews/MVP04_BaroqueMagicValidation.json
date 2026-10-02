@@ -1,0 +1,32 @@
+{
+  "accepted": true,
+  "duplicateRejected": true,
+  "noProjectileBeforeCharge": true,
+  "chargeSeconds": 0.6,
+  "observedFirstProjectileSeconds": 0.604328156,
+  "launchFrameDeltaSeconds": 0.008261203,
+  "chargeFollowsMovingOwner": true,
+  "headingLockedAtCastStart": true,
+  "spawnSweepBlocked": true,
+  "ownerIgnored": true,
+  "maxStarParticles": 98,
+  "releasedSigilGone": true,
+  "projectileAndTrailCleanedUp": true,
+  "disableCancelsPendingCast": true,
+  "inputDevicesUnchanged": true,
+  "shaderMessages": [
+    {
+      "name": "MVP04/Baroque Sigil",
+      "messages": []
+    },
+    {
+      "name": "MVP04/Star Mote",
+      "messages": []
+    },
+    {
+      "name": "MVP04/Astral Trail",
+      "messages": []
+    }
+  ],
+  "note": "Frame-driven test uses a temporary offscreen actor, moves its origin during charge and changes its facing. A separate thin wall tests the launch-offset sweep. No input devices are created, removed or simulated."
+}

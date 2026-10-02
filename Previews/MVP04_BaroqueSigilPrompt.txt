@@ -1,0 +1,14 @@
+Generated with the built-in image_gen tool. Final asset: Assets/MVP04/Textures/BaroqueSigil.png.
+
+Initial prompt:
+Use case: stylized-concept.
+Asset type: a single transparent emissive texture for a baroque spell sigil in a 3D HD2D cathedral game.
+Create one centred, front-facing, perfectly circular ornamental magic pattern on a genuinely transparent background, square 1024x1024. This is NOT a rendered scene or an object photograph.
+Design: refined European Baroque engraving, curling acanthus leaves and elegant C- and S-scroll filigree; small scallop-shell ornaments at the four cardinal points, a delicate openwork eight-lobed central rosette, two slender concentric circular bands with tiny bead accents. Warm ivory and pale antique-gold line work. Strong radial balance, clearly readable major scroll shapes, abundant transparent negative space. Keep the middle mostly open (a small central rosette and an empty aperture) so a luminous orb can emerge from it. Maximum occupied diameter about 880 pixels, leaving a safe transparent margin.
+Line work should be crisp with medium-weight main outlines and restrained inner detail, visible when scaled down to about 150px across. Flat luminous ornamental line art with slight tonal gold variation, NO thick metal extrusions, NO painterly background, NO surrounding halo or fog baked into the texture. Glow will be added in the engine.
+No words, no letters, no numbers, no text, no pentagram, no extra symbols outside the circle, no user interface border, no watermarks. Every gap between the ornament lines and the entire outer background must be transparent. A usable one-piece RGBA game VFX atlas asset.
+
+Refinement prompt:
+Edit target: the attached golden Baroque sigil. Keep the same overall radial composition, acanthus scrolls, four shell ornaments, paired circular bands, and central rosette.
+Change it from shaded golden metal into FLAT OPEN LINE ART suitable for a luminous magic-circle texture. Remove ALL metallic bevels, solid filled gold/cream areas, volumetric shading and baked glow. Trace the major ornament outlines and a restrained number of inner veins in pale warm ivory/gold lines. Every leaf, shell and scroll must have a TRANSPARENT INTERIOR bounded by clean luminous strokes. Lines about 3 to 5 pixels wide at 1024px canvas; major outer rings about 4px. No thick outlines wider than 6px. The result should be an airy engraving made only of lines, with at least 85 percent transparent area, not a golden shield or frame.
+Scale the entire circle down to occupy about 86 percent of the square canvas so all four ornaments have generous transparent padding. Keep the central rosette small, leave a large empty opening around it. No text, no extra objects, no grain, no stray pixels. Truly transparent background and all negative spaces.

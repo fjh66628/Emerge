@@ -286,7 +286,7 @@ public static partial class MVP04Builder
         ConfigurePlayerAnimation(sr);
         var cc=root.AddComponent<CharacterController>();cc.height=1.7f;cc.radius=.28f;cc.center=V(0,.85f,0);cc.stepOffset=.30f;cc.skinWidth=.015f;
         root.AddComponent<PixelPilgrim>().Configure(camera,sr);
-        root.AddComponent<MagicBoltCaster>().Configure(AssetDatabase.LoadAssetAtPath<MagicBolt>("Assets/MVP03/Prefabs/MagicBolt.prefab"));
+        ConfigureChapelMagic(root.AddComponent<MagicBoltCaster>());
         return root;
     }
 

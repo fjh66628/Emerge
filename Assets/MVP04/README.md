@@ -43,6 +43,18 @@ Movement, zoom and casting prefer an enabled, registered hardware keyboard over 
 
 `Previews/MVP04_KeyboardRoutingValidation.json` checks hardware selection with a virtual or removed current device and verifies the device list is preserved. `Previews/MVP04_PhysicalInputValidation.json` records movement observed from the native keyboard after recovery, without injecting input.
 
+## Baroque astral magic
+
+Press **Space** to unfold a warm ivory-gold Baroque ornament, then launch a small three-dimensional white-blue orb after **0.6 seconds**. The ornament combines acanthus scrolls, shell ornaments and fine circular bands. It expands with a radial reveal and a slight turn, then fades over 0.3 seconds as the orb departs. The casting position is 1.6 metres above the actor, with a 1.8-metre ornament, keeping the pattern visible above the back-facing sprite.
+
+The charge follows the actor's position; its firing direction is captured when Space is pressed. Recovery is 0.48 seconds after launch. Holding Space does not auto-repeat. The orb travels at 9 m/s, uses a swept sphere collision and checks the path from the actor to the ornament before spawning ahead. Disabling the caster cancels a pending charge. MVP03 retains immediate casting when no ornament prefab is assigned.
+
+The orb uses one small emissive sphere and a restrained spherical halo. Its wake combines a feathered blue-violet noise ribbon with world-space four-point star particles. Stars spread slowly, change from warm white to blue and violet, and fade independently after impact; the orb has no orbiting rings. Impact adds a small ripple and short stardust burst. Temporary point lights illuminate nearby surfaces and the character without adding shadow maps. Each flying wake is capped at 128 particles.
+
+**MVP04 > Apply Baroque Astral Magic** installs the effect on the current character without rebuilding the chapel. `Prefabs/BaroqueCast.prefab`, `AstralOrb.prefab` and `AstralImpact.prefab` hold the effects; `MagicBoltCaster` on the character exposes charge duration, recovery and cast height. The corresponding `BaroqueSigil`, `AstralOrbCore`, `AstralOrbHalo`, `AstralNebula`, `AstralStars` and `AstralImpactHalo` materials control their appearance. The transparent ornament is `Textures/BaroqueSigil.png`, generated and refined with the built-in image generation tool. Exact prompts are in `Previews/MVP04_BaroqueSigilPrompt.txt`.
+
+`Previews/MVP04_BaroqueCast.png` shows the actual Game camera. `MVP04_BaroqueDetail.png` and `MVP04_AstralFlight.png` use a temporary side camera to show the pattern and wake clearly; the player's camera and pose are preserved. `MVP04_BaroqueMagicValidation.json` records charge timing, origin following, fixed direction, launch obstruction, owner collision filtering, cancellation, cleanup, unchanged input devices and shader checks.
+
 ## Light sources and projection
 
 There are three real exterior spotlights: the existing front source plus a source outside each side wall. The front source retains the user's saved position and intensity in `Rendering/ExteriorLight.asset`. The left and right sources are at **(-24, 14, 12)** and **(24, 14, 12)** metres, aimed at **(0, 1, 1)**, each with intensity **18000**, an **82-degree** cone and **65-metre** range. They are elevated artificial lights; the intensity uses URP relative units rather than calibrated lumens.
