@@ -33,10 +33,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BeamContrast: 1.65
+    - _BeamEdge: 0.025
+    - _BeamSpread: 0.003
     - _Density: 0.045
     - _Length: 26
     - _NoiseScale: 0.48
     - _Radius: 2.6
+    - _ShadowSharpness: 0.7
     - _SideDensity: 0.11
     m_Colors:
     - _LightDirection: {r: 0, g: -0.41905817, b: -0.9079594, a: 0}

@@ -12,6 +12,10 @@ Shader "MVP04/Window Volume"
         _Length ("Beam length", Float) = 26
         _Density ("Dust density", Range(0,.2)) = .045
         _NoiseScale ("Dust scale", Float) = .48
+        _BeamEdge ("Beam edge softness", Range(.005,.15)) = .025
+        _BeamSpread ("Beam spread per metre", Range(0,.03)) = .003
+        _BeamContrast ("Transmission contrast", Range(1,3)) = 1.65
+        _ShadowSharpness ("Shadow edge definition", Range(0,1)) = .7
     }
     SubShader
     {
@@ -36,6 +40,7 @@ Shader "MVP04/Window Volume"
                 float4 _ScatterColor, _WindowOrigin, _LightDirection;
                 float _Radius, _Length, _Density, _NoiseScale;
                 float _SideDensity;
+                float _BeamEdge, _BeamSpread, _BeamContrast, _ShadowSharpness;
                 int _SideCount;
                 float4 _SideSources[8], _SideWindows[8];
             CBUFFER_END
@@ -48,6 +53,16 @@ Shader "MVP04/Window Volume"
                 float3 i=floor(p), f=frac(p); f=f*f*(3-2*f);
                 return lerp(lerp(lerp(Hash(i),Hash(i+float3(1,0,0)),f.x),lerp(Hash(i+float3(0,1,0)),Hash(i+float3(1,1,0)),f.x),f.y),
                     lerp(lerp(Hash(i+float3(0,0,1)),Hash(i+float3(1,0,1)),f.x),lerp(Hash(i+float3(0,1,1)),Hash(i+1),f.x),f.y),f.z);
+            }
+            float TransmissionMask(half3 glass)
+            {
+                float value=max(glass.r,max(glass.g,glass.b));
+                // Suppress dark lead leakage while keeping the brighter glass segments distinct.
+                return .45*pow(saturate(value/.45),_BeamContrast)*smoothstep(.012,.055,value);
+            }
+            float DefinedShadow(float shadow)
+            {
+                return lerp(shadow,smoothstep(.28,.72,shadow),_ShadowSharpness);
             }
             half4 Frag(Varyings input):SV_Target
             {
@@ -73,7 +88,7 @@ Shader "MVP04/Window Volume"
                 float3 axis=normalize(_LightDirection.xyz);
                 float3 right=normalize(cross(axis,float3(0,1,0)));
                 float3 up=normalize(cross(right,axis));
-                const int STEPS=48;
+                const int STEPS=72;
                 float stepSize=(end-begin)/STEPS;
                 // Stable per-cell jitter avoids moving screen noise and reduces slice banding.
                 float jitter=Hash(float3(floor(input.positionCS.xy/2),2.73));
@@ -85,17 +100,17 @@ Shader "MVP04/Window Volume"
                     float3 p=origin+ray*(begin+(s+jitter)*stepSize);
                     float3 delta=p-_WindowOrigin.xyz;
                     float along=dot(delta,axis);
-                    float radius=_Radius*(1+along*.012);
+                    float radius=_Radius*(1+along*_BeamSpread);
                     float2 radial=float2(dot(delta,right),dot(delta,up))/radius;
-                    float edge=(1-smoothstep(.82,1,dot(radial,radial)))*step(0,along)*step(along,_Length);
+                    float edge=(1-smoothstep(1-_BeamEdge,1,length(radial)))*step(0,along)*step(along,_Length);
                     float dust=.42+.58*Noise(p*_NoiseScale+float3(_Time.y*.025,0,0));
                     float extinction=0;
                     half3 radiance=0;
                     if(edge>0 && _Density>0)
                     {
                         half3 glass=SAMPLE_TEXTURE2D_LOD(_RoseMask,sampler_RoseMask,radial*.5+.5,0).rgb;
-                        float mask=max(glass.r,max(glass.g,glass.b));
-                        float shadow=MainLightRealtimeShadow(TransformWorldToShadowCoord(p));
+                        float mask=TransmissionMask(glass);
+                        float shadow=DefinedShadow(MainLightRealtimeShadow(TransformWorldToShadowCoord(p)));
                         float weight=_Density*edge*mask;
                         extinction+=weight;
                         radiance+=weight*glass*_ScatterColor.rgb*shadow*phase;
@@ -112,10 +127,10 @@ Shader "MVP04/Window Volume"
                         float2 paneUV=float2(.5+sign(centre.x)*(hit.z-centre.z)/2.44,(hit.y-3)/4.5);
                         if(any(paneUV<=0) || any(paneUV>=1)) continue;
                         half4 glass=SAMPLE_TEXTURE2D_LOD(_SideMask,sampler_SideMask,paneUV,0);
-                        float mask=max(glass.r,max(glass.g,glass.b))*glass.a;
+                        float mask=TransmissionMask(glass.rgb)*smoothstep(.15,.85,glass.a);
                         if(mask<.015) continue;
                         float dist=length(fromLight);
-                        float shadow=AdditionalLightRealtimeShadow((int)_SideSources[w].w,p,-fromLight/dist);
+                        float shadow=DefinedShadow(AdditionalLightRealtimeShadow((int)_SideSources[w].w,p,-fromLight/dist));
                         float fade=(1-smoothstep(16,23,dist))*projection;
                         float weight=_SideDensity*mask*fade*_SideWindows[w].w*shadow;
                         float sidePhase=.65+.35*pow(saturate(dot(ray,-fromLight/dist)),3);

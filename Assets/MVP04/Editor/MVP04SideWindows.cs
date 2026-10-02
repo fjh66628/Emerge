@@ -57,13 +57,10 @@ public static partial class MVP04Builder
         var previous=random;random=new System.Random(20408);
         var root=new GameObject("Side stained glass and moonlight").transform;
         var texture=SideGlassTexture();
-        var glass=Lit("LuminousSideGlass",Color.white,.8f);
-        glass.SetTexture("_BaseMap",texture);glass.SetTexture("_EmissionMap",texture);
-        glass.SetFloat("_AlphaClip",1);glass.SetFloat("_Cutoff",.5f);glass.EnableKeyword("_ALPHATEST_ON");
-        glass.renderQueue=2450;Emission(glass,new Color(1.85f,1.85f,1.85f));
+        var glass=FrostedGlass("LuminousSideGlass",texture,1.65f,new Vector2(2.44f,4.5f));
         var bronze=AssetDatabase.LoadAssetAtPath<Material>(Root+"/Materials/AgedBronze.mat");
         var volume=AssetDatabase.LoadAssetAtPath<Material>(Root+"/Materials/RoseWindowVolume.mat");
-        if(volume!=null){volume.SetTexture("_SideMask",texture);volume.SetFloat("_SideDensity",.11f);EditorUtility.SetDirty(volume);}
+        if(volume!=null){volume.SetTexture("_SideMask",texture);volume.SetFloat("_SideDensity",.11f);SharpenWindowBeams(volume);}
         // Clustered lighting retains nearby candle/bounce lights as the eight window spots are added.
         var renderer=AssetDatabase.LoadAssetAtPath<UniversalRendererData>(Root+"/Rendering/NocturneRenderer.asset");
         var rendererSettings=new SerializedObject(renderer);rendererSettings.FindProperty("m_RenderingMode").intValue=2;

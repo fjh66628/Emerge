@@ -164,8 +164,7 @@ public static partial class MVP04Builder
             leading.Bar(Window+radial*.44f,Window+radial*2.57f,.045f);
         }
         leading.Save("RoseBronzeTracery",bronze);
-        Material glass=Lit("LuminousRoseGlass",Color.white,.75f);
-        glass.SetTexture("_BaseMap",texture);glass.SetTexture("_EmissionMap",texture);Emission(glass,new Color(2.6f,2.6f,2.6f));
+        Material glass=FrostedGlass("LuminousRoseGlass",texture,2.05f,new Vector2(5.26f,5.26f));
         var pane=new ChapelMesh();pane.Disc(Window+Vector3.forward*.12f,2.63f);
         var go=pane.Save("RoseStainedGlass",glass);
         go.GetComponent<Renderer>().shadowCastingMode=ShadowCastingMode.Off;
@@ -315,6 +314,7 @@ public static partial class MVP04Builder
             if(feature is FullScreenPassRendererFeature full && full.passMaterial!=null && full.passMaterial.shader.name=="MVP03/Subtle Pixels")
             {full.passMaterial=AssetDatabase.LoadAssetAtPath<Material>(pixelsPath);EditorUtility.SetDirty(full);}
         Material volume=Material("RoseWindowVolume","MVP04/Window Volume");volume.SetTexture("_RoseMask",rose);volume.SetVector("_WindowOrigin",Window);volume.SetVector("_LightDirection",SunDirection);volume.SetFloat("_Radius",2.6f);volume.SetFloat("_Density",.045f);volume.SetFloat("_Length",26);volume.SetColor("_ScatterColor",new Color(1.3f,1.5f,1.9f));EditorUtility.SetDirty(volume);
+        SharpenWindowBeams(volume);
         var light=renderer.rendererFeatures.OfType<WindowVolumeFeature>().FirstOrDefault();
         if(light==null){light=ScriptableObject.CreateInstance<WindowVolumeFeature>();light.name="Rose window / shadowed dust volume";AssetDatabase.AddObjectToAsset(light,renderer);renderer.rendererFeatures.Add(light);}
         light.material=volume;light.Create();EditorUtility.SetDirty(light);renderer.SetDirty();EditorUtility.SetDirty(renderer);
