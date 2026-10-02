@@ -1,0 +1,66 @@
+{
+  "passed": true,
+  "stableBeforeContact": true,
+  "sceneStandCount": 10,
+  "unhitStandsRemainLit": true,
+  "unhitMaximumTilt": 0.0,
+  "sharedFlameMaterialUnchanged": true,
+  "cases": [
+    {
+      "direction": "(1.00, 0.00, 0.00)",
+      "candles": 3,
+      "pass": true,
+      "maxTiltDegrees": 83.01259,
+      "extinguishedSecondsAfterWalking": 0.7543411,
+      "extinguished": true,
+      "remainsOff": true,
+      "displacementMetres": 0.250720978,
+      "minimumBaseY": 50.0,
+      "sleeping": true,
+      "speed": 0.0
+    },
+    {
+      "direction": "(-1.00, 0.00, 0.00)",
+      "candles": 5,
+      "pass": true,
+      "maxTiltDegrees": 81.78736,
+      "extinguishedSecondsAfterWalking": 0.769138336,
+      "extinguished": true,
+      "remainsOff": true,
+      "displacementMetres": 0.237946749,
+      "minimumBaseY": 50.0000229,
+      "sleeping": true,
+      "speed": 0.0
+    },
+    {
+      "direction": "(0.00, 0.00, 1.00)",
+      "candles": 3,
+      "pass": true,
+      "maxTiltDegrees": 99.82099,
+      "extinguishedSecondsAfterWalking": 0.8696861,
+      "extinguished": true,
+      "remainsOff": true,
+      "displacementMetres": 0.332030416,
+      "minimumBaseY": 50.0,
+      "sleeping": true,
+      "speed": 0.0
+    },
+    {
+      "direction": "(0.00, 0.00, -1.00)",
+      "candles": 5,
+      "pass": true,
+      "maxTiltDegrees": 99.1860046,
+      "extinguishedSecondsAfterWalking": 0.891880035,
+      "extinguished": true,
+      "remainsOff": true,
+      "displacementMetres": 0.3310542,
+      "minimumBaseY": 50.0000229,
+      "sleeping": true,
+      "speed": 0.0
+    }
+  ],
+  "note": "Four real CharacterControllers walk at 3.4 m/s into cloned three- and five-candle stands on a temporary collider floor. No keyboard devices or player state are changed. Measurements include ten seconds of live physics and all original scene stands.",
+  "compilationErrors": 0,
+  "editorUpgradeIdempotent": true,
+  "gamePreview": "Previews/MVP04_CandlePhysicsGame.png"
+}

@@ -77,6 +77,16 @@ Select a `Flames...` object to adjust its **Candle Sway** component: **Intensity
 
 **MVP04 > Apply Candle Sway** attaches the effect to the existing chapel; new builds include it. It reuses the current point lights and their range, colour and shadow settings. `Previews/MVP04_CandleSwayValidation.json` records sampled brightness/motion and restoration checks.
 
+## Knockable candle stands
+
+Walk into any of the **ten freestanding candle stands** with WASD / arrow keys to push it over. Each stand uses one 4 kg Rigidbody and four primitive colliders for its base, stem, arm and wax. The two small candle groups on the altar remain fixed. The character's `ChapelPropPusher` transfers controller contacts into an impulse at torso height; the stand then falls and settles using normal rigidbody physics.
+
+At **32 degrees of tilt**, `KnockableCandleStand` permanently extinguishes that stand for the current Play session: candle sway stops, its flame renderer switches off, and its point light switches off. Wax and metal stay visible and collidable. Other candle groups and the shared flame material remain unchanged. Restart Play to restore the scene. Settled props sleep; this adds no lights, shadow maps or per-frame scene searches.
+
+Select a `Candle stand ...` root to adjust **Extinguish Angle**, **Push Impulse** (5 N s at normal walking speed), **Push Cooldown** (0.3 s), mass and damping. `Materials/CandleContact.physicMaterial` controls friction. **MVP04 > Apply Candle Physics** upgrades existing stands without rebuilding the chapel; running it again creates no duplicates. Full chapel builds include the feature.
+
+`Previews/MVP04_CandlePhysicsValidation.json` records real CharacterController collisions from all four directions, both stand sizes, stable unhit neighbours, persistent extinction and resting physics bodies.
+
 ## Participating medium
 
 `WindowVolumeFeature` runs a depth-limited world-space ray march before post processing. The standard preset uses half width and height (one quarter of the pixels), at most 40 camera-ray steps and two light-path samples. Air occupies the chapel envelope from (-8.86, 0, -13) to (8.86, 13.6, 17.57); the exterior is assumed clear.

@@ -495,7 +495,7 @@
       "shadowed": 0
     }
   ],
-  "standardVersion": "1.1",
+  "standardVersion": "1.2",
   "timezone": "Asia/Shanghai",
   "postProcessing": {
     "Bloom": {
@@ -617,6 +617,48 @@
       "standardVersion": "1.1",
       "dateLocal": "2026-10-03",
       "description": "Added light-facing sprite shadows and conservative bounds after the altar side-light regression. Other parameters retain the original capture."
+    },
+    {
+      "standardVersion": "1.2",
+      "dateLocal": "2026-10-03",
+      "description": "Added physical character collisions and tilt-triggered extinction for ten freestanding candle stands. Other visual parameters retain the original capture."
     }
-  ]
+  ],
+  "candlePhysics": {
+    "component": "Assets/MVP04/Scripts/KnockableCandleStand.cs",
+    "characterInteraction": "Assets/MVP04/Scripts/ChapelPropPusher.cs",
+    "freestandingCount": 10,
+    "fixedTabletopGroups": 2,
+    "collidersPerStand": 4,
+    "massKg": 4,
+    "centerOfMassMetres": [
+      0,
+      0.6,
+      0
+    ],
+    "linearDamping": 0.25,
+    "angularDamping": 0.6,
+    "collisionDetection": "ContinuousDynamic",
+    "interpolation": "Interpolate",
+    "solverIterations": 6,
+    "solverVelocityIterations": 1,
+    "staticFriction": 0.65,
+    "dynamicFriction": 0.5,
+    "bounciness": 0,
+    "pushImpulseNewtonSeconds": 5,
+    "walkingSpeedReference": 3.4,
+    "pushCooldownSeconds": 0.3,
+    "uprightPushHeightMetres": [
+      0.95,
+      1.3
+    ],
+    "extinguishTiltDegrees": 32,
+    "extinguishActions": [
+      "Disable CandleSway",
+      "Disable flame Renderer",
+      "Disable own point Light"
+    ],
+    "extinctionLifetime": "Current Play session; restart Play restores saved scene",
+    "validation": "Previews/MVP04_CandlePhysicsValidation.json"
+  }
 }
