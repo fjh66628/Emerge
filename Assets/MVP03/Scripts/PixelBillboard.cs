@@ -16,9 +16,8 @@ namespace MVP03
         void LateUpdate()
         {
             if (view == null || sprite == null) return;
-            Vector3 facing = view.transform.position - sprite.transform.position;
-            facing.y = 0;
-            sprite.transform.rotation = Quaternion.LookRotation(facing, Vector3.up);
+            // Match camera pitch while preserving this legacy portrait's horizontal orientation.
+            sprite.transform.rotation = view.transform.rotation * Quaternion.Euler(0, 180, 0);
         }
     }
 }

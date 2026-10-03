@@ -109,12 +109,12 @@ namespace MVP03
         private void LateUpdate()
         {
             if (portrait == null || worldCamera == null) return;
-            Vector3 toCamera = worldCamera.transform.position - portrait.transform.position;
-            toCamera.y = 0f;
-            // Keep atlas +X aligned with screen right; the legacy portrait faced the
-            // opposite plane normal and relied on flipX for its single side view.
+            // Matching the camera basis cancels its view rotation, including pitch.
+            // Rotate the foot-pivot visual only; the controller remains upright.
+            // Retain the legacy portrait's reversed horizontal atlas orientation.
             bool directional = walkAnimation != null && walkAnimation.IsConfigured;
-            portrait.transform.rotation = Quaternion.LookRotation(directional ? -toCamera : toCamera, Vector3.up);
+            portrait.transform.rotation = worldCamera.transform.rotation *
+                (directional ? Quaternion.identity : Quaternion.Euler(0, 180, 0));
         }
     }
 }

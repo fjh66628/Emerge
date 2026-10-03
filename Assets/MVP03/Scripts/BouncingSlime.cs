@@ -155,9 +155,8 @@ namespace MVP03
         private void LateUpdate()
         {
             if (view == null || portrait == null) return;
-            Vector3 away = portrait.transform.position - view.transform.position;
-            away.y = 0;
-            if (away.sqrMagnitude > .001f) portrait.transform.rotation = Quaternion.LookRotation(away);
+            // Screen-aligned even at high camera pitch; squash and hop stay independent.
+            portrait.transform.rotation = view.transform.rotation;
         }
     }
 }
