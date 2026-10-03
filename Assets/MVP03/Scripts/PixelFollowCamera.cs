@@ -26,6 +26,20 @@ namespace MVP03
 
         public float Distance => currentDistance;
         public float TargetDistance => targetDistance;
+        public float Pitch => Mathf.Asin(Mathf.Clamp(viewDirection.y, -1f, 1f)) * Mathf.Rad2Deg;
+
+        public void SetPitch(float degrees)
+        {
+            if (float.IsNaN(degrees) || float.IsInfinity(degrees)) return;
+            if (viewDirection.sqrMagnitude < .0001f) InitializeZoom();
+            Vector3 horizontal = Vector3.ProjectOnPlane(viewDirection, Vector3.up).normalized;
+            if (horizontal.sqrMagnitude < .0001f) horizontal = Vector3.back;
+            float angle = Mathf.Clamp(degrees, 0, 75) * Mathf.Deg2Rad;
+            viewDirection = horizontal * Mathf.Cos(angle) + Vector3.up * Mathf.Sin(angle);
+            offset = Vector3.up * focusHeight + viewDirection * currentDistance;
+            // Preserve zoom target/velocity, subject framing and the existing horizontal heading.
+            Follow();
+        }
 
         private void Awake() => InitializeZoom();
 

@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "clickSetsAngle": true,
+  "dragClampsAt45": true,
+  "dragClampsAt5": true,
+  "resetTo18": true,
+  "preferenceRestoredAfterReenable": true,
+  "oneEventSystem": true,
+  "keyboardPreserved": true,
+  "maximumViewportCentreError": 2.38418579E-07,
+  "maximumZoomDistanceChange": 0.0,
+  "maximumYawError": 0.0,
+  "restoredUserAngle": 45.0,
+  "note": "Real uGUI GraphicRaycaster and pointer down/drag/up/click handlers exercised in Play, then preference reload by disabling/re-enabling the UI. User angle and PlayerPrefs restored; no keyboard devices simulated or modified."
+}

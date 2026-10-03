@@ -59,6 +59,7 @@ public static class MVP03Presentation
         follow.Configure(hero.transform);
         follow.ConfigureZoom(5, 15);
         EditorUtility.SetDirty(follow);
+        if (!camera.TryGetComponent<CameraPitchUI>(out _)) Undo.AddComponent<CameraPitchUI>(camera.gameObject);
 
         ConfigurePlayerAnimation(hero, camera);
         var scene = camera.gameObject.scene;
