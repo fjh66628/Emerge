@@ -8,16 +8,14 @@ namespace MVP03
     // Graph particles own their 3D velocity, curl turbulence and lifetime on the GPU.
     internal sealed class GroundFire : System.IDisposable
     {
-        private const int MaximumLights = 4;
+        private const int WarmLightCount = 4;
         private readonly Material material;
         private readonly Vector4 atlas;
         private readonly VisualEffectAsset asset;
         private VisualEffect spare;
         private readonly Dictionary<ClickPuddles.Patch, VisualEffect> fields = new Dictionary<ClickPuddles.Patch, VisualEffect>();
         private readonly List<Vector3> anchors = new List<Vector3>();
-        private readonly Light[] lights = new Light[MaximumLights];
-        private readonly List<Vector3> selected = new List<Vector3>(MaximumLights);
-        private float nextSelection;
+        private readonly List<Light> lights = new List<Light>(16);
         public int LightCount { get; private set; }
         public int EffectCount => fields.Count;
 
@@ -25,14 +23,16 @@ namespace MVP03
         {
             material = fireMaterial; atlas = worldAtlas; asset = graph;
             spare = CreateEffect();
-            for (int i = 0; i < lights.Length; i++)
-            {
-                var root = new GameObject("Ground fire / pooled warm light " + i) { hideFlags = HideFlags.DontSave };
-                var light = root.AddComponent<Light>();
-                light.type = LightType.Point; light.shadows = LightShadows.None;
-                light.color = new Color(1, .62f, .055f); light.enabled = false;
-                lights[i] = light;
-            }
+            for (int i = 0; i < WarmLightCount; i++) lights.Add(CreateLight(i));
+        }
+
+        private static Light CreateLight(int index)
+        {
+            var root = new GameObject("Ground fire / pooled warm light " + index) { hideFlags = HideFlags.DontSave };
+            var light = root.AddComponent<Light>();
+            light.type = LightType.Point; light.shadows = LightShadows.None;
+            light.color = new Color(1, .62f, .055f); light.enabled = false;
+            return light;
         }
 
         private VisualEffect CreateEffect()
@@ -81,43 +81,30 @@ namespace MVP03
 
         public void AddLightAnchor(Vector3 position)
         {
-            // Lights are representative samples of the region, not one light per click.
-            foreach (var anchor in anchors) if ((anchor - position).sqrMagnitude < 2.5f * 2.5f) return;
-            anchors.Add(position); nextSelection = 0;
+            // A distinct fire region keeps its own stable light. New fires and camera movement
+            // must not reassign an existing region's illumination to a different position.
+            float mergeDistance = Mathf.Min(2.5f, material.GetFloat("_LightRange") * .4f);
+            foreach (var anchor in anchors)
+                if (Mathf.Abs(anchor.y - position.y) < .1f && (anchor - position).sqrMagnitude < mergeDistance * mergeDistance) return;
+            anchors.Add(position);
+            if (lights.Count < anchors.Count) lights.Add(CreateLight(lights.Count));
+            lights[anchors.Count - 1].transform.position = position + Vector3.up * .65f;
         }
 
-        public void Tick(Camera camera)
+        public void Tick()
         {
             foreach (var pair in fields)
             {
                 Bounds bounds = pair.Key.renderer.bounds;
                 ApplySettings(pair.Value, bounds.size.x * bounds.size.z);
             }
-            if (Time.unscaledTime >= nextSelection)
-            {
-                nextSelection = Time.unscaledTime + .25f; selected.Clear();
-                if (camera != null && fields.Count != 0)
-                    for (int slot = 0; slot < MaximumLights; slot++)
-                    {
-                        float best = float.PositiveInfinity; Vector3 point = default; bool found = false;
-                        foreach (var anchor in anchors)
-                        {
-                            if (selected.Contains(anchor)) continue;
-                            float distance = (camera.transform.position - anchor).sqrMagnitude;
-                            if (distance < best) { best = distance; point = anchor; found = true; }
-                        }
-                        if (!found) break;
-                        selected.Add(point);
-                    }
-            }
             LightCount = 0;
             float intensity = Mathf.Max(0, material.GetFloat("_LightIntensity"));
-            for (int i = 0; i < lights.Length; i++)
+            for (int i = 0; i < lights.Count; i++)
             {
-                var light = lights[i]; light.enabled = i < selected.Count && intensity > .001f;
+                var light = lights[i]; light.enabled = i < anchors.Count && fields.Count != 0 && intensity > .001f;
                 if (!light.enabled) continue;
                 LightCount++;
-                light.transform.position = selected[i] + Vector3.up * .65f;
                 light.range = material.GetFloat("_LightRange");
                 light.intensity = intensity * (.82f + Mathf.PerlinNoise(i * 7.1f, Time.time * 2.4f) * .36f);
             }
@@ -137,8 +124,13 @@ namespace MVP03
                 effect.Stop(); effect.gameObject.SetActive(false);
                 if (spare == null) spare = effect; else Object.Destroy(effect.gameObject);
             }
-            fields.Clear(); anchors.Clear(); selected.Clear(); LightCount = 0; nextSelection = 0;
+            fields.Clear(); anchors.Clear(); LightCount = 0;
             foreach (var light in lights) if (light != null) light.enabled = false;
+            // Keep a small warm pool after Clear, but never evict a light from an active region.
+            for (int i = lights.Count - 1; i >= WarmLightCount; i--)
+            {
+                Object.Destroy(lights[i].gameObject); lights.RemoveAt(i);
+            }
         }
         public void Dispose()
         {

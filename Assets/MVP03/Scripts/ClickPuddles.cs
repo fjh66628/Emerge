@@ -165,7 +165,7 @@ namespace MVP03
         private void LateUpdate()
         {
             ripples?.Tick(patches, Time.deltaTime);
-            fire?.Tick(view);
+            fire?.Tick();
         }
 
         private void Update()

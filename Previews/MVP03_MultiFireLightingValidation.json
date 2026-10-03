@@ -1,0 +1,48 @@
+{
+  "distinctFireRegions": 12,
+  "activeLights": 12,
+  "vfxSystems": 1,
+  "firstFourSurviveAdditionalFires": true,
+  "renderedOnOneCombinedStoneMesh": [
+    {
+      "rendererIndex": 2,
+      "redLightContributionAtEveryFire": [
+        1.84667969,
+        1.85253906,
+        1.84667969,
+        1.65917969,
+        1.62207031,
+        1.81933594,
+        1.94628906,
+        1.95605469,
+        1.92871094,
+        1.83105469,
+        1.82910156,
+        1.80566406
+      ],
+      "minimum": 1.62207031
+    },
+    {
+      "rendererIndex": 4,
+      "redLightContributionAtEveryFire": [
+        2.3515625,
+        2.375,
+        2.35351563,
+        2.1640625,
+        2.12695313,
+        2.34179688,
+        2.45117188,
+        2.46289063,
+        2.45507813,
+        2.37304688,
+        2.3515625,
+        2.328125
+      ],
+      "minimum": 2.12695313
+    }
+  ],
+  "cameraMoveKeepsOriginalLights": true,
+  "clearDisablesAllLights": true,
+  "error": null,
+  "passed": true
+}

@@ -3,6 +3,7 @@ using MVP03;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public static class MVP03GroundFireBuilder
 {
@@ -20,6 +21,7 @@ public static class MVP03GroundFireBuilder
 
     public static void ConfigureScene()
     {
+        ConfigureLighting();
         var ground = Camera.main != null ? Camera.main.GetComponent<ClickPuddles>() : null;
         if (ground == null) throw new InvalidOperationException("Install click-to-place puddles first.");
         var material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
@@ -33,5 +35,19 @@ public static class MVP03GroundFireBuilder
         }
         Undo.RecordObject(ground, "Configure yellow ground fire");
         ground.ConfigureFire(material, MVP03GroundFireGraph.Build()); EditorUtility.SetDirty(ground);
+    }
+
+    public static void ConfigureLighting()
+    {
+        // Both the Game camera and its water reflection need clustered lighting:
+        // the courtyard's combined stone mesh must receive more than four fire lights.
+        foreach (string path in new[] { MVP03WarmLighting.RendererPath, MVP03PuddleBuilder.RendererPath })
+        {
+            var renderer = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(path);
+            if (renderer == null || renderer.renderingMode == RenderingMode.ForwardPlus) continue;
+            Undo.RecordObject(renderer, "Enable Forward+ ground fire lighting");
+            renderer.renderingMode = RenderingMode.ForwardPlus;
+            renderer.SetDirty(); EditorUtility.SetDirty(renderer); AssetDatabase.SaveAssetIfDirty(renderer);
+        }
     }
 }
