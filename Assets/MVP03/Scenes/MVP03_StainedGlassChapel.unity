@@ -430,6 +430,7 @@ GameObject:
   - component: {fileID: 279173756}
   - component: {fileID: 279173755}
   - component: {fileID: 279173757}
+  - component: {fileID: 279173758}
   m_Layer: 0
   m_Name: Pixel portrait
   m_TagString: Untagged
@@ -463,7 +464,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1a79567b68d9ae545934b2cae9d6143d, type: 2}
+  - {fileID: 2100000, guid: 9b8d34eb0dbc0e941bffb5dc5361e992, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -486,7 +487,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 83bce2adbf6918946b492d51fe47b12c, type: 3}
+  m_Sprite: {fileID: -7528493520053627270, guid: 9deca4cbece45124abf14937baa8a032, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -504,7 +505,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 279173754}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -523,6 +524,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9c04098efddd5642983c7f182974db9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MVP04.PixelCharacterShadow
+--- !u!114 &279173758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279173754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee13b6ba5c8fce64bb20c52b520c97cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP03.PixelWalkAnimation
+  animationSet: {fileID: 11400000, guid: 6f4dca0abf376ae4fa6f9b6d39d72942, type: 2}
+  initialFacing: 3
 --- !u!1 &302980847
 GameObject:
   m_ObjectHideFlags: 0

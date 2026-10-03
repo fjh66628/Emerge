@@ -1,0 +1,69 @@
+{
+  "passed": true,
+  "sharedAnimationAsset": "Assets/MVP04/Textures/PilgrimWalk.asset",
+  "material": "Assets/MVP03/Materials/PilgrimWalk_Lit.mat",
+  "shader": "MVP04/Lit Pixel Character",
+  "receivesShadow": true,
+  "castsShadow": "TwoSided",
+  "atlasScreenAxesCorrect": true,
+  "blockedStopsWalking": true,
+  "directions": [
+    {
+      "direction": "Back",
+      "distance": 2.60231948,
+      "frames": [
+        "Pilgrim_Back_0",
+        "Pilgrim_Back_1",
+        "Pilgrim_Back_2",
+        "Pilgrim_Back_3",
+        "Pilgrim_Back_4",
+        "Pilgrim_Back_5"
+      ],
+      "rowMatchesMovement": true,
+      "idleKeepsFacing": true
+    },
+    {
+      "direction": "Front",
+      "distance": 2.617337,
+      "frames": [
+        "Pilgrim_Front_0",
+        "Pilgrim_Front_1",
+        "Pilgrim_Front_2",
+        "Pilgrim_Front_3",
+        "Pilgrim_Front_4",
+        "Pilgrim_Front_5"
+      ],
+      "rowMatchesMovement": true,
+      "idleKeepsFacing": true
+    },
+    {
+      "direction": "Left",
+      "distance": 2.61126,
+      "frames": [
+        "Pilgrim_Left_0",
+        "Pilgrim_Left_1",
+        "Pilgrim_Left_2",
+        "Pilgrim_Left_3",
+        "Pilgrim_Left_4",
+        "Pilgrim_Left_5"
+      ],
+      "rowMatchesMovement": true,
+      "idleKeepsFacing": true
+    },
+    {
+      "direction": "Right",
+      "distance": 2.61319327,
+      "frames": [
+        "Pilgrim_Right_0",
+        "Pilgrim_Right_1",
+        "Pilgrim_Right_2",
+        "Pilgrim_Right_3",
+        "Pilgrim_Right_4",
+        "Pilgrim_Right_5"
+      ],
+      "rowMatchesMovement": true,
+      "idleKeepsFacing": true
+    }
+  ],
+  "note": "Live CharacterController and PixelPilgrim.Move on an isolated clone; 2.6 metres in each direction, then idle and wall blocking. Native input and the real player were untouched."
+}
