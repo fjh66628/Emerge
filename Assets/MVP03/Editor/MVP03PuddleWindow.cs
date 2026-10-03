@@ -33,7 +33,7 @@ public sealed class MVP03PuddleWindow : EditorWindow
         var title = new Label("MVP03 · 水渍与潮湿地面");
         title.style.fontSize = 21; title.style.unityFontStyleAndWeight = FontStyle.Bold;
         scroll.Add(title);
-        scroll.Add(new HelpBox("左键点地面放置。重叠区域会合并；调整即时生效，停止 Play 后保留，支持 Ctrl+Z。", HelpBoxMessageType.Info));
+        scroll.Add(new HelpBox("左键点地面，后台生成积水；重叠区域合并。第一版镜面效果 + 水渍贴图。参数即时生效，停止 Play 后保留，支持 Ctrl+Z。", HelpBoxMessageType.Info));
         if (material == null) { scroll.Add(new Label("请先执行 MVP03 > Add Click-to-Place Puddles。")); return; }
         Heading(scroll, "水渍形状");
         var texture = new ObjectField("灰度水渍贴图") { name = "stain-texture", objectType = typeof(Texture2D), allowSceneObjects = false };
@@ -42,15 +42,14 @@ public sealed class MVP03PuddleWindow : EditorWindow
         {
             var value = evt.newValue as Texture2D;
             if (value == null) { texture.SetValueWithoutNotify(material.GetTexture("_StainMap")); return; }
-            if (!value.isReadable || (AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(value)) is TextureImporter settings && settings.sRGBTexture))
+            if (AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(value)) is TextureImporter settings && settings.sRGBTexture)
             {
                 if (AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(value)) is TextureImporter importer)
                 {
-                    importer.isReadable = true; importer.sRGBTexture = false; importer.wrapMode = TextureWrapMode.Clamp;
+                    importer.sRGBTexture = false; importer.wrapMode = TextureWrapMode.Clamp;
                     importer.SaveAndReimport();
                 }
             }
-            if (!value.isReadable) return;
             Undo.RecordObject(material, "更换地面水渍贴图"); material.SetTexture("_StainMap", value);
             RebuildMasks(); Changed();
         });
@@ -58,7 +57,7 @@ public sealed class MVP03PuddleWindow : EditorWindow
         Slider(scroll, "边缘过渡", "edge-softness", "_EdgeSoftness", .02f, .3f, "调整湿痕到积水的过渡，轮廓来自水渍贴图。");
         Slider(scroll, "湿润深浅", "wet-darkening", "_WetDarkening", 0, .6f, "石板被水浸湿后的变暗程度；0 保留原亮度。");
         Heading(scroll, "反射与表面");
-        Slider(scroll, "反射强度", "reflection-strength", "_ReflectionStrength", 0, 2, "水面菲涅耳反射倍率，0 关闭反射。默认 0.8；掠射角更明显。");
+        Slider(scroll, "反射强度", "reflection-strength", "_ReflectionStrength", 0, 1, "第一版镜面反射，默认 0.48；掠射角更明显。0 关闭倒影与高光。");
         Slider(scroll, "倒影模糊", "reflection-blur", "_ReflectionBlur", 0, 6, "0 清晰；较高值让倒影更柔和。");
         Slider(scroll, "阳光高光", "sun-highlight", "_SunHighlight", 0, 1, "降低镜面亮点，避免潮湿地面像镀铬。");
         Slider(scroll, "光滑度", "smoothness", "_Smoothness", .7f, .99f, "控制太阳高光的集中程度。");
@@ -69,9 +68,9 @@ public sealed class MVP03PuddleWindow : EditorWindow
         Heading(scroll, "保存");
         scroll.Add(new Button(() =>
         {
-            Undo.RecordObject(material, "恢复自然水渍预设"); MVP03PuddleBuilder.ApplyNaturalDefaults(material);
+            Undo.RecordObject(material, "恢复第一版积水预设"); MVP03PuddleBuilder.ApplyOriginalDefaults(material);
             RefreshControls(); Changed();
-        }) { text = "恢复自然湿润预设", name = "natural-preset" });
+        }) { text = "恢复第一版积水效果", name = "original-preset" });
         scroll.Add(new Button(SaveSettings) { text = "立即保存", name = "save-settings" });
         status = new Label("设置已载入") { name = "save-status" }; scroll.Add(status);
         RefreshControls();

@@ -1,0 +1,129 @@
+{
+  "firstEnqueue": {
+    "accepted": true,
+    "milliseconds": 0.07350000000000001,
+    "PendingCount": 1,
+    "surfacesImmediately": 0
+  },
+  "textureAlignment": {
+    "samples": 310,
+    "mismatches": 0,
+    "maxError": 0.0102618076,
+    "wetPixels": 11812,
+    "width": 2048,
+    "height": 2048
+  },
+  "duplicateOverlapIdentical": true,
+  "offsetOverlap": {
+    "PuddleCount": 2,
+    "surfaces": 1
+  },
+  "clearPending": {
+    "pending": true,
+    "milliseconds": 0.0159,
+    "PuddleCount": 0,
+    "surfaces": 0
+  },
+  "stairLevel": 0.205,
+  "stairWetPixels": 4867,
+  "passed": true,
+  "placementPerformance": {
+    "error": null,
+    "attempt": 24,
+    "accepted": 21,
+    "PuddleCount": 22,
+    "surfaces": 2,
+    "width": 2560,
+    "height": 1440,
+    "enqueue": {
+      "count": 24,
+      "averageMs": 0.051491666666666665,
+      "p95Ms": 0.0446,
+      "maxMs": 0.46740000000000004
+    },
+    "editorFrames": {
+      "count": 260,
+      "averageMs": 7.2188892168924212,
+      "p95Ms": 8.8022034615278244,
+      "maxMs": 10.593395680189133
+    },
+    "framesWithPendingWater": {
+      "count": 44,
+      "averageMs": 7.3741860476068473,
+      "p95Ms": 8.8022034615278244,
+      "maxMs": 9.3015022575855255
+    },
+    "completionLatencyFrames": [
+      2,
+      2,
+      2,
+      2,
+      4,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "slowFrames": [],
+    "mainThreadStages": {
+      "Puddles.Enqueue": {
+        "count": 25,
+        "averageMs": 0.031619999999999995,
+        "p95Ms": 0.0418,
+        "maxMs": 0.0423
+      },
+      "Puddles.ScheduleSupportJob": {
+        "count": 22,
+        "averageMs": 0.017409090909090912,
+        "p95Ms": 0.0209,
+        "maxMs": 0.0227
+      },
+      "Puddles.FinishSupportJob": {
+        "count": 22,
+        "averageMs": 0.11816818181818181,
+        "p95Ms": 0.1328,
+        "maxMs": 0.1736
+      },
+      "Puddles.GPUMaxUnion": {
+        "count": 22,
+        "averageMs": 0.0974590909090909,
+        "p95Ms": 0.1178,
+        "maxMs": 0.1821
+      }
+    },
+    "note": "Live Unity Editor after 40 warmup frames, 24 clicks at 8-frame intervals. Whole-frame samples include the full scene, pooled reflection capture, Editor and user activity; not a GPU-only benchmark or universal no-stutter guarantee."
+  },
+  "burstAndDisable": {
+    "burst": {
+      "accepted": 48,
+      "enqueue48Milliseconds": 0.2398,
+      "boundedCount": 24,
+      "pending": 24
+    },
+    "completedBurst": {
+      "frames": 25,
+      "PuddleCount": 24,
+      "surfaces": 1
+    },
+    "disablePendingMilliseconds": 1.7790000000000001,
+    "reenabled": {
+      "PuddleCount": 1,
+      "surfaces": 1
+    },
+    "error": null,
+    "passed": true
+  }
+}

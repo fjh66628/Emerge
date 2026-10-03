@@ -38,17 +38,18 @@ Material:
     m_Ints: []
     m_Floats:
     - _EdgeNoise: 0.8
-    - _EdgeSoftness: 0.3
+    - _EdgeSoftness: 0.1198
     - _HasReflection: 0
-    - _ReflectionBlur: 6
-    - _ReflectionStrength: 2
-    - _RippleStrength: 0.02
+    - _ReflectionBlur: 0.6
+    - _ReflectionStrength: 0.48
+    - _RippleStrength: 0.006
     - _Seed: 0
-    - _Smoothness: 0.7052
-    - _SunHighlight: 0.176
-    - _WaterThreshold: 0.164
-    - _WetDarkening: 0
+    - _Smoothness: 0.9128
+    - _SunHighlight: 1
+    - _WaterThreshold: 0.5
+    - _WetDarkening: 0.6
     m_Colors:
-    - _WetTint: {r: 0.035, g: 0.055, b: 0.06, a: 1}
+    - _SupportAtlas: {r: 0, g: 0, b: 1, a: 1}
+    - _WetTint: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

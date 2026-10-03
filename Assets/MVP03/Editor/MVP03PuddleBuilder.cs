@@ -32,19 +32,19 @@ public static class MVP03PuddleBuilder
         if (material == null)
         {
             material = new Material(Shader.Find("MVP03/Wet Puddle")) { name = "WetPuddle" };
-            ApplyNaturalDefaults(material);
+            ApplyOriginalDefaults(material);
             AssetDatabase.CreateAsset(material, MaterialPath);
         }
         if (material.GetTexture("_StainMap") == null)
         {
             var importer = (TextureImporter)AssetImporter.GetAtPath(StainPath);
             if (importer == null) throw new InvalidOperationException("Import the water-stain mask before configuring puddles.");
-            importer.sRGBTexture = false; importer.isReadable = true; importer.mipmapEnabled = false;
+            importer.sRGBTexture = false; importer.isReadable = false; importer.mipmapEnabled = false;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.wrapMode = TextureWrapMode.Clamp; importer.filterMode = FilterMode.Bilinear;
             importer.maxTextureSize = 1024; importer.SaveAndReimport();
             material.SetTexture("_StainMap", AssetDatabase.LoadAssetAtPath<Texture2D>(StainPath));
-            ApplyNaturalDefaults(material);
+            ApplyOriginalDefaults(material);
             EditorUtility.SetDirty(material);
         }
         var renderer = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(RendererPath);
@@ -79,16 +79,16 @@ public static class MVP03PuddleBuilder
         EditorUtility.SetDirty(puddles); EditorUtility.SetDirty(reflections);
     }
 
-    public static void ApplyNaturalDefaults(Material material)
+    public static void ApplyOriginalDefaults(Material material)
     {
-        material.SetFloat("_ReflectionStrength", .8f);
-        material.SetFloat("_ReflectionBlur", 1.3f);
-        material.SetFloat("_SunHighlight", .3f);
-        material.SetFloat("_WetDarkening", .2f);
+        material.SetFloat("_ReflectionStrength", .48f);
+        material.SetFloat("_ReflectionBlur", .6f);
+        material.SetFloat("_SunHighlight", 1f);
+        material.SetFloat("_WetDarkening", .32f);
         material.SetFloat("_WaterThreshold", .5f);
         material.SetFloat("_EdgeSoftness", .12f);
-        material.SetFloat("_RippleStrength", .002f);
-        material.SetFloat("_Smoothness", .88f);
+        material.SetFloat("_RippleStrength", .006f);
+        material.SetFloat("_Smoothness", .97f);
         material.SetColor("_WetTint", new Color(.035f, .055f, .06f, 1));
     }
 }

@@ -14,6 +14,8 @@ namespace MVP03
         [SerializeField, Range(10, 60)] private int refreshRate = 30;
         private Camera source, reflection;
         private ClickPuddles puddles;
+        private Capture spare;
+        private bool warmed;
         private readonly Dictionary<int, Capture> captures = new Dictionary<int, Capture>();
         private readonly List<int> obsolete = new List<int>();
         private readonly HashSet<int> used = new HashSet<int>();
@@ -45,6 +47,14 @@ namespace MVP03
 
         private void LateUpdate()
         {
+            // Prepare the reflection camera, renderer and first HDR target on entering Play.
+            // Keep one spare capture across Clear so the next click does not pay setup again.
+            if (!warmed)
+            {
+                spare = new Capture { height = puddles.LowestWaterHeight };
+                Render(spare); warmed = true;
+                return;
+            }
             if (puddles.Patches.Count == 0) return;
             GeometryUtility.CalculateFrustumPlanes(source, frustum);
             used.Clear();
@@ -54,12 +64,17 @@ namespace MVP03
                 int key = Mathf.RoundToInt(patch.height * 1000);
                 used.Add(key);
                 if (!captures.TryGetValue(key, out var capture))
-                { capture = new Capture { height = patch.height }; captures.Add(key, capture); }
+                {
+                    capture = spare ?? new Capture(); spare = null;
+                    if (!Mathf.Approximately(capture.height, patch.height)) capture.ready = false;
+                    capture.height = patch.height; capture.lastTime = -1000;
+                    captures.Add(key, capture);
+                }
                 if (patch.renderer != null && GeometryUtility.TestPlanesAABB(frustum, patch.renderer.bounds)) capture.visible = true;
             }
             obsolete.Clear();
             foreach (var pair in captures) if (!used.Contains(pair.Key)) obsolete.Add(pair.Key);
-            foreach (int key in obsolete) { Release(captures[key]); captures.Remove(key); }
+            foreach (int key in obsolete) { Recycle(captures[key]); captures.Remove(key); }
             Capture next = null;
             foreach (var capture in captures.Values)
             {
@@ -170,15 +185,22 @@ namespace MVP03
             capture.ready = false;
         }
 
+        private void Recycle(Capture capture)
+        {
+            if (spare == null) spare = capture; else Release(capture);
+        }
+
         public void Clear()
         {
-            foreach (var capture in captures.Values) Release(capture);
+            foreach (var capture in captures.Values) Recycle(capture);
             captures.Clear();
         }
 
         private void OnDisable()
         {
             Clear();
+            if (spare != null) { Release(spare); spare = null; }
+            warmed = false;
             if (reflection != null) { Destroy(reflection.gameObject); reflection = null; }
         }
     }
