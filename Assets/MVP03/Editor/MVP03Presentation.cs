@@ -12,7 +12,7 @@ public static class MVP03Presentation
     public const string ScenePath = "Assets/MVP03/Scenes/MVP03_StainedGlassChapel.unity";
     public const string WalkSetPath = "Assets/MVP04/Textures/PilgrimWalk.asset";
     public const string WalkMaterialPath = "Assets/MVP03/Materials/PilgrimWalk_Lit.mat";
-    public const float CameraPitch = 11.4f;
+    public const float CameraPitch = 18f;
 
     [MenuItem("MVP03/Apply Front Camera and Lit Characters")]
     public static void Apply()

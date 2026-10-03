@@ -50,7 +50,7 @@ public static class MVP03SlimeBuilder
         try
         {
             var body = template.AddComponent<CharacterController>();
-            body.height = 1.05f; body.radius = .46f; body.center = new Vector3(0, .535f, 0);
+            body.height = 1.35f; body.radius = .62f; body.center = new Vector3(0, .685f, 0);
             body.skinWidth = .035f; body.minMoveDistance = 0; body.stepOffset = .18f; body.slopeLimit = 45;
             var card = new GameObject("Lit pixel slime");
             card.transform.SetParent(template.transform, false);

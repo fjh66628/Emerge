@@ -4073,8 +4073,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1646015939}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.09931977, y: 0, z: 0, w: 0.9950556}
-  m_LocalPosition: {x: -2.35, y: 3.9975488, z: -32.969025}
+  m_LocalRotation: {x: 0.1564345, y: 0, z: 0, w: 0.98768836}
+  m_LocalPosition: {x: -2.35, y: 5.6469235, z: -32.53632}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4093,7 +4093,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MVP03.PixelFollowCamera
   subject: {fileID: 494170374}
-  offset: {x: 0, y: 3.927549, z: -14.519023}
+  offset: {x: 0, y: 5.5769234, z: -14.086319}
   focusHeight: 1
   allowZoom: 1
   minimumDistance: 5

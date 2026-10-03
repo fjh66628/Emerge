@@ -52,13 +52,13 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1.05
-  m_Radius: 0.46
+  m_Height: 1.35
+  m_Radius: 0.62
   m_SlopeLimit: 45
   m_StepOffset: 0.18
   m_SkinWidth: 0.035
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 0.535, z: 0}
+  m_Center: {x: 0, y: 0.685, z: 0}
 --- !u!114 &4635049616739037071
 MonoBehaviour:
   m_ObjectHideFlags: 0
