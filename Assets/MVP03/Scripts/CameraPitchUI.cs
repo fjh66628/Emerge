@@ -36,7 +36,7 @@ namespace MVP03
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080); scaler.matchWidthOrHeight = .5f;
 
-            RectTransform panel = Rect("Camera pitch panel", canvasObject.transform, new Vector2(340, 226));
+            RectTransform panel = Rect("Camera pitch panel", canvasObject.transform, new Vector2(340, 273));
             panel.anchorMin = panel.anchorMax = panel.pivot = Vector2.one;
             panel.anchoredPosition = new Vector2(-24, -24);
             Fill(panel, new Color(.055f, .07f, .095f, .94f));
@@ -94,14 +94,42 @@ namespace MVP03
                 EventSystem.current?.SetSelectedGameObject(null);
             });
 
-            var waterHint = Label("Puddle hint", panel, "左键点击地面 · 生成水塘", 12, new Vector2(18, -193), new Vector2(205, 22));
+            var ground = GetComponent<ClickPuddles>();
+            var waterRect = Rect("Select water", panel, new Vector2(146, 32));
+            waterRect.anchoredPosition = new Vector2(18, -192);
+            var waterImage = Fill(waterRect, new Color(.12f, .35f, .43f, 1));
+            var water = waterRect.gameObject.AddComponent<Button>(); water.targetGraphic = waterImage;
+            water.navigation = new Navigation { mode = Navigation.Mode.None };
+            var waterText = Label("Water label", waterRect, "水塘", 15, Vector2.zero, waterRect.sizeDelta);
+            waterText.alignment = TextAnchor.MiddleCenter;
+            var fireRect = Rect("Select fire", panel, new Vector2(146, 32));
+            fireRect.anchoredPosition = new Vector2(176, -192);
+            var fireImage = Fill(fireRect, new Color(.24f, .19f, .12f, 1));
+            var fire = fireRect.gameObject.AddComponent<Button>(); fire.targetGraphic = fireImage;
+            fire.navigation = new Navigation { mode = Navigation.Mode.None };
+            fire.interactable = ground != null && ground.HasFire;
+            var fireText = Label("Fire label", fireRect, "黄色火焰", 15, Vector2.zero, fireRect.sizeDelta);
+            fireText.alignment = TextAnchor.MiddleCenter;
+            var waterHint = Label("Puddle hint", panel, "左键点击地面 · 生成水塘", 12, new Vector2(18, -237), new Vector2(205, 22));
             waterHint.color = new Color(.65f, .78f, .82f);
+            System.Action<ClickPuddles.GroundElement> select = element =>
+            {
+                ground?.SelectElement(element);
+                bool selectedFire = element == ClickPuddles.GroundElement.Fire;
+                fireImage.color = selectedFire ? new Color(.62f, .35f, .07f, 1) : new Color(.24f, .19f, .12f, 1);
+                waterImage.color = selectedFire ? new Color(.14f, .21f, .25f, 1) : new Color(.12f, .35f, .43f, 1);
+                waterHint.text = selectedFire ? "左键点击地面 · 生成火焰" : "左键点击地面 · 生成水塘";
+                EventSystem.current?.SetSelectedGameObject(null);
+            };
+            water.onClick.AddListener(() => select(ClickPuddles.GroundElement.Water));
+            fire.onClick.AddListener(() => select(ClickPuddles.GroundElement.Fire));
+            select(ground != null ? ground.SelectedElement : ClickPuddles.GroundElement.Water);
             var clearRect = Rect("Clear puddles", panel, new Vector2(91, 26));
-            clearRect.anchoredPosition = new Vector2(232, -191);
+            clearRect.anchoredPosition = new Vector2(232, -235);
             var clearImage = Fill(clearRect, new Color(.19f, .25f, .29f, 1));
             var clear = clearRect.gameObject.AddComponent<Button>();
             clear.targetGraphic = clearImage; clear.navigation = new Navigation { mode = Navigation.Mode.None };
-            var clearText = Label("Clear puddles label", clearRect, "清空水塘", 13, Vector2.zero, clearRect.sizeDelta);
+            var clearText = Label("Clear puddles label", clearRect, "清空地面", 13, Vector2.zero, clearRect.sizeDelta);
             clearText.alignment = TextAnchor.MiddleCenter;
             clear.onClick.AddListener(() => { GetComponent<ClickPuddles>()?.Clear(); EventSystem.current?.SetSelectedGameObject(null); });
 

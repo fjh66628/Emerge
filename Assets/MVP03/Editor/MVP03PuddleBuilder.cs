@@ -77,6 +77,7 @@ public static class MVP03PuddleBuilder
         Undo.RecordObject(reflections, "Configure pooled water reflections");
         reflections.Configure(index);
         EditorUtility.SetDirty(puddles); EditorUtility.SetDirty(reflections);
+        MVP03GroundFireBuilder.ConfigureScene();
     }
 
     public static void ApplyOriginalDefaults(Material material)

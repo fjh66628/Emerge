@@ -1,0 +1,18 @@
+Ground fire animation atlas
+
+Tool: built-in image_gen (imagegen skill), 2026-10-04.
+Final asset: Textures/FlameFlipbook.png
+Layout: 4 x 4, 16 frames, left-to-right / top-to-bottom.
+Neutral emission with original generated alpha; yellow/orange comes from the VFX Graph.
+Copied without pixel edits; texture importer handles GPU size/compression.
+Replaces the preliminary Unity sample flipbook. The final image is newly generated and is not that CC0 sample.
+
+Final generation prompt:
+Use case: stylized-concept.
+Asset type: production Unity VFX Graph fire flipbook sprite sheet, 4 columns x 4 rows, 16 equal square cells, square 2048x2048 canvas.
+Primary request: sixteen consecutive animation frames of ONE short turbulent ground flame, for a dark HD2D stone courtyard. This is a looping flame animation atlas, not 16 unrelated flame designs.
+Composition: exact evenly spaced 4 by 4 invisible grid. Read frames left-to-right, top-to-bottom. Every cell contains the same flame at the same scale, centered horizontally, with a fixed base at 86 percent cell height. Keep each flame inside 18–82 percent cell width and 15–86 percent cell height, leaving completely transparent gutters. No drawn grid, borders, numbers or captions.
+Animation: one cohesive flame silhouette evolves smoothly: the main tongue leans left, straightens and elongates a little, curls right and splits into two tips, the old tips dissolve as a new central tongue grows, returning seamlessly to frame 1. Small changes each frame, consistent luminous core, no shifting base. Compact upright flame with 2 or 3 tapering wisps, no smoke.
+Style: beautiful luminous fluid flame with readable sweeping shapes, sharp tapered tips and gently translucent wispy edges, fine internal streaks and hollow pockets, suitable for cinematic HD2D. Real fire movement rendered with art-directed clarity, not a flat cartoon icon, not photoreal scene, not giant explosion.
+Color: NEUTRAL WHITE and pale GRAY emission only, no color tint at all (yellow is added by the game shader). Bright white core occupying a small fraction of the silhouette, softer gray translucent outer tongues. Actual transparent background and transparent empty space, preserve alpha, absolutely no black rectangle or painted checkerboard. Avoid huge bloom halos, detached sparks, logs, floor, scenery, shadows, text, logos and watermarks.
+

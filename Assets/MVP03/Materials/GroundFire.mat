@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GroundFire
+  m_Shader: {fileID: 4800000, guid: 7668ecc1655c9274795a95c322d51d3f, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _StainMap:
+        m_Texture: {fileID: 2800000, guid: 47a76b5b18a7a78469bea40109269c9c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SupportMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AnimationFPS: 16
+    - _EdgeSoftness: 0.3
+    - _Emission: 4
+    - _FireThreshold: 0.513
+    - _FlameDensity: 1
+    - _FlameHeight: 0.5
+    - _FlameSpeed: 0.704
+    - _FlameWidth: 0.9
+    - _GroundGlow: 0.5
+    - _LightIntensity: 5
+    - _LightRange: 3
+    - _ScorchScale: 7
+    - _ScorchStrength: 0.756
+    - _Turbulence: 2.38
+    - _TurbulenceFrequency: 1.6
+    m_Colors:
+    - _ParticlePivot: {r: 0, g: 0.3, b: 0, a: 0}
+    - _SupportAtlas: {r: 0, g: 0, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

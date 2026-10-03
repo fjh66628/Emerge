@@ -12,7 +12,10 @@ namespace MVP03
     [DisallowMultipleComponent, RequireComponent(typeof(Camera))]
     public sealed class ClickPuddles : MonoBehaviour
     {
+        public enum GroundElement { Water, Fire }
         [SerializeField] private Material waterMaterial;
+        [SerializeField] private Material fireMaterial;
+        [SerializeField] private UnityEngine.VFX.VisualEffectAsset fireEffect;
         [SerializeField] private Collider[] groundSurfaces;
         [SerializeField] private Vector2 radiusRange = new Vector2(1.5f, 2.3f);
         private const int SupportSize = 48, SampleCount = SupportSize * SupportSize, MaxHits = 4;
@@ -29,6 +32,7 @@ namespace MVP03
         private int atlasWidth, atlasHeight;
         private Work work;
         private PuddleRipples ripples;
+        private GroundFire fire;
         private Stamp active;
         private int generation, activeGeneration;
         private Patch spare;
@@ -37,12 +41,20 @@ namespace MVP03
         private readonly List<Stamp> stamps = new List<Stamp>(48);
         private readonly Queue<Stamp> pending = new Queue<Stamp>();
         private readonly List<Patch> patches = new List<Patch>();
+        private readonly List<Patch> firePatches = new List<Patch>();
+        private int waterCount, fireCount;
         private readonly List<RaycastResult> uiHits = new List<RaycastResult>();
         private readonly Queue<int> dirtyHeights = new Queue<int>();
         private readonly HashSet<int> dirtySet = new HashSet<int>();
         private readonly System.Random random = new System.Random();
         public IReadOnlyList<Patch> Patches => patches;
-        public int PuddleCount => stamps.Count;
+        public IReadOnlyList<Patch> FirePatches => firePatches;
+        public GroundElement SelectedElement { get; private set; }
+        public bool HasFire => fireMaterial != null && fireEffect != null;
+        public int PuddleCount => waterCount;
+        public int FireCount => fireCount;
+        public int FireLightCount => fire?.LightCount ?? 0;
+        public int FireEffectCount => fire?.EffectCount ?? 0;
         public int ActiveRippleSurfaces => ripples?.ActiveCount ?? 0;
         public int RippleImpulseCount => ripples?.ImpulseCount ?? 0;
         public int PendingCount => pending.Count + (active != null && activeGeneration == generation ? 1 : 0);
@@ -74,7 +86,9 @@ namespace MVP03
             public Vector2 radius;
             public float sine, cosine;
             public Texture2D support;
+            public bool isFire;
             public int HeightKey => Mathf.RoundToInt(position.y * 1000);
+            public int SurfaceKey => HeightKey * 2 + (isFire ? 1 : 0);
             public Vector2 Extents => new Vector2(Mathf.Abs(cosine) * radius.x + Mathf.Abs(sine) * radius.y,
                 Mathf.Abs(sine) * radius.x + Mathf.Abs(cosine) * radius.y);
         }
@@ -143,9 +157,16 @@ namespace MVP03
             Clear(); ReleaseResources(); waterMaterial = material; groundSurfaces = surfaces;
             if (Application.isPlaying && isActiveAndEnabled) EnsureResources();
         }
+        public void ConfigureFire(Material material, UnityEngine.VFX.VisualEffectAsset effect)
+        { Clear(); ReleaseResources(); fireMaterial = material; fireEffect = effect; }
+        public void SelectElement(GroundElement element) => SelectedElement = element;
         private void Awake() => view = GetComponent<Camera>();
         private void Start() => EnsureResources();
-        private void LateUpdate() => ripples?.Tick(patches, Time.deltaTime);
+        private void LateUpdate()
+        {
+            ripples?.Tick(patches, Time.deltaTime);
+            fire?.Tick(view);
+        }
 
         private void Update()
         {
@@ -168,7 +189,8 @@ namespace MVP03
                         { name = "Puddle floor support", hideFlags = HideFlags.DontSave, filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
                         active.support.SetPixelData(work.mask, 0);
                         active.support.Apply(false, true); // Only 2.25 KB; no full-atlas CPU upload.
-                        Dirty(active.HeightKey);
+                        Dirty(active.SurfaceKey);
+                        if (active.isFire) fire?.AddLightAnchor(active.position);
                     }
                     active = null;
                 }
@@ -197,7 +219,10 @@ namespace MVP03
         {
             using (PlacementMarker.Auto())
             {
-                if (!Application.isPlaying || !isActiveAndEnabled || waterMaterial == null || waterMaterial.GetTexture("_StainMap") == null) return false;
+                bool isFire = SelectedElement == GroundElement.Fire;
+                if (isFire && !HasFire) return false;
+                Material material = isFire ? fireMaterial : waterMaterial;
+                if (!Application.isPlaying || !isActiveAndEnabled || material == null || material.GetTexture("_StainMap") == null) return false;
                 if (view == null) view = GetComponent<Camera>();
                 if (!view.pixelRect.Contains(position)) return false;
                 if (EventSystem.current != null)
@@ -210,9 +235,10 @@ namespace MVP03
                 if (hit.normal.y < .98f || groundSurfaces == null || System.Array.IndexOf(groundSurfaces, hit.collider) < 0) return false;
                 float radius = Mathf.Lerp(radiusRange.x, radiusRange.y, (float)random.NextDouble());
                 float angle = (float)random.NextDouble() * Mathf.PI * 2;
-                var stamp = new Stamp { position = hit.point + Vector3.up * .035f,
+                var stamp = new Stamp { position = hit.point + Vector3.up * .035f, isFire = isFire,
                     radius = new Vector2(radius, radius * Mathf.Lerp(.65f, 1.05f, (float)random.NextDouble())), sine = Mathf.Sin(angle), cosine = Mathf.Cos(angle) };
                 stamps.Add(stamp);
+                if (isFire) fireCount++; else waterCount++;
                 pending.Enqueue(stamp); // No admission cap or eviction; jobs still run one at a time.
                 return true;
             }
@@ -221,27 +247,35 @@ namespace MVP03
         private void Dirty(int key) { if (dirtySet.Add(key)) dirtyHeights.Enqueue(key); }
         public void RebuildSurfaces()
         {
-            foreach (var patch in patches) Dirty(Mathf.RoundToInt(patch.height * 1000));
-            foreach (var stamp in stamps) if (stamp.support != null) Dirty(stamp.HeightKey);
+            foreach (var patch in patches) Dirty(Mathf.RoundToInt(patch.height * 1000) * 2);
+            foreach (var patch in firePatches) Dirty(Mathf.RoundToInt(patch.height * 1000) * 2 + 1);
+            foreach (var stamp in stamps) if (stamp.support != null) Dirty(stamp.SurfaceKey);
         }
 
         private void RebuildHeight(int key)
         {
-            Patch patch = patches.Find(p => Mathf.RoundToInt(p.height * 1000) == key);
-            bool ready = stamps.Exists(s => s.HeightKey == key && s.support != null);
+            bool isFire = (key & 1) != 0;
+            int heightKey = key >> 1;
+            var surfaces = isFire ? firePatches : patches;
+            Material material = isFire ? fireMaterial : waterMaterial;
+            Patch patch = surfaces.Find(p => Mathf.RoundToInt(p.height * 1000) == heightKey);
+            bool ready = stamps.Exists(s => s.SurfaceKey == key && s.support != null);
             if (!ready)
             {
-                if (patch != null) { patches.Remove(patch); Recycle(patch); }
+                if (patch != null) { surfaces.Remove(patch); Recycle(patch); }
                 return;
             }
             if (patch == null)
             {
                 patch = spare ?? NewPatch(); spare = null;
-                patch.height = key / 1000f; patch.root.name = "Merged water stains / " + key;
+                patch.height = heightKey / 1000f;
+                patch.root.name = (isFire ? "Merged ground fire / " : "Merged water stains / ") + heightKey;
+                patch.root.layer = isFire ? 0 : 4;
+                patch.renderer.sharedMaterial = material;
                 patch.properties.Clear(); patch.properties.SetTexture("_SupportMap", patch.support);
                 patch.properties.SetVector("_SupportAtlas", atlas);
                 patch.renderer.SetPropertyBlock(patch.properties);
-                patches.Add(patch);
+                surfaces.Add(patch);
             }
             commands.Clear();
             commands.SetRenderTarget(patch.support);
@@ -249,11 +283,11 @@ namespace MVP03
             Vector2 min = Vector2.one * float.PositiveInfinity, max = Vector2.one * float.NegativeInfinity;
             foreach (var stamp in stamps)
             {
-                if (stamp.HeightKey != key || stamp.support == null) continue;
+                if (stamp.SurfaceKey != key || stamp.support == null) continue;
                 var centre = new Vector2(stamp.position.x, stamp.position.z);
                 min = Vector2.Min(min, centre - stamp.Extents); max = Vector2.Max(max, centre + stamp.Extents);
                 drawProperties.Clear();
-                drawProperties.SetTexture("_StainMap", waterMaterial.GetTexture("_StainMap"));
+                drawProperties.SetTexture("_StainMap", material.GetTexture("_StainMap"));
                 drawProperties.SetTexture("_SupportMap", stamp.support);
                 drawProperties.SetVector("_Atlas", atlas);
                 drawProperties.SetVector("_Stamp", new Vector4(stamp.position.x, stamp.position.z, stamp.radius.x, stamp.radius.y));
@@ -265,6 +299,7 @@ namespace MVP03
             patch.root.transform.position = new Vector3((min.x + max.x) * .5f, patch.height, (min.y + max.y) * .5f);
             patch.root.transform.localScale = new Vector3((max.x - min.x) * .5f, 1, (max.y - min.y) * .5f);
             patch.root.SetActive(true);
+            if (isFire) fire?.Sync(patch);
         }
 
         private bool EnsureResources()
@@ -296,6 +331,7 @@ namespace MVP03
             quad.triangles = new[] { 0, 2, 1, 0, 3, 2 };
             quad.bounds = new Bounds(Vector3.zero, new Vector3(2, .1f, 2));
             ripples = new PuddleRipples(waterMaterial, atlas, quad);
+            if (HasFire) fire = new GroundFire(fireMaterial, atlas, fireEffect);
             // Prepare the first atlas and shader when entering Play, not when clicking.
             spare = NewPatch();
             drawProperties.SetTexture("_StainMap", Texture2D.blackTexture);
@@ -335,6 +371,7 @@ namespace MVP03
         private void Recycle(Patch patch)
         {
             ripples?.Remove(patch);
+            fire?.Remove(patch);
             patch.root.SetActive(false);
             if (spare == null) spare = patch; else Release(patch);
         }
@@ -347,9 +384,12 @@ namespace MVP03
         public void Clear()
         {
             ripples?.Clear();
+            fire?.Clear();
             foreach (var patch in patches) Recycle(patch);
+            foreach (var patch in firePatches) Recycle(patch);
             foreach (var stamp in stamps) if (stamp.support != null) Destroy(stamp.support);
-            patches.Clear(); stamps.Clear(); pending.Clear(); dirtyHeights.Clear(); dirtySet.Clear();
+            patches.Clear(); firePatches.Clear(); stamps.Clear(); pending.Clear(); dirtyHeights.Clear(); dirtySet.Clear();
+            waterCount = fireCount = 0;
             generation++;
             // A running job belongs to the old generation and cannot restore cleared water.
             GetComponent<PuddleReflections>()?.Clear();
@@ -357,6 +397,7 @@ namespace MVP03
         private void ReleaseResources()
         {
             ripples?.Dispose(); ripples = null;
+            fire?.Dispose(); fire = null;
             work?.Dispose(); work = null; active = null;
             Release(spare); spare = null; warmingPatch = null;
             commands?.Release(); commands = null;

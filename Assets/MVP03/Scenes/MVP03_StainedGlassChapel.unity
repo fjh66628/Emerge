@@ -4171,6 +4171,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MVP03.ClickPuddles
   waterMaterial: {fileID: 2100000, guid: ab96e877cd7c7ff4a827b8973d27d7f9, type: 2}
+  fireMaterial: {fileID: 2100000, guid: 2bf64eba1a4c62d4ea53867deb175543, type: 2}
+  fireEffect: {fileID: 8926484042661614526, guid: ef729f3cb1361ed42aca3caced16b9ab, type: 3}
   groundSurfaces:
   - {fileID: 603427352}
   - {fileID: 1784942121}
