@@ -1,18 +1,19 @@
-Ground fire animation atlas
+﻿Ground fire animation atlas / atmospheric revision
 
 Tool: built-in image_gen (imagegen skill), 2026-10-04.
 Final asset: Textures/FlameFlipbook.png
-Layout: 4 x 4, 16 frames, left-to-right / top-to-bottom.
-Neutral emission with original generated alpha; yellow/orange comes from the VFX Graph.
-Copied without pixel edits; texture importer handles GPU size/compression.
-Replaces the preliminary Unity sample flipbook. The final image is newly generated and is not that CC0 sample.
+Reference: user screenshot, 2026-10-04 044448.png (horizontal golden/orange ground fire).
+Layout: 4 x 4, 16 consecutive frames, left-to-right / top-to-bottom.
+Colour RGB carries the golden core, orange tongues and red fringe. Import as sRGB, preserve original generated alpha.
+Copied without pixel edits. The Unity importer resizes/compresses for runtime.
+This revision replaces the neutral white flame atlas. A near-neutral VFX multiplier preserves the authored palette.
 
 Final generation prompt:
 Use case: stylized-concept.
-Asset type: production Unity VFX Graph fire flipbook sprite sheet, 4 columns x 4 rows, 16 equal square cells, square 2048x2048 canvas.
-Primary request: sixteen consecutive animation frames of ONE short turbulent ground flame, for a dark HD2D stone courtyard. This is a looping flame animation atlas, not 16 unrelated flame designs.
-Composition: exact evenly spaced 4 by 4 invisible grid. Read frames left-to-right, top-to-bottom. Every cell contains the same flame at the same scale, centered horizontally, with a fixed base at 86 percent cell height. Keep each flame inside 18–82 percent cell width and 15–86 percent cell height, leaving completely transparent gutters. No drawn grid, borders, numbers or captions.
-Animation: one cohesive flame silhouette evolves smoothly: the main tongue leans left, straightens and elongates a little, curls right and splits into two tips, the old tips dissolve as a new central tongue grows, returning seamlessly to frame 1. Small changes each frame, consistent luminous core, no shifting base. Compact upright flame with 2 or 3 tapering wisps, no smoke.
-Style: beautiful luminous fluid flame with readable sweeping shapes, sharp tapered tips and gently translucent wispy edges, fine internal streaks and hollow pockets, suitable for cinematic HD2D. Real fire movement rendered with art-directed clarity, not a flat cartoon icon, not photoreal scene, not giant explosion.
-Color: NEUTRAL WHITE and pale GRAY emission only, no color tint at all (yellow is added by the game shader). Bright white core occupying a small fraction of the silhouette, softer gray translucent outer tongues. Actual transparent background and transparent empty space, preserve alpha, absolutely no black rectangle or painted checkerboard. Avoid huge bloom halos, detached sparks, logs, floor, scenery, shadows, text, logos and watermarks.
-
+Asset type: Unity HD2D ground-fire animation flipbook, 4 columns x 4 rows, exactly 16 frames on an evenly divided square canvas, preferably 2048x2048.
+Input image: the provided small horizontal yellow-orange fire is the STYLE AND SHAPE reference. Recreate its dense, low, wide atmospheric fire, its broken wispy orange edges and hot golden-yellow core. The checkerboard in the reference only indicates transparency: it must never appear in the output.
+Primary request: a cohesive 16-frame looping animation of a small low patch of burning ground. Each frame is the same horizontal cluster of connected fire tongues changing smoothly through time, not an isolated teardrop, candle flame, elegant ribbon, logo, or icon.
+Appearance: richly textured cinematic fantasy pixel-painted fire for an HD2D game. Dense glowing yellow core near the base, irregular bright golden lobes, ember-orange and deep red fringes, tiny ragged turbulent curls and a few dim glowing specks immediately above the flame. The light should feel hot and atmospheric. Coarse clustered colour details and subtly broken pixel-like edges like the supplied reference, while translucent orange edges and a very restrained soft glow blend into the scene. No black smoke cloud. Do not bleach the entire fire white.
+Exact atlas layout: 4 by 4 equally sized invisible cells, read left-to-right then top-to-bottom. In every cell the fire occupies x=10%..90%, y=40%..82%. Flame base fixed at y=82%, centered at x=50%. Occupied silhouette approximately twice as wide as high. Keep completely transparent padding between cells, no variation of scale or baseline. A few very small upward wisps may reach y=30%. Never let glow bleed into another cell.
+Animation: connected low fire billows rise, fold, split and fade as fresh bright lobes grow below; the bright core travels gently along the width. Small coherent changes between consecutive frames. Frame 16 should flow back into frame 1. Avoid 16 identical copies.
+Colour: retain the reference's GOLDEN YELLOW, warm ORANGE and subdued DEEP RED in the RGB image itself. Hot core pale yellow with very small cream highlights. Authentic transparent RGBA, no background, no checkerboard, no grid, no text, no numbers, no watermarks, no floor, no logs or stones.

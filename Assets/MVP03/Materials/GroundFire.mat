@@ -49,7 +49,7 @@ Material:
     - _Turbulence: 2.38
     - _TurbulenceFrequency: 1.6
     m_Colors:
-    - _ParticlePivot: {r: 0, g: 0.3, b: 0, a: 0}
+    - _ParticlePivot: {r: 0, g: -0.32, b: 0, a: 0}
     - _SupportAtlas: {r: 0, g: 0, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -5,7 +5,7 @@ Shader "MVP03/Ground Fire"
         _StainMap("Ground footprint", 2D) = "black" {}
         _FlameHeight("Flame height (m)", Range(.2,1.8)) = .55
         _FlameWidth("Flame width (m)", Range(0,2)) = .44
-        _ParticlePivot("Particle pivot (local XYZ)", Vector) = (0,-.42,0,0)
+        _ParticlePivot("Particle pivot (local XYZ)", Vector) = (0,-.32,0,0)
         _FlameDensity("Flame density", Range(.2,1)) = .82
         _FlameSpeed("Rise speed", Range(.2,3)) = 1.2
         _AnimationFPS("Flipbook frames per second", Range(4,32)) = 16

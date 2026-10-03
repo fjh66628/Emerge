@@ -29,7 +29,7 @@ public static class MVP03GroundFireGraph
             throw new FileNotFoundException("The authored 4 x 4 flame flipbook is required.", TexturePath);
         AssetDatabase.ImportAsset(TexturePath, ImportAssetOptions.ForceSynchronousImport);
         var importer = (TextureImporter)AssetImporter.GetAtPath(TexturePath);
-        importer.sRGBTexture = false; importer.wrapMode = TextureWrapMode.Clamp; importer.filterMode = FilterMode.Bilinear;
+        importer.sRGBTexture = true; importer.wrapMode = TextureWrapMode.Clamp; importer.filterMode = FilterMode.Bilinear;
         importer.mipmapEnabled = true; importer.isReadable = false; importer.maxTextureSize = 2048;
         importer.alphaSource = TextureImporterAlphaSource.FromInput; importer.alphaIsTransparency = true;
         importer.textureCompression = TextureImporterCompression.CompressedHQ; importer.SaveAndReimport();
@@ -62,7 +62,7 @@ public static class MVP03GroundFireGraph
         var orient = Node("UnityEditor.VFX.Block.Orient", output); Setting(orient, "mode", "FaceCameraPlane");
         Setting(output, "uvMode", "Flipbook"); Setting(output, "flipbookBlendFrames", true);
         Setting(output, "useSoftParticle", true); Setting(output, "sort", "Off");
-        Value(output, "softParticleFadeDistance", .12f);
+        Value(output, "softParticleFadeDistance", .2f);
         var flipbook = Slot(output, "flipBookSize");
         Value(flipbook, "x", 4); Value(flipbook, "y", 4);
         Value(output, "mainTexture", AssetDatabase.LoadAssetAtPath<Texture2D>(TexturePath));
@@ -88,7 +88,7 @@ public static class MVP03GroundFireGraph
         Bind(initialize,"Threshold",Parameter("Threshold",typeof(float),.32f));
         Bind(initialize,"EdgeSoftness",Parameter("EdgeSoftness",typeof(float),.14f));
         Bind(animate,"FlameWidth",Parameter("FlameWidth",typeof(float),.44f));
-        var pivot = Parameter("ParticlePivot",typeof(Vector3),new Vector3(0,-.42f,0));
+        var pivot = Parameter("ParticlePivot",typeof(Vector3),new Vector3(0,-.32f,0));
         Bind(initialize,"ParticlePivot",pivot); Bind(animate,"ParticlePivot",pivot);
         Bind(animate,"Brightness",Parameter("Brightness",typeof(float),1.65f));
         Bind(animate,"AnimationFPS",Parameter("AnimationFPS",typeof(float),16f));

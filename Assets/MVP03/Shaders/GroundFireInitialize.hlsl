@@ -21,6 +21,6 @@ void InitializeGroundFire(inout VFXAttributes attributes, VFXSampler2D Coverage,
     attributes.pivotY = ParticlePivot.y;
     attributes.pivotZ = ParticlePivot.z;
     attributes.texIndex = random.z * 15;
-    attributes.color = float3(1,.65,.025);
+    attributes.color = float3(1,1,1);
     attributes.alpha = 0;
 }

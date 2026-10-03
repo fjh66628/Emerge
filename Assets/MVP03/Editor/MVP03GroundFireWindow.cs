@@ -28,7 +28,7 @@ public sealed class MVP03GroundFireWindow : EditorWindow
         var pivot = new UnityEngine.UIElements.Vector3Field("粒子 Pivot")
         {
             name = "_ParticlePivot",
-            tooltip = "粒子局部 XYZ 枢轴，相对粒子尺寸；0 为中心，Y=-0.5 为底边。默认 (0, -0.42, 0)。"
+            tooltip = "粒子局部 XYZ 枢轴，相对粒子尺寸；0 为中心，Y=-0.5 为底边。当前彩色图集建议 (0, -0.32, 0)。"
         };
         pivot.style.marginTop = 10;
         pivot.SetValueWithoutNotify(material.GetVector("_ParticlePivot"));

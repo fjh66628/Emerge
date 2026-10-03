@@ -11,7 +11,9 @@ void UpdateGroundFire(inout VFXAttributes attributes, float DeltaTime, float Ris
     attributes.velocity.xz *= exp(-DeltaTime * 1.4);
     attributes.size = FlameWidth * (.8 + .25 * sin(life * 3.14159)) * (1 - life * .56);
     attributes.scaleY = lerp(1.8,2.6,life) * FlameHeight / 1.05;
-    attributes.color = lerp(float3(1,.76,.045), float3(1,.22,.003), smoothstep(.25,1,life)) * Brightness;
-    attributes.alpha = smoothstep(0,.12,life) * pow(saturate(1-life),1.1) * .28;
+    // The authored colour flipbook carries the hot gold core and ember-red fringe.
+    // A near-neutral multiplier preserves that palette and gently cools the dying tongue.
+    attributes.color = lerp(float3(1,1,1), float3(.8,.65,.52), smoothstep(.45,1,life)) * Brightness;
+    attributes.alpha = smoothstep(0,.12,life) * pow(saturate(1-life),1.1) * .18;
     attributes.texIndex = fmod(attributes.texIndex + DeltaTime * AnimationFPS,16);
 }
