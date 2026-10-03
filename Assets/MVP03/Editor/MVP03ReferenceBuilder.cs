@@ -109,6 +109,7 @@ public static class MVP03ReferenceBuilder
         MVP03MagicBuilder.ConfigureScene();
         MVP03WarmLighting.ConfigureScene();
         MVP03SlimeBuilder.ConfigureScene();
+        MVP03PuddleBuilder.ConfigureScene();
         EditorSceneManager.SaveScene(scene,Root+"/Scenes/MVP03_StainedGlassChapel.unity");
         AssetDatabase.SaveAssets();
         Debug.Log("Rebuilt MVP03: beveled masonry, leaf meshes, imported pixel travelers, dedicated SSAO and optical focus.");

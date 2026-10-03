@@ -36,7 +36,7 @@ namespace MVP03
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080); scaler.matchWidthOrHeight = .5f;
 
-            RectTransform panel = Rect("Camera pitch panel", canvasObject.transform, new Vector2(340, 188));
+            RectTransform panel = Rect("Camera pitch panel", canvasObject.transform, new Vector2(340, 226));
             panel.anchorMin = panel.anchorMax = panel.pivot = Vector2.one;
             panel.anchoredPosition = new Vector2(-24, -24);
             Fill(panel, new Color(.055f, .07f, .095f, .94f));
@@ -93,6 +93,17 @@ namespace MVP03
                 else { spawner.TrySpawn(out _, out string message); spawnStatus.text = message; }
                 EventSystem.current?.SetSelectedGameObject(null);
             });
+
+            var waterHint = Label("Puddle hint", panel, "左键点击地面 · 生成水塘", 12, new Vector2(18, -193), new Vector2(205, 22));
+            waterHint.color = new Color(.65f, .78f, .82f);
+            var clearRect = Rect("Clear puddles", panel, new Vector2(91, 26));
+            clearRect.anchoredPosition = new Vector2(232, -191);
+            var clearImage = Fill(clearRect, new Color(.19f, .25f, .29f, 1));
+            var clear = clearRect.gameObject.AddComponent<Button>();
+            clear.targetGraphic = clearImage; clear.navigation = new Navigation { mode = Navigation.Mode.None };
+            var clearText = Label("Clear puddles label", clearRect, "清空水塘", 13, Vector2.zero, clearRect.sizeDelta);
+            clearText.alignment = TextAnchor.MiddleCenter;
+            clear.onClick.AddListener(() => { GetComponent<ClickPuddles>()?.Clear(); EventSystem.current?.SetSelectedGameObject(null); });
 
             float value = PlayerPrefs.GetFloat(PreferenceKey, follow.Pitch);
             if (float.IsNaN(value) || float.IsInfinity(value)) value = DefaultPitch;

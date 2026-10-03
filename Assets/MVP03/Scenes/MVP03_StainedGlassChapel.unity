@@ -3942,6 +3942,8 @@ GameObject:
   - component: {fileID: 1646015946}
   - component: {fileID: 1646015947}
   - component: {fileID: 1646015948}
+  - component: {fileID: 1646015950}
+  - component: {fileID: 1646015949}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4141,6 +4143,61 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MVP03.CourtyardEnemySpawner
   enemyPrefab: {fileID: 4635049616739037071, guid: 430cff53f6b453746bfd265275e59108, type: 3}
   player: {fileID: 494170372}
+--- !u!114 &1646015949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1646015939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4aff618d66afb349b413d89e0d7d30c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP03.PuddleReflections
+  reflectionRendererIndex: 4
+  maximumWidth: 768
+  refreshRate: 30
+--- !u!114 &1646015950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1646015939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0942b78545b94fa408bd547b9af34db4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP03.ClickPuddles
+  waterMaterial: {fileID: 2100000, guid: ab96e877cd7c7ff4a827b8973d27d7f9, type: 2}
+  groundSurfaces:
+  - {fileID: 603427352}
+  - {fileID: 1784942121}
+  - {fileID: 76035672}
+  - {fileID: 1768596477}
+  - {fileID: 784052241}
+  - {fileID: 1307710875}
+  - {fileID: 1360387354}
+  - {fileID: 392280370}
+  - {fileID: 1410487313}
+  - {fileID: 1256927796}
+  - {fileID: 1600286637}
+  - {fileID: 654377067}
+  - {fileID: 937919372}
+  - {fileID: 1895131283}
+  - {fileID: 1052382981}
+  - {fileID: 1943545810}
+  - {fileID: 207278503}
+  - {fileID: 508364277}
+  - {fileID: 793524665}
+  - {fileID: 1538437861}
+  - {fileID: 547735863}
+  - {fileID: 524198103}
+  - {fileID: 1133549736}
+  - {fileID: 1580860755}
+  radiusRange: {x: 1.5, y: 2.3}
+  maximumPuddles: 24
 --- !u!1 &1755286116
 GameObject:
   m_ObjectHideFlags: 0

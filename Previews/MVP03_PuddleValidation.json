@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "uiBlocked": true,
+  "heroBlocked": true,
+  "wallBlocked": true,
+  "outsideBlocked": true,
+  "sameHeightSharesOneTexture": true,
+  "reflectionRestoresSceneState": true,
+  "reflectionCapturesPerUpdate": 1,
+  "puddleCount": 18,
+  "reflectionTextureSize": "768x432",
+  "note": "Live click entry point checked against all three UI buttons, character collider, wall and outside viewport; same-height pools share a real rendered texture. Forced one real reflection submission and checked restoration of sprite rotation/bounds, main camera and culling state.",
+  "stairPlacement": {
+    "passed": true,
+    "placed": true,
+    "waterHeight": 0.205,
+    "maskedPixels": 1834,
+    "supportedPixels": 470,
+    "clearEmptiesPatches": true,
+    "screen": "(1280.00, 720.00, 6.40)",
+    "ray": "Origin: (6.65, 5.05, -28.91), Dir: (0.00, -0.78, 0.62)",
+    "hit": "RebuiltStairs",
+    "normal": "(0.00, 1.00, 0.00)",
+    "ui": [],
+    "note": "Isolated disabled camera/manager aimed at the first stair, using the real screen-ray entry point and actual scene colliders. Read back the support mask to verify clipping at tread edges, then cleared temporary water. User pools untouched."
+  },
+  "performance": {
+    "samples": 120,
+    "width": 2560,
+    "height": 1440,
+    "puddleCount": 18,
+    "reflectionPlanes": 1,
+    "maximumCapturesPerMainFrame": 1,
+    "totalReflectionRenders": 30,
+    "averageEditorFrameMilliseconds": 8.220569,
+    "p95EditorFrameMilliseconds": 8.9607,
+    "note": "Live Editor timings after 20 warm-up frames. Includes current scene/volume, editor overhead and user activity; not an isolated GPU measurement or frame-rate guarantee."
+  }
+}
