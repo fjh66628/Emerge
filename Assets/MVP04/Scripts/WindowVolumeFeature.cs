@@ -13,6 +13,11 @@ namespace MVP04
         [Range(16,96)] public int viewSteps=40;
         [Range(1,6)] public int lightSteps=2;
         [Range(0,1)] public float denoiseStrength=.9f;
+        [Header("Participating medium bounds")]
+        public Vector3 mediumMin = ChapelWindowLight.RoomMin;
+        public Vector3 mediumMax = ChapelWindowLight.RoomMax;
+        [Tooltip("Include the main directional light and its world-space shadow map, for open-air scenes.")]
+        public bool includeMainDirectionalLight;
         private WindowPass pass;
         private Vector3 airOffset;
         private double lastAirTime=-1;
@@ -33,6 +38,9 @@ namespace MVP04
             pass.viewSteps = viewSteps;
             pass.lightSteps = lightSteps;
             pass.denoiseStrength = denoiseStrength;
+            pass.mediumMin = mediumMin;
+            pass.mediumMax = mediumMax;
+            pass.includeMainDirectionalLight = includeMainDirectionalLight;
             AdvanceAirFlow();
             pass.airOffset = airOffset;
             renderer.EnqueuePass(pass);
@@ -57,6 +65,8 @@ namespace MVP04
             public int resolutionDivisor,viewSteps,lightSteps;
             public float denoiseStrength;
             public Vector3 airOffset;
+            public Vector3 mediumMin, mediumMax;
+            public bool includeMainDirectionalLight;
             private readonly Vector4[] sources=new Vector4[3];
             private static readonly int VolumeTexture=Shader.PropertyToID("_ChapelVolumeTexture");
             public WindowPass() => requiresIntermediateTexture = true;
@@ -85,12 +95,18 @@ namespace MVP04
                 // Snapshot camera-specific bindings; Scene and Game cameras have different lists.
                 var properties = new MaterialPropertyBlock();
                 properties.SetInteger("_SourceCount", count);
+                bool useSun = includeMainDirectionalLight && lights.mainLightIndex >= 0 &&
+                    lights.visibleLights[lights.mainLightIndex].lightType == LightType.Directional;
+                properties.SetInteger("_UseMainDirectionalLight", useSun ? 1 : 0);
+                var mainSource = useSun ? lights.visibleLights[lights.mainLightIndex].light : null;
+                properties.SetFloat("_MainVolumeShadowStrength", mainSource != null && mainSource.shadows != LightShadows.None
+                    ? mainSource.shadowStrength : 0);
                 properties.SetVectorArray("_Sources", sources);
                 properties.SetInteger("_ViewSteps", Mathf.Clamp(viewSteps,16,96));
                 properties.SetInteger("_LightSteps", Mathf.Clamp(lightSteps,1,6));
                 properties.SetVector("_AirFlowOffset",airOffset);
-                properties.SetVector("_RoomMin", ChapelWindowLight.RoomMin);
-                properties.SetVector("_RoomMax", ChapelWindowLight.RoomMax);
+                properties.SetVector("_RoomMin", mediumMin);
+                properties.SetVector("_RoomMax", mediumMax);
                 var source = resources.activeColorTexture;
                 var descriptor = graph.GetTextureDesc(source);
                 var camera=frame.Get<UniversalCameraData>();

@@ -23,6 +23,7 @@ Shader "MVP04/Window Volume"
             #pragma target 4.5
             #pragma vertex Vert
             #pragma fragment Frag
+            #pragma multi_compile_fragment _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
             #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
             #pragma multi_compile_fragment _ _LIGHT_COOKIES
@@ -37,7 +38,8 @@ Shader "MVP04/Window Volume"
                 float4 _FlowDirection;
             CBUFFER_END
             TEXTURE3D(_DensityNoise); SAMPLER(sampler_DensityNoise);
-            int _SourceCount, _ViewSteps, _LightSteps;
+            int _SourceCount, _ViewSteps, _LightSteps, _UseMainDirectionalLight;
+            float _MainVolumeShadowStrength;
             float4 _Sources[3];
             float3 _AirFlowOffset;
             float3 _RoomMin, _RoomMax;
@@ -117,6 +119,26 @@ Shader "MVP04/Window Volume"
                     float3 p=origin+ray*(begin+(s+jitter)*stepSize);
                     float segmentT=exp(-SigmaT(p,stepSize)*stepSize);
                     float3 incident=0;
+                    if(_UseMainDirectionalLight != 0)
+                    {
+                        // Sunlight is parallel and does not have inverse-square falloff inside the courtyard.
+                        // Sample the same cascaded world-space shadow atlas as the stone and foliage.
+                        Light sunlight=GetMainLight();
+                        float visibility=1;
+                        #if defined(MAIN_LIGHT_CALCULATE_SHADOWS)
+                            float4 shadowCoord=TransformWorldToShadowCoord(p);
+                            // Snapshot strength per camera: an empty shadow pass can retain the cascade keyword.
+                            if(_MainVolumeShadowStrength>0 && !BEYOND_SHADOW_FAR(shadowCoord))
+                                visibility=lerp(1,SAMPLE_TEXTURE2D_SHADOW(_MainLightShadowmapTexture,
+                                    sampler_LinearClampCompare,shadowCoord.xyz),_MainVolumeShadowStrength);
+                        #endif
+                        float3 transmission=1;
+                        #if defined(_LIGHT_COOKIES)
+                            transmission=SampleMainLightCookie(p);
+                        #endif
+                        incident+=sunlight.color*visibility*transmission*
+                            LightTransmittance(p,sunlight.direction,1e5)*Phase(dot(ray,sunlight.direction));
+                    }
                     [loop] for(int source=0;source<_SourceCount;source++)
                     {
                         int index=(int)_Sources[source].w;

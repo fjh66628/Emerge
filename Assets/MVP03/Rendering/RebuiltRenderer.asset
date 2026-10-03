@@ -46,6 +46,27 @@ MonoBehaviour:
   passIndex: 0
   bindDepthStencilAttachment: 0
   m_Version: 1
+--- !u!114 &-3174123002453713646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01379c706dcb4c545af444702add9bcb, type: 3}
+  m_Name: Warm courtyard / MVP04 single scattering
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.WindowVolumeFeature
+  m_Active: 1
+  material: {fileID: 2100000, guid: 0b5d5740195274d40990713ca8093480, type: 2}
+  resolutionDivisor: 3
+  viewSteps: 32
+  lightSteps: 1
+  denoiseStrength: 0.9
+  mediumMin: {x: -13.9, y: 0, z: -30.4}
+  mediumMax: {x: 12, y: 15, z: 3.4}
+  includeMainDirectionalLight: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,6 +94,7 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: -5026891514096487126}
   - {fileID: -3178391320263390132}
+  - {fileID: -3174123002453713646}
   m_RendererFeatureMap: 
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
