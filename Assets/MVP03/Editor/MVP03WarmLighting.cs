@@ -116,6 +116,7 @@ public static class MVP03WarmLighting
         EditorUtility.SetDirty(sun);
         EditorUtility.SetDirty(follow);
         EditorUtility.SetDirty(hero);
+        MVP03Presentation.ConfigureScene();
     }
 
     private static void ConfigureWallBacking()

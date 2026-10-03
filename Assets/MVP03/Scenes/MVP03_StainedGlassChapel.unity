@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 14381331}
   - component: {fileID: 14381330}
   - component: {fileID: 14381332}
+  - component: {fileID: 14381333}
   m_Layer: 0
   m_Name: Sun / warm diagonal daylight
   m_TagString: Untagged
@@ -246,6 +247,19 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!114 &14381333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14381329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dc59f7161e0e1c49a75fecee7dc687c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP03.CourtyardSun
+  settings: {fileID: 11400000, guid: 68fad81478959f7449268f204bf878b7, type: 2}
 --- !u!1 &47034289
 GameObject:
   m_ObjectHideFlags: 0
@@ -415,6 +429,7 @@ GameObject:
   m_Component:
   - component: {fileID: 279173756}
   - component: {fileID: 279173755}
+  - component: {fileID: 279173757}
   m_Layer: 0
   m_Name: Pixel portrait
   m_TagString: Untagged
@@ -432,7 +447,7 @@ SpriteRenderer:
   m_GameObject: {fileID: 279173754}
   m_Enabled: 1
   m_CastShadows: 2
-  m_ReceiveShadows: 0
+  m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
@@ -448,7 +463,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3ec056d8f367b3a4f9ec8a57e9cf17a6, type: 2}
+  - {fileID: 2100000, guid: 1a79567b68d9ae545934b2cae9d6143d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -489,13 +504,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 279173754}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.956355, z: -0, w: 0.29220748}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 494170374}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &279173757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279173754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9c04098efddd5642983c7f182974db9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.PixelCharacterShadow
 --- !u!1 &302980847
 GameObject:
   m_ObjectHideFlags: 0
@@ -2682,6 +2709,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1257442156}
   - component: {fileID: 1257442155}
+  - component: {fileID: 1257442157}
   m_Layer: 0
   m_Name: Pixel portrait
   m_TagString: Untagged
@@ -2699,7 +2727,7 @@ SpriteRenderer:
   m_GameObject: {fileID: 1257442154}
   m_Enabled: 1
   m_CastShadows: 2
-  m_ReceiveShadows: 0
+  m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
@@ -2715,7 +2743,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: eb0cd6a016d7ed349a9e1c2357ad91df, type: 2}
+  - {fileID: 2100000, guid: 1a2ffacdaed915f4e8c776faf039574e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2756,13 +2784,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1257442154}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.935076, z: -0, w: 0.35444725}
+  m_LocalRotation: {x: -0, y: 0.9975085, z: -0, w: 0.07054641}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1401674279}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1257442157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257442154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9c04098efddd5642983c7f182974db9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.PixelCharacterShadow
 --- !u!1 &1307710874
 GameObject:
   m_ObjectHideFlags: 0
@@ -3953,8 +3993,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1646015939}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.1441067, y: -0.2494624, z: 0.037569787, w: 0.95686483}
-  m_LocalPosition: {x: 4.5605574, y: 5.4322896, z: -30.80262}
+  m_LocalRotation: {x: 0.09931977, y: 0, z: 0, w: 0.9950556}
+  m_LocalPosition: {x: -2.35, y: 3.9975488, z: -32.969025}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3973,7 +4013,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MVP03.PixelFollowCamera
   subject: {fileID: 494170374}
-  offset: {x: 6.9105573, y: 5.3622894, z: -12.35262}
+  offset: {x: 0, y: 3.927549, z: -14.519023}
   focusHeight: 1
   allowZoom: 1
   minimumDistance: 5
