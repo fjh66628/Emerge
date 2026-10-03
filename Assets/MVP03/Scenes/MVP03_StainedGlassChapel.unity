@@ -4157,7 +4157,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MVP03.PuddleReflections
   reflectionRendererIndex: 4
   maximumWidth: 768
-  refreshRate: 30
+  refreshRate: 60
 --- !u!114 &1646015950
 MonoBehaviour:
   m_ObjectHideFlags: 0

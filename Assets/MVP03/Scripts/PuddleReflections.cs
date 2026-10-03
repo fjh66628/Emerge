@@ -11,7 +11,7 @@ namespace MVP03
     {
         [SerializeField] private int reflectionRendererIndex;
         [SerializeField, Range(256, 1024)] private int maximumWidth = 768;
-        [SerializeField, Range(10, 60)] private int refreshRate = 30;
+        [SerializeField, Range(10, 60)] private int refreshRate = 60;
         private Camera source, reflection;
         private ClickPuddles puddles;
         private Capture spare;
