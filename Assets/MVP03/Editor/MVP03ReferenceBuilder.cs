@@ -301,7 +301,11 @@ public static class MVP03ReferenceBuilder
     static int ConfigureRenderer()
     {
         string path=Root+"/Rendering/RebuiltRenderer.asset";
-        if(!File.Exists(path))AssetDatabase.CopyAsset("Assets/MVP02/Rendering/MVP02_Renderer.asset",path);
+        if(!File.Exists(path))
+        {
+            const string template="Assets/Settings/ForwardRendererTemplate.asset";
+            if(!AssetDatabase.CopyAsset(template,path))throw new IOException("Could not create the courtyard renderer from "+template);
+        }
         var renderer=AssetDatabase.LoadAssetAtPath<UniversalRendererData>(path);
         MVP03PixelPostBuilder.Configure(renderer);
         ScreenSpaceAmbientOcclusion ao=null;
