@@ -62,6 +62,10 @@ public sealed class MVP03PuddleWindow : EditorWindow
         Slider(scroll, "阳光高光", "sun-highlight", "_SunHighlight", 0, 1, "降低镜面亮点，避免潮湿地面像镀铬。");
         Slider(scroll, "光滑度", "smoothness", "_Smoothness", .7f, .99f, "控制太阳高光的集中程度。");
         Slider(scroll, "水面扰动", "ripple-strength", "_RippleStrength", 0, .02f, "轻微扭曲倒影；0 为静止平面。");
+        Heading(scroll, "接触涟漪");
+        Slider(scroll, "涟漪强度", "contact-ripple-strength", "_ContactRippleStrength", 0, 3, "角色、史莱姆落地和刚体接触扰动水面；0 关闭接触涟漪。");
+        Slider(scroll, "传播速度", "contact-ripple-speed", "_ContactRippleSpeed", .3f, 2, "米/秒。实际速度受网格稳定性上限约束。");
+        Slider(scroll, "衰减速度", "contact-ripple-decay", "_ContactRippleDecay", .4f, 4, "越大越快恢复平静；静止物体不会持续制造新涟漪。");
         var tint = new ColorField("湿润色调") { name = "wet-tint", showAlpha = false, hdr = false };
         scroll.Add(tint); refreshers.Add(() => tint.SetValueWithoutNotify(material.GetColor("_WetTint")));
         tint.RegisterValueChangedCallback(evt => { Undo.RecordObject(material, "调整水渍色调"); material.SetColor("_WetTint", evt.newValue); Changed(); });

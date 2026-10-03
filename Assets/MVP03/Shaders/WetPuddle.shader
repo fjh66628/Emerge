@@ -11,8 +11,15 @@ Shader "MVP03/Wet Puddle"
         _WaterThreshold("Water core threshold", Range(.15,.9)) = .5
         _EdgeSoftness("Wetness transition", Range(.02,.3)) = .12
         _RippleStrength("Subtle surface distortion", Range(0,.02)) = .006
+        _ContactRippleStrength("Contact ripple strength", Range(0,3)) = 1.2
+        _ContactRippleSpeed("Contact wave speed (m/s)", Range(.3,2)) = 1.1
+        _ContactRippleDecay("Contact wave damping", Range(.4,4)) = 1.6
         _Smoothness("Water smoothness", Range(.7,.99)) = .97
         [HideInInspector] _SupportMap("Ground support", 2D) = "white" {}
+        [HideInInspector] _RippleMap("Contact height field", 2D) = "black" {}
+        [HideInInspector] _RippleTexel("Contact field texel / metres", Vector) = (1,1,1,1)
+        [HideInInspector] _RippleBlend("Contact interpolation", Float) = 1
+        [HideInInspector] _HasContactRipples("Contact field active", Float) = 0
         [HideInInspector] _SupportAtlas("World XZ coverage bounds", Vector) = (0,0,1,1)
         [HideInInspector] _PlanarReflection("Planar reflection", 2D) = "black" {}
         [HideInInspector] _HasReflection("Reflection ready", Float) = 0
@@ -36,11 +43,14 @@ Shader "MVP03/Wet Puddle"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             TEXTURE2D(_PlanarReflection); SAMPLER(sampler_PlanarReflection);
             TEXTURE2D(_SupportMap); SAMPLER(sampler_SupportMap);
+            TEXTURE2D(_RippleMap); SAMPLER(sampler_RippleMap);
             CBUFFER_START(UnityPerMaterial)
                 float4 _WetTint;
                 float4 _SupportAtlas;
+                float4 _RippleTexel;
                 float _ReflectionStrength, _ReflectionBlur, _SunHighlight, _WetDarkening, _WaterThreshold, _EdgeSoftness;
                 float _RippleStrength, _Smoothness, _HasReflection;
+                float _ContactRippleStrength, _ContactRippleSpeed, _ContactRippleDecay, _RippleBlend, _HasContactRipples;
                 float4x4 _ReflectionVP;
             CBUFFER_END
             struct A { float4 positionOS:POSITION; float2 uv:TEXCOORD0; };
@@ -61,6 +71,11 @@ Shader "MVP03/Wet Puddle"
                 return lerp(lerp(dot(Gradient(cell),f),dot(Gradient(cell+float2(1,0)),f-float2(1,0)),u.x),
                     lerp(dot(Gradient(cell+float2(0,1)),f-float2(0,1)),dot(Gradient(cell+1),f-1),u.x),u.y);
             }
+            float ContactHeight(float2 uv)
+            {
+                float2 state=SAMPLE_TEXTURE2D_LOD(_RippleMap,sampler_RippleMap,uv,0).rg;
+                return lerp(state.g,state.r,_RippleBlend);
+            }
             half4 Frag(V i):SV_Target
             {
                 // Source water-stain stamps were max-unioned in world space before shading.
@@ -73,7 +88,15 @@ Shader "MVP03/Wet Puddle"
                 // Stationary shoreline and only a slight, slowly moving water normal.
                 float2 wave=i.positionWS.xz*2.2+float2(_Time.y*.055,-_Time.y*.04);
                 float2 slope=float2(Noise(wave+6),Noise(wave+24))*_RippleStrength;
-                float3 normal=normalize(float3(slope.x,1,slope.y));
+                float2 contact=0;
+                [branch] if(_HasContactRipples>.5 && _ContactRippleStrength>.001)
+                {
+                    contact=float2(
+                        ContactHeight(coverageUV-float2(_RippleTexel.x,0))-ContactHeight(coverageUV+float2(_RippleTexel.x,0)),
+                        ContactHeight(coverageUV-float2(0,_RippleTexel.y))-ContactHeight(coverageUV+float2(0,_RippleTexel.y)));
+                    contact=clamp(contact/(2*max(_RippleTexel.zw,.001))*_ContactRippleStrength,-.25,.25)*water;
+                }
+                float3 normal=normalize(float3(slope.x+contact.x,1,slope.y+contact.y));
                 float3 view=GetWorldSpaceNormalizeViewDir(i.positionWS);
                 // Original art-directed mirror look, now shaped by the water-stain texture.
                 float fresnel=pow(1-saturate(dot(normal,view)),3);
@@ -85,7 +108,7 @@ Shader "MVP03/Wet Puddle"
                 #if UNITY_UV_STARTS_AT_TOP
                     uv.y=1-uv.y;
                 #endif
-                uv+=slope*.3;
+                uv+=slope*.3+contact*.12;
                 float inside=step(0,uv.x)*step(uv.x,1)*step(0,uv.y)*step(uv.y,1)*step(.001,projected.w);
                 float mip=_ReflectionBlur;
                 float3 reflected=SAMPLE_TEXTURE2D_LOD(_PlanarReflection,sampler_PlanarReflection,saturate(uv),mip).rgb;

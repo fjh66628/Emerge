@@ -29,6 +29,7 @@ namespace MVP03
         private Vector4 atlas;
         private int atlasWidth, atlasHeight;
         private Work work;
+        private PuddleRipples ripples;
         private Stamp active;
         private Patch spare;
         private Patch warmingPatch;
@@ -41,6 +42,8 @@ namespace MVP03
         private readonly System.Random random = new System.Random();
         public IReadOnlyList<Patch> Patches => patches;
         public int PuddleCount => stamps.Count;
+        public int ActiveRippleSurfaces => ripples?.ActiveCount ?? 0;
+        public int RippleImpulseCount => ripples?.ImpulseCount ?? 0;
         public int PendingCount { get { int n = 0; foreach (var s in stamps) if (s.support == null) n++; return n; } }
         public bool IsBusy => active != null || PendingCount != 0 || dirtyHeights.Count != 0;
         internal float LowestWaterHeight
@@ -141,6 +144,7 @@ namespace MVP03
         }
         private void Awake() => view = GetComponent<Camera>();
         private void Start() => EnsureResources();
+        private void LateUpdate() => ripples?.Tick(patches, Time.deltaTime);
 
         private void Update()
         {
@@ -295,6 +299,7 @@ namespace MVP03
             quad.normals = new[] { Vector3.up, Vector3.up, Vector3.up, Vector3.up };
             quad.triangles = new[] { 0, 2, 1, 0, 3, 2 };
             quad.bounds = new Bounds(Vector3.zero, new Vector3(2, .1f, 2));
+            ripples = new PuddleRipples(waterMaterial, atlas, quad);
             // Prepare the first atlas and shader when entering Play, not when clicking.
             spare = NewPatch();
             drawProperties.SetTexture("_StainMap", Texture2D.blackTexture);
@@ -333,6 +338,7 @@ namespace MVP03
 
         private void Recycle(Patch patch)
         {
+            ripples?.Remove(patch);
             patch.root.SetActive(false);
             if (spare == null) spare = patch; else Release(patch);
         }
@@ -344,6 +350,7 @@ namespace MVP03
         }
         public void Clear()
         {
+            ripples?.Clear();
             foreach (var patch in patches) Recycle(patch);
             foreach (var stamp in stamps) if (stamp.support != null) Destroy(stamp.support);
             patches.Clear(); stamps.Clear(); dirtyHeights.Clear(); dirtySet.Clear();
@@ -352,6 +359,7 @@ namespace MVP03
         }
         private void ReleaseResources()
         {
+            ripples?.Dispose(); ripples = null;
             work?.Dispose(); work = null; active = null;
             Release(spare); spare = null; warmingPatch = null;
             commands?.Release(); commands = null;

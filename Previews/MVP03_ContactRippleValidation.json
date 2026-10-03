@@ -1,0 +1,76 @@
+{
+  "initialWave": {
+    "peak": 0.004688263,
+    "dryPeak": 0.0,
+    "otherIslandPeak": 0.0,
+    "outerEnergy": 0.0,
+    "nonzero": 93,
+    "width": 352,
+    "height": 352
+  },
+  "stationaryEmitsOnce": true,
+  "propagatedWave": {
+    "peak": 0.00106334686,
+    "dryPeak": 0.0,
+    "otherIslandPeak": 0.0,
+    "outerEnergy": 0.11757582426071167,
+    "nonzero": 453,
+    "width": 352,
+    "height": 352
+  },
+  "movementImpulses": 1,
+  "landingImpulses": 1,
+  "characterControllerImpulses": 1,
+  "settledActiveFields": 0,
+  "reactivationMove": {
+    "before": "(100.30, 0.05, 99.52)",
+    "requested": "(-0.37, 0.00, -0.23)",
+    "after": "(99.93, 0.12, 99.29)",
+    "bounds": "Center: (99.93, 0.62, 99.29), Extents: (0.25, 0.50, 0.25)",
+    "skinWidth": 0.08,
+    "collision": "Below",
+    "RippleImpulseCount": 4
+  },
+  "reactivationFields": 1,
+  "reactivationImpulses": 5,
+  "clearedFields": 0,
+  "error": null,
+  "passed": true,
+  "livePerformance": {
+    "error": null,
+    "width": 2560,
+    "height": 1440,
+    "maximumActiveRippleFields": 1,
+    "contactImpulses": 17,
+    "mainThread": {
+      "count": 180,
+      "averageMs": 0.056468333333333329,
+      "p95Ms": 0.1388,
+      "maxMs": 0.1723
+    },
+    "editorFrames": {
+      "count": 180,
+      "averageMs": 11.434303909643656,
+      "p95Ms": 16.929004341363907,
+      "maxMs": 20.689003169536591
+    },
+    "note": "180 live frames after 40 warm-up frames with a moving contact plus normal player/slime activity. CPU marker covers overlap detection and GPU submissions, not GPU execution. Full frame times include Editor, scene, volume and reflections."
+  },
+  "renderedVisibility": {
+    "passed": true,
+    "changedPixels": 529,
+    "maximumLinearChannelChange": 0.0319824219,
+    "averageChangedPixelDifference": 0.0060310435881010755,
+    "note": "Matched HDR renders with the contact-height normals enabled/disabled in the same frame. The original ripple property blocks are restored afterward."
+  },
+  "shaderErrors": [],
+  "console": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "settingsControls": [
+    "contact-ripple-strength",
+    "contact-ripple-speed",
+    "contact-ripple-decay"
+  ]
+}

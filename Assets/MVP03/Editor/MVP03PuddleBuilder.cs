@@ -88,6 +88,9 @@ public static class MVP03PuddleBuilder
         material.SetFloat("_WaterThreshold", .5f);
         material.SetFloat("_EdgeSoftness", .12f);
         material.SetFloat("_RippleStrength", .006f);
+        material.SetFloat("_ContactRippleStrength", 1.2f);
+        material.SetFloat("_ContactRippleSpeed", 1.1f);
+        material.SetFloat("_ContactRippleDecay", 1.6f);
         material.SetFloat("_Smoothness", .97f);
         material.SetColor("_WetTint", new Color(.035f, .055f, .06f, 1));
     }
