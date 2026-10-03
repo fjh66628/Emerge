@@ -57,14 +57,14 @@ namespace MVP03
                          collisionLayers, QueryTriggerInteraction.Ignore))
             {
                 if (IsOwner(obstacle)) continue;
-                Finish(transform.position, -direction, true);
+                Finish(transform.position, -direction, true, obstacle);
                 return;
             }
             // The sigil sits in front of the actor: sweep to it instead of spawning through walls.
             Vector3 offset = destination - castOrigin;
             if (offset.sqrMagnitude > .000001f && Sweep(offset.normalized, offset.magnitude, out var hit))
             {
-                Finish(hit.point, hit.normal, true);
+                Finish(hit.point, hit.normal, true, hit.collider);
                 return;
             }
             transform.position = destination;
@@ -84,7 +84,7 @@ namespace MVP03
             if (Sweep(direction, distance, out var nearest))
             {
                 transform.position += direction * nearest.distance;
-                Finish(nearest.point, nearest.normal, true);
+                Finish(nearest.point, nearest.normal, true, nearest.collider);
                 return;
             }
             transform.position += direction * distance;
@@ -116,10 +116,12 @@ namespace MVP03
             return nearestDistance < float.PositiveInfinity;
         }
 
-        private void Finish(Vector3 point, Vector3 normal, bool hit)
+        private void Finish(Vector3 point, Vector3 normal, bool hit, Collider obstacle = null)
         {
             if (finished) return;
             finished = true;
+            if (hit && obstacle != null)
+                obstacle.GetComponentInParent<IMagicHitReceiver>()?.ReceiveMagicHit(direction);
             if (hit && impactPrefab != null)
                 Instantiate(impactPrefab, point + normal * .06f, Quaternion.LookRotation(normal));
             if (ribbon != null)
