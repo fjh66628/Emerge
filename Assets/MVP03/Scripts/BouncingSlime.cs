@@ -28,7 +28,10 @@ namespace MVP03
         public bool IsDefeated => defeated;
 
         public void Configure(SpriteRenderer sprite, Transform player, Camera camera)
-        { portrait = sprite; target = player; view = camera; }
+        {
+            portrait = sprite; target = player; view = camera;
+            FaceCameraFront();
+        }
 
         private void Awake()
         {
@@ -45,6 +48,7 @@ namespace MVP03
         {
             if (target == null) target = FindFirstObjectByType<PixelPilgrim>()?.transform;
             if (view == null) view = Camera.main;
+            FaceCameraFront();
         }
 
         private void Update()
@@ -152,11 +156,16 @@ namespace MVP03
         private void Shape(float width, float height)
             => portrait.transform.localScale = Vector3.Scale(restScale, new Vector3(width, height, 1));
 
-        private void LateUpdate()
+        private void LateUpdate() => FaceCameraFront();
+
+        private void FaceCameraFront()
         {
-            if (view == null || portrait == null) return;
-            // Screen-aligned even at high camera pitch; squash and hop stay independent.
-            portrait.transform.rotation = view.transform.rotation;
+            if (portrait == null) return;
+            // One fixed front sprite. Pursuit/recoil change movement only, never facing
+            // or mirroring. Camera alignment retains the pitch compensation.
+            portrait.flipX = false;
+            portrait.flipY = false;
+            if (view != null) portrait.transform.rotation = view.transform.rotation;
         }
     }
 }
