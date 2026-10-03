@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "clickable": true,
+  "spawnCountsAfterClicks": [
+    1,
+    2,
+    3
+  ],
+  "instances": [
+    {
+      "position": "(4.284, 0.090, -28.931)",
+      "clear": true,
+      "grounded": true,
+      "lit": true,
+      "health": 2
+    },
+    {
+      "position": "(5.881, 0.090, -29.926)",
+      "clear": true,
+      "grounded": true,
+      "lit": true,
+      "health": 2
+    },
+    {
+      "position": "(8.284, 0.090, -26.331)",
+      "clear": true,
+      "grounded": true,
+      "lit": true,
+      "health": 2
+    }
+  ],
+  "status": "已生成蓝色史莱姆",
+  "pitchUnchanged": true,
+  "zoomUnchanged": true,
+  "keyboardPreserved": true,
+  "note": "Play-mode GraphicRaycaster hit and three actual uGUI pointer-click callbacks. Checked spawned capsules, floor support, shader and health; test-spawned objects removed afterward. No keyboard simulation."
+}

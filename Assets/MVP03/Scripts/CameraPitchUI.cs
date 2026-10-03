@@ -36,7 +36,7 @@ namespace MVP03
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080); scaler.matchWidthOrHeight = .5f;
 
-            RectTransform panel = Rect("Camera pitch panel", canvasObject.transform, new Vector2(340, 110));
+            RectTransform panel = Rect("Camera pitch panel", canvasObject.transform, new Vector2(340, 188));
             panel.anchorMin = panel.anchorMax = panel.pivot = Vector2.one;
             panel.anchoredPosition = new Vector2(-24, -24);
             Fill(panel, new Color(.055f, .07f, .095f, .94f));
@@ -74,6 +74,25 @@ namespace MVP03
             var low = Label("Minimum", panel, "5° · 低视角", 12, new Vector2(18, -80), new Vector2(140, 20));
             var high = Label("Maximum", panel, "高视角 · 45°", 12, new Vector2(182, -80), new Vector2(140, 20));
             low.color = high.color = new Color(.64f, .69f, .76f); high.alignment = TextAnchor.MiddleRight;
+
+            var divider = Rect("Enemy section divider", panel, new Vector2(304, 1));
+            divider.anchoredPosition = new Vector2(18, -109); Fill(divider, new Color(.3f, .34f, .4f, .65f), false);
+            var spawnRect = Rect("Spawn enemy", panel, new Vector2(304, 34));
+            spawnRect.anchoredPosition = new Vector2(18, -121);
+            var spawnImage = Fill(spawnRect, new Color(.13f, .27f, .35f, 1));
+            var spawn = spawnRect.gameObject.AddComponent<Button>();
+            spawn.targetGraphic = spawnImage; spawn.navigation = new Navigation { mode = Navigation.Mode.None };
+            var spawnText = Label("Spawn label", spawnRect, "+ 生成敌人 · 蓝色史莱姆", 16, Vector2.zero, spawnRect.sizeDelta);
+            spawnText.alignment = TextAnchor.MiddleCenter;
+            var spawnStatus = Label("Spawn status", panel, "在主角附近生成 1 只史莱姆", 12, new Vector2(18, -160), new Vector2(304, 20));
+            spawnStatus.color = new Color(.64f, .75f, .82f);
+            spawn.onClick.AddListener(() =>
+            {
+                var spawner = GetComponent<CourtyardEnemySpawner>();
+                if (spawner == null) spawnStatus.text = "敌人生成器尚未配置";
+                else { spawner.TrySpawn(out _, out string message); spawnStatus.text = message; }
+                EventSystem.current?.SetSelectedGameObject(null);
+            });
 
             float value = PlayerPrefs.GetFloat(PreferenceKey, follow.Pitch);
             if (float.IsNaN(value) || float.IsInfinity(value)) value = DefaultPitch;

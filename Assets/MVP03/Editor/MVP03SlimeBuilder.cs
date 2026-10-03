@@ -76,6 +76,19 @@ public static class MVP03SlimeBuilder
         slime.Configure(slime.GetComponentInChildren<SpriteRenderer>(), hero != null ? hero.transform : null, Camera.main);
         PrefabUtility.RecordPrefabInstancePropertyModifications(slime);
         EditorUtility.SetDirty(slime);
+        ConfigureSpawner();
+    }
+
+    public static void ConfigureSpawner()
+    {
+        var camera = Camera.main;
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+        if (camera == null || prefab == null) throw new InvalidOperationException("The courtyard camera and slime prefab must exist first.");
+        if (!camera.TryGetComponent<CourtyardEnemySpawner>(out var spawner))
+            spawner = Undo.AddComponent<CourtyardEnemySpawner>(camera.gameObject);
+        Undo.RecordObject(spawner, "Configure courtyard enemy spawning");
+        spawner.Configure(prefab.GetComponent<BouncingSlime>(), UnityEngine.Object.FindFirstObjectByType<PixelPilgrim>());
+        EditorUtility.SetDirty(spawner);
     }
 
     private static Sprite ImportSprite()
