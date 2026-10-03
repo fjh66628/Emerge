@@ -4197,7 +4197,6 @@ MonoBehaviour:
   - {fileID: 1133549736}
   - {fileID: 1580860755}
   radiusRange: {x: 1.5, y: 2.3}
-  maximumPuddles: 24
 --- !u!1 &1755286116
 GameObject:
   m_ObjectHideFlags: 0

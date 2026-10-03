@@ -15,7 +15,6 @@ namespace MVP03
         [SerializeField] private Material waterMaterial;
         [SerializeField] private Collider[] groundSurfaces;
         [SerializeField] private Vector2 radiusRange = new Vector2(1.5f, 2.3f);
-        [SerializeField, Range(1, 48)] private int maximumPuddles = 24;
         private const int SupportSize = 48, SampleCount = SupportSize * SupportSize, MaxHits = 4;
         private static readonly ProfilerMarker PlacementMarker = new ProfilerMarker("Puddles.Enqueue");
         private static readonly ProfilerMarker UploadMarker = new ProfilerMarker("Puddles.FinishSupportJob");
@@ -31,10 +30,12 @@ namespace MVP03
         private Work work;
         private PuddleRipples ripples;
         private Stamp active;
+        private int generation, activeGeneration;
         private Patch spare;
         private Patch warmingPatch;
         private int warmFrame;
         private readonly List<Stamp> stamps = new List<Stamp>(48);
+        private readonly Queue<Stamp> pending = new Queue<Stamp>();
         private readonly List<Patch> patches = new List<Patch>();
         private readonly List<RaycastResult> uiHits = new List<RaycastResult>();
         private readonly Queue<int> dirtyHeights = new Queue<int>();
@@ -44,7 +45,7 @@ namespace MVP03
         public int PuddleCount => stamps.Count;
         public int ActiveRippleSurfaces => ripples?.ActiveCount ?? 0;
         public int RippleImpulseCount => ripples?.ImpulseCount ?? 0;
-        public int PendingCount { get { int n = 0; foreach (var s in stamps) if (s.support == null) n++; return n; } }
+        public int PendingCount => pending.Count + (active != null && activeGeneration == generation ? 1 : 0);
         public bool IsBusy => active != null || PendingCount != 0 || dirtyHeights.Count != 0;
         internal float LowestWaterHeight
         {
@@ -161,7 +162,7 @@ namespace MVP03
                 using (UploadMarker.Auto())
                 {
                     work.fence.Complete(); // Already finished: never wait for unfinished work.
-                    if (stamps.Contains(active))
+                    if (activeGeneration == generation)
                     {
                         active.support = new Texture2D(SupportSize, SupportSize, TextureFormat.R8, false, true)
                         { name = "Puddle floor support", hideFlags = HideFlags.DontSave, filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
@@ -178,20 +179,18 @@ namespace MVP03
                 int key = dirtyHeights.Dequeue(); dirtySet.Remove(key);
                 using (MergeMarker.Auto()) RebuildHeight(key);
             }
-            if (active == null)
-                foreach (var stamp in stamps)
+            if (active == null && pending.Count != 0)
+            {
+                var stamp = pending.Dequeue();
+                using (ScheduleMarker.Auto())
                 {
-                    if (stamp.support != null) continue;
-                    using (ScheduleMarker.Auto())
-                    {
-                        active = stamp;
-                        var build = new BuildRays { rays = work.rays, centre = stamp.position, radius = stamp.radius, sine = stamp.sine, cosine = stamp.cosine }.Schedule(SampleCount, 64);
-                        var trace = RaycastCommand.ScheduleBatch(work.rays, work.hits, 64, MaxHits, build);
-                        work.fence = new ReadSupport { hits = work.hits, groundIds = work.groundIds, mask = work.mask, floorHeight = stamp.position.y - .035f }.Schedule(SampleCount, 64, trace);
-                        JobHandle.ScheduleBatchedJobs();
-                    }
-                    break;
+                    active = stamp; activeGeneration = generation;
+                    var build = new BuildRays { rays = work.rays, centre = stamp.position, radius = stamp.radius, sine = stamp.sine, cosine = stamp.cosine }.Schedule(SampleCount, 64);
+                    var trace = RaycastCommand.ScheduleBatch(work.rays, work.hits, 64, MaxHits, build);
+                    work.fence = new ReadSupport { hits = work.hits, groundIds = work.groundIds, mask = work.mask, floorHeight = stamp.position.y - .035f }.Schedule(SampleCount, 64, trace);
+                    JobHandle.ScheduleBatchedJobs();
                 }
+            }
         }
 
         public bool TryPlaceAtScreen(Vector2 position)
@@ -211,13 +210,10 @@ namespace MVP03
                 if (hit.normal.y < .98f || groundSurfaces == null || System.Array.IndexOf(groundSurfaces, hit.collider) < 0) return false;
                 float radius = Mathf.Lerp(radiusRange.x, radiusRange.y, (float)random.NextDouble());
                 float angle = (float)random.NextDouble() * Mathf.PI * 2;
-                stamps.Add(new Stamp { position = hit.point + Vector3.up * .035f,
-                    radius = new Vector2(radius, radius * Mathf.Lerp(.65f, 1.05f, (float)random.NextDouble())), sine = Mathf.Sin(angle), cosine = Mathf.Cos(angle) });
-                while (stamps.Count > maximumPuddles)
-                {
-                    var oldest = stamps[0]; stamps.RemoveAt(0); Dirty(oldest.HeightKey);
-                    if (oldest.support != null) Destroy(oldest.support);
-                }
+                var stamp = new Stamp { position = hit.point + Vector3.up * .035f,
+                    radius = new Vector2(radius, radius * Mathf.Lerp(.65f, 1.05f, (float)random.NextDouble())), sine = Mathf.Sin(angle), cosine = Mathf.Cos(angle) };
+                stamps.Add(stamp);
+                pending.Enqueue(stamp); // No admission cap or eviction; jobs still run one at a time.
                 return true;
             }
         }
@@ -353,8 +349,9 @@ namespace MVP03
             ripples?.Clear();
             foreach (var patch in patches) Recycle(patch);
             foreach (var stamp in stamps) if (stamp.support != null) Destroy(stamp.support);
-            patches.Clear(); stamps.Clear(); dirtyHeights.Clear(); dirtySet.Clear();
-            // The active job may finish, but its stamp no longer belongs to this collection.
+            patches.Clear(); stamps.Clear(); pending.Clear(); dirtyHeights.Clear(); dirtySet.Clear();
+            generation++;
+            // A running job belongs to the old generation and cannot restore cleared water.
             GetComponent<PuddleReflections>()?.Clear();
         }
         private void ReleaseResources()
