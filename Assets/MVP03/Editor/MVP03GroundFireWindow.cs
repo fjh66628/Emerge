@@ -24,7 +24,7 @@ public sealed class MVP03GroundFireWindow : EditorWindow
         panel.Add(new HelpBox("在 Game 面板选择“黄色火焰”，再点击地面。参数即时生效、自动保存，支持撤销。", HelpBoxMessageType.Info));
         if (material == null) { panel.Add(new Label("请先执行 MVP03 > Add Ground Fire。")); return; }
         Add(panel, "火焰高度 / 米", "_FlameHeight", .2f, 1.8f);
-        Add(panel, "火焰宽度 / 米", "_FlameWidth", .2f, .9f);
+        Add(panel, "火焰宽度 / 米", "_FlameWidth", 0f, 2f);
         var pivot = new UnityEngine.UIElements.Vector3Field("粒子 Pivot")
         {
             name = "_ParticlePivot",
