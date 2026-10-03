@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "groundClick": true,
+  "exactDuplicateMaskUnchanged": true,
+  "threeIdenticalStampsOneSurface": true,
+  "offsetOverlapClick": true,
+  "fourStampsOneSurface": true,
+  "wetPixels": 25240,
+  "dryPixels": 48505,
+  "gradedWetPixels": 16942,
+  "clearRemovesAll": true,
+  "stainTexture": "Assets/MVP03/Textures/GroundWaterStain.png",
+  "textureReadable": true,
+  "defaultReflectionMultiplier": 0.8,
+  "normalIncidenceReflectance": 0.016,
+  "note": "Isolated camera/manager with real ground raycasts. Byte-exact merged-mask comparison before/after three identical stamps, then a different overlapping placement. One rendering surface avoids repeated blend/highlight contributions.",
+  "settingsWindow": {
+    "passed": true,
+    "liveSliderCallback": true,
+    "savedDuringPlay": true,
+    "undoRestoresMaterialAndSlider": true,
+    "eightSliders": true,
+    "restoredReflectionMultiplier": 0.8,
+    "note": "Exercised the actual UI Toolkit slider callback, saved the material asset during Play and checked the serialized value, then used Undo and restored the user value."
+  },
+  "renderedVisibility": {
+    "passed": true,
+    "changedPixels": 110780,
+    "maximumLinearChannelChange": 0.633789063,
+    "averageChangedPixelDifference": 0.18454857902161845,
+    "note": "Matched offscreen HDR renders with merged water surfaces enabled/disabled in the same frame, including the existing main scene post/volume. Original renderers restored afterward."
+  }
+}

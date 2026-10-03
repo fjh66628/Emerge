@@ -27,6 +27,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _StainMap:
+        m_Texture: {fileID: 2800000, guid: 47a76b5b18a7a78469bea40109269c9c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SupportMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -34,13 +38,17 @@ Material:
     m_Ints: []
     m_Floats:
     - _EdgeNoise: 0.8
+    - _EdgeSoftness: 0.3
     - _HasReflection: 0
-    - _ReflectionStrength: 0.48
-    - _RippleStrength: 0.006
+    - _ReflectionBlur: 6
+    - _ReflectionStrength: 2
+    - _RippleStrength: 0.02
     - _Seed: 0
-    - _Smoothness: 0.97
-    - _WetDarkening: 0.32
+    - _Smoothness: 0.7052
+    - _SunHighlight: 0.176
+    - _WaterThreshold: 0.164
+    - _WetDarkening: 0
     m_Colors:
-    - _WetTint: {r: 0.035, g: 0.054999977, b: 0.059999965, a: 1}
+    - _WetTint: {r: 0.035, g: 0.055, b: 0.06, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

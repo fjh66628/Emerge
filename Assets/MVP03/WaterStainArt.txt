@@ -1,0 +1,8 @@
+GroundWaterStain.png
+Generated with the built-in image_gen tool. Opaque grayscale coverage mask;
+the original generated pixels are preserved. Imported as linear, readable data.
+Black means dry; brighter values mean progressively wetter stone/water.
+The shader supplies lighting and reflection at runtime.
+
+Final prompt:
+Use case: stylized-concept. Asset type: grayscale technical water-stain coverage mask for a Unity HD2D stone-floor wet decal, top-down orthographic texture. Generate one single naturally irregular connected puddle/water stain centered in a square image. Pure black dry background with a broad entirely black border of at least 12% on every edge. Mostly white to light gray interior represents the deeper wet core, softly mottled medium-gray shallow damp perimeter. Organic asymmetrical branching lobes, indentations and narrow connecting necks, a few tiny irregular dry holes, fine porous capillary fringes and just a few tiny satellite wet droplets next to the stain. Shape occupies about 72% of image width and height, balanced noncircular irregular footprint. This is a flat data mask: absolutely no perspective, shadows, lighting, reflections, actual stone texture, highlights, 3D relief, outlines, lettering, borders or watermark. Grayscale only; black=zero moisture, white=maximum moisture. Background opaque black, not transparency. Precise crisp organic silhouette with a small softly feathered irregular gray edge, not a blurry cloud or symmetrical circle. 1024 square.
