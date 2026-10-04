@@ -56,14 +56,7 @@ public class GameInstance : Singleton<GameInstance>
                 continue;
             }
 
-            if (shouldActive)
-            {
-                script.SwitchOn();
-            }
-            else
-            {
-                script.SwitchOff();
-            }
+            script.UpdateScript();
         }
     }
 
@@ -75,4 +68,6 @@ public interface Instance_interface// 负责单例组件中生命周期的接口
     bool IsActiveInScene(string sceneName);// 在指定场景名下是否应该激活
     void SwitchOn();
     void SwitchOff();
+
+    void UpdateScript();// 更新脚本状态入口
 }

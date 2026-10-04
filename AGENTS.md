@@ -110,7 +110,9 @@ No tests exist yet. To add them, create `Assets/Tests/` with its own test assemb
 ## Agent-Specific Instructions
 
 - The Unity Editor is often open and reimporting, so files may appear, disappear, or be renamed mid-task. Re-check the working tree before editing.
-- Serialized GUIDs live in `.meta` files; preserve them when adding or moving assets, and report compile warnings you did not fix.\### 环境描述
+- Serialized GUIDs live in `.meta` files; preserve them when adding or moving assets, and report compile warnings you did not fix.
+
+\### 环境描述
 
 
 

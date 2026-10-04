@@ -24,7 +24,7 @@ public abstract class ManagerBase : MonoBehaviour, Instance_interface
     public bool IsSwitchedOn => this.enabled;
 
     //判断该组件在指定场景名是否应该激活
-    public bool IsActiveInScene(string sceneName)
+    bool IsActiveInScene(string sceneName)
     {
         switch (activationMode)
         {
@@ -45,5 +45,24 @@ public abstract class ManagerBase : MonoBehaviour, Instance_interface
     public virtual void SwitchOff()
     {
         this.enabled = false;
+    }
+
+    public virtual void UpdateScript()
+    {
+        // 根据当前场景名切换组件激活状态
+        string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        bool shouldActive = IsActiveInScene(currentSceneName);
+
+        if (IsSwitchedOn != shouldActive)
+        {
+            if (shouldActive)
+            {
+                SwitchOn();
+            }
+            else
+            {
+                SwitchOff();
+            }
+        }
     }
 }
