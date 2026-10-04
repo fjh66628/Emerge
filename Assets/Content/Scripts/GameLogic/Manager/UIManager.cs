@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class UIManager : MonoBehaviour, Instance_interface
+public class UIManager : ManagerBase
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -12,17 +12,5 @@ public class UIManager : MonoBehaviour, Instance_interface
     void Update()
     {
 
-    }
-    /*
-        <summary>接口实现部分
-    */
-    public void SwitchOn()
-    {
-        this.enabled = true;
-    }
-
-    public void SwitchOff()
-    {
-        this.enabled = false;
     }
 }

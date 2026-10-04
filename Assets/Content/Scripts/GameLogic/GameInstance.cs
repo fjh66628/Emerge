@@ -25,9 +25,11 @@ public class GameInstance : Singleton<GameInstance>
         base.OnDestroy();
     }
 
-    //收到场景加载事件后转交 LevelManager 执行
+    //收到场景加载事件后先切换组件激活状态，再转交 LevelManager 执行
     public void OnLevelLoaded(LevelLoadEvent levelLoadEvent)
     {
+        ApplySceneActivation(levelLoadEvent);
+
         var levelManager = GetComponent<LevelManager>();
         if (levelManager == null)
         {
@@ -38,10 +40,39 @@ public class GameInstance : Singleton<GameInstance>
         levelManager.LevelLoad(levelLoadEvent);
     }
 
+    //按事件里的新场景名切换各组件激活状态，纯卸载事件不切换
+    void ApplySceneActivation(LevelLoadEvent levelLoadEvent)
+    {
+        if (string.IsNullOrEmpty(levelLoadEvent.targetName))
+        {
+            return;
+        }
+
+        foreach (var script in scriptList)
+        {
+            bool shouldActive = script.IsActiveInScene(levelLoadEvent.targetName);
+            if (script.IsSwitchedOn == shouldActive)
+            {
+                continue;
+            }
+
+            if (shouldActive)
+            {
+                script.SwitchOn();
+            }
+            else
+            {
+                script.SwitchOff();
+            }
+        }
+    }
+
 }
 
 public interface Instance_interface// 负责单例组件中生命周期的接口
 {
+    bool IsSwitchedOn { get; }// 当前是否处于激活状态
+    bool IsActiveInScene(string sceneName);// 在指定场景名下是否应该激活
     void SwitchOn();
     void SwitchOff();
 }

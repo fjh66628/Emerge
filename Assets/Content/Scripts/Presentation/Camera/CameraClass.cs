@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class InventoryManager : ManagerBase
+public class CameraClass : Singleton<CameraClass>
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
