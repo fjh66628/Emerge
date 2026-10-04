@@ -1,0 +1,17 @@
+{
+    "offMs":  5.730436,
+    "onMs":  5.84585428,
+    "offFps":  174.50679,
+    "onFps":  171.0614,
+    "sameLightAndMediumSettings":  true,
+    "framesPerCondition":  120,
+    "resolution":  "2560x1440",
+    "resolutionDivisor":  3,
+    "viewSteps":  32,
+    "lightSteps":  1,
+    "strength":  0.9,
+    "method":  "Editor frame-time comparison; both modes use interleaved sampling. No isolated GPU timer.",
+    "shaderErrors":  0,
+    "csharpErrors":  0,
+    "sliderAndUndoVerified":  true
+}

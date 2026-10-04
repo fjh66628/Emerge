@@ -1,0 +1,188 @@
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
+using UnityEngine.UI;
+
+namespace MVP03
+{
+    [DisallowMultipleComponent, RequireComponent(typeof(PixelFollowCamera))]
+    public sealed class CameraPitchUI : MonoBehaviour
+    {
+        public const string PreferenceKey = "MVP03.CameraPitch";
+        public const float MinimumPitch = 5, MaximumPitch = 45, DefaultPitch = 18;
+        private PixelFollowCamera follow;
+        private GameObject canvasObject, ownedEventSystem;
+        private Font font;
+        private Slider slider;
+        private Text readout;
+        private bool savePending;
+        private float saveAt;
+
+        private void OnEnable()
+        {
+            if (!Application.isPlaying) return;
+            follow = GetComponent<PixelFollowCamera>();
+            if (EventSystem.current == null)
+            {
+                ownedEventSystem = new GameObject("MVP03 camera UI events", typeof(EventSystem), typeof(InputSystemUIInputModule));
+                // Pointer-only controls leave WASD, arrows and Space with the player.
+                ownedEventSystem.GetComponent<EventSystem>().sendNavigationEvents = false;
+            }
+            font = Font.CreateDynamicFontFromOSFont(new[] { "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "Arial" }, 18);
+            canvasObject = new GameObject("MVP03 camera pitch UI", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            var canvas = canvasObject.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.sortingOrder = 100;
+            var scaler = canvasObject.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080); scaler.matchWidthOrHeight = .5f;
+
+            RectTransform panel = Rect("Camera pitch panel", canvasObject.transform, new Vector2(340, 273));
+            panel.anchorMin = panel.anchorMax = panel.pivot = Vector2.one;
+            panel.anchoredPosition = new Vector2(-24, -24);
+            Fill(panel, new Color(.055f, .07f, .095f, .94f));
+            Label("Title", panel, "相机俯角", 19, new Vector2(18, -12), new Vector2(124, 28));
+            readout = Label("Angle", panel, "", 20, new Vector2(158, -12), new Vector2(70, 28));
+            readout.color = new Color(.91f, .80f, .58f);
+
+            var resetRect = Rect("Reset pitch", panel, new Vector2(91, 28));
+            resetRect.anchoredPosition = new Vector2(232, -12);
+            var resetImage = Fill(resetRect, new Color(.23f, .25f, .28f, 1));
+            var reset = resetRect.gameObject.AddComponent<Button>();
+            reset.targetGraphic = resetImage; reset.navigation = new Navigation { mode = Navigation.Mode.None };
+            var resetText = Label("Reset label", resetRect, "重置 18°", 14, Vector2.zero, resetRect.sizeDelta);
+            resetText.alignment = TextAnchor.MiddleCenter;
+            reset.onClick.AddListener(() => { slider.value = DefaultPitch; EventSystem.current?.SetSelectedGameObject(null); });
+
+            var sliderRect = Rect("Camera pitch slider", panel, new Vector2(304, 30));
+            sliderRect.anchoredPosition = new Vector2(18, -48);
+            // A transparent graphic makes the full 30-pixel-high track clickable.
+            Fill(sliderRect, Color.clear);
+            var track = Rect("Track", sliderRect, Vector2.zero); Stretch(track, 0, 0, .4f, .6f);
+            Fill(track, new Color(.30f, .33f, .38f, 1), false);
+            var fillArea = Rect("Fill area", sliderRect, Vector2.zero); Stretch(fillArea, 0, 0, .4f, .6f);
+            var fillRect = Rect("Fill", fillArea, Vector2.zero); Stretch(fillRect, 0, 0, 0, 1);
+            Fill(fillRect, new Color(.74f, .62f, .40f, 1), false);
+            var handleArea = Rect("Handle area", sliderRect, Vector2.zero); Stretch(handleArea, 0, 0, .1f, .9f);
+            var handle = Rect("Handle", handleArea, new Vector2(14, 0));
+            handle.anchorMin = handle.anchorMax = new Vector2(0, .5f); handle.pivot = new Vector2(.5f, .5f);
+            var handleImage = Fill(handle, new Color(.98f, .88f, .66f, 1));
+            slider = sliderRect.gameObject.AddComponent<Slider>();
+            slider.fillRect = fillRect; slider.handleRect = handle; slider.targetGraphic = handleImage;
+            slider.direction = Slider.Direction.LeftToRight; slider.minValue = MinimumPitch; slider.maxValue = MaximumPitch;
+            slider.wholeNumbers = true; slider.navigation = new Navigation { mode = Navigation.Mode.None };
+            slider.onValueChanged.AddListener(ApplyPitch);
+            var low = Label("Minimum", panel, "5° · 低视角", 12, new Vector2(18, -80), new Vector2(140, 20));
+            var high = Label("Maximum", panel, "高视角 · 45°", 12, new Vector2(182, -80), new Vector2(140, 20));
+            low.color = high.color = new Color(.64f, .69f, .76f); high.alignment = TextAnchor.MiddleRight;
+
+            var divider = Rect("Enemy section divider", panel, new Vector2(304, 1));
+            divider.anchoredPosition = new Vector2(18, -109); Fill(divider, new Color(.3f, .34f, .4f, .65f), false);
+            var spawnRect = Rect("Spawn enemy", panel, new Vector2(304, 34));
+            spawnRect.anchoredPosition = new Vector2(18, -121);
+            var spawnImage = Fill(spawnRect, new Color(.13f, .27f, .35f, 1));
+            var spawn = spawnRect.gameObject.AddComponent<Button>();
+            spawn.targetGraphic = spawnImage; spawn.navigation = new Navigation { mode = Navigation.Mode.None };
+            var spawnText = Label("Spawn label", spawnRect, "+ 生成敌人 · 蓝色史莱姆", 16, Vector2.zero, spawnRect.sizeDelta);
+            spawnText.alignment = TextAnchor.MiddleCenter;
+            var spawnStatus = Label("Spawn status", panel, "在主角附近生成 1 只史莱姆", 12, new Vector2(18, -160), new Vector2(304, 20));
+            spawnStatus.color = new Color(.64f, .75f, .82f);
+            spawn.onClick.AddListener(() =>
+            {
+                var spawner = GetComponent<CourtyardEnemySpawner>();
+                if (spawner == null) spawnStatus.text = "敌人生成器尚未配置";
+                else { spawner.TrySpawn(out _, out string message); spawnStatus.text = message; }
+                EventSystem.current?.SetSelectedGameObject(null);
+            });
+
+            var ground = GetComponent<ClickPuddles>();
+            var waterRect = Rect("Select water", panel, new Vector2(146, 32));
+            waterRect.anchoredPosition = new Vector2(18, -192);
+            var waterImage = Fill(waterRect, new Color(.12f, .35f, .43f, 1));
+            var water = waterRect.gameObject.AddComponent<Button>(); water.targetGraphic = waterImage;
+            water.navigation = new Navigation { mode = Navigation.Mode.None };
+            var waterText = Label("Water label", waterRect, "水塘", 15, Vector2.zero, waterRect.sizeDelta);
+            waterText.alignment = TextAnchor.MiddleCenter;
+            var fireRect = Rect("Select fire", panel, new Vector2(146, 32));
+            fireRect.anchoredPosition = new Vector2(176, -192);
+            var fireImage = Fill(fireRect, new Color(.24f, .19f, .12f, 1));
+            var fire = fireRect.gameObject.AddComponent<Button>(); fire.targetGraphic = fireImage;
+            fire.navigation = new Navigation { mode = Navigation.Mode.None };
+            fire.interactable = ground != null && ground.HasFire;
+            var fireText = Label("Fire label", fireRect, "黄色火焰", 15, Vector2.zero, fireRect.sizeDelta);
+            fireText.alignment = TextAnchor.MiddleCenter;
+            var waterHint = Label("Puddle hint", panel, "左键点击地面 · 生成水塘", 12, new Vector2(18, -237), new Vector2(205, 22));
+            waterHint.color = new Color(.65f, .78f, .82f);
+            System.Action<ClickPuddles.GroundElement> select = element =>
+            {
+                ground?.SelectElement(element);
+                bool selectedFire = element == ClickPuddles.GroundElement.Fire;
+                fireImage.color = selectedFire ? new Color(.62f, .35f, .07f, 1) : new Color(.24f, .19f, .12f, 1);
+                waterImage.color = selectedFire ? new Color(.14f, .21f, .25f, 1) : new Color(.12f, .35f, .43f, 1);
+                waterHint.text = selectedFire ? "左键点击地面 · 生成火焰" : "左键点击地面 · 生成水塘";
+                EventSystem.current?.SetSelectedGameObject(null);
+            };
+            water.onClick.AddListener(() => select(ClickPuddles.GroundElement.Water));
+            fire.onClick.AddListener(() => select(ClickPuddles.GroundElement.Fire));
+            select(ground != null ? ground.SelectedElement : ClickPuddles.GroundElement.Water);
+            var clearRect = Rect("Clear puddles", panel, new Vector2(91, 26));
+            clearRect.anchoredPosition = new Vector2(232, -235);
+            var clearImage = Fill(clearRect, new Color(.19f, .25f, .29f, 1));
+            var clear = clearRect.gameObject.AddComponent<Button>();
+            clear.targetGraphic = clearImage; clear.navigation = new Navigation { mode = Navigation.Mode.None };
+            var clearText = Label("Clear puddles label", clearRect, "清空地面", 13, Vector2.zero, clearRect.sizeDelta);
+            clearText.alignment = TextAnchor.MiddleCenter;
+            clear.onClick.AddListener(() => { GetComponent<ClickPuddles>()?.Clear(); EventSystem.current?.SetSelectedGameObject(null); });
+
+            float value = PlayerPrefs.GetFloat(PreferenceKey, follow.Pitch);
+            if (float.IsNaN(value) || float.IsInfinity(value)) value = DefaultPitch;
+            value = Mathf.Round(Mathf.Clamp(value, MinimumPitch, MaximumPitch));
+            slider.SetValueWithoutNotify(value); follow.SetPitch(value); UpdateReadout(value);
+        }
+
+        private void ApplyPitch(float value)
+        {
+            follow.SetPitch(value); UpdateReadout(value);
+            PlayerPrefs.SetFloat(PreferenceKey, value);
+            savePending = true; saveAt = Time.unscaledTime + .4f;
+        }
+
+        private void UpdateReadout(float value) => readout.text = value.ToString("0") + "°";
+        private void Update() { if (savePending && Time.unscaledTime >= saveAt) Save(); }
+        private void OnApplicationFocus(bool focus) { if (!focus) Save(); }
+        private void Save() { if (!savePending) return; PlayerPrefs.Save(); savePending = false; }
+        private void OnDisable()
+        {
+            Save();
+            if (canvasObject != null) { canvasObject.SetActive(false); Destroy(canvasObject); }
+            if (ownedEventSystem != null) { ownedEventSystem.SetActive(false); Destroy(ownedEventSystem); }
+            if (font != null) Destroy(font);
+        }
+
+        private static RectTransform Rect(string name, Transform parent, Vector2 size)
+        {
+            var rect = new GameObject(name, typeof(RectTransform)).GetComponent<RectTransform>();
+            rect.SetParent(parent, false); rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0, 1);
+            rect.sizeDelta = size; return rect;
+        }
+
+        private static void Stretch(RectTransform rect, float left, float right, float bottom, float top)
+        {
+            rect.anchorMin = new Vector2(0, bottom); rect.anchorMax = new Vector2(1, top);
+            rect.pivot = new Vector2(.5f, .5f); rect.offsetMin = new Vector2(left, 0); rect.offsetMax = new Vector2(-right, 0);
+        }
+
+        private static Image Fill(RectTransform rect, Color color, bool raycast = true)
+        {
+            var graphic = rect.gameObject.AddComponent<Image>(); graphic.color = color; graphic.raycastTarget = raycast;
+            return graphic;
+        }
+
+        private Text Label(string name, Transform parent, string text, int size, Vector2 position, Vector2 bounds)
+        {
+            var rect = Rect(name, parent, bounds); rect.anchoredPosition = position;
+            var label = rect.gameObject.AddComponent<Text>(); label.font = font; label.fontSize = size;
+            label.text = text; label.color = new Color(.9f, .92f, .95f); label.alignment = TextAnchor.MiddleLeft;
+            label.raycastTarget = false; return label;
+        }
+    }
+}

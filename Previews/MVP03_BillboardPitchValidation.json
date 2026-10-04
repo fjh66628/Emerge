@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "actors": [
+    "BlueSlime",
+    "Pilgrim / WASD",
+    "Ranger / companion"
+  ],
+  "pitches": [
+    5,
+    18,
+    45
+  ],
+  "maximumBasisAlignmentError": 5.96046448E-08,
+  "maximumCardDepthDifference": 1.90734863E-06,
+  "shadowSamples": 288,
+  "shadowContained": true,
+  "rootsUnchanged": true,
+  "pivotsUnchanged": true,
+  "scaleUnchanged": true,
+  "litAndShadows": true,
+  "note": "Live player, companion and slime billboard callbacks at three camera pitches; all camera and actor transforms restored synchronously. Checked shader shadow-envelope corners for eight light azimuths per sprite, with no input-device simulation."
+}

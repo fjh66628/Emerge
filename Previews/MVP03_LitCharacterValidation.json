@@ -1,0 +1,124 @@
+{
+  "samples": [
+    {
+      "name": "No direct light",
+      "meanLinearRGB": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "luminance": 0.0
+    },
+    {
+      "name": "Red point light",
+      "meanLinearRGB": [
+        0.0833814442,
+        0.0004292309,
+        7.692482E-05
+      ],
+      "luminance": 0.0180394351
+    },
+    {
+      "name": "Blue point light",
+      "meanLinearRGB": [
+        0.000129073829,
+        0.00116977375,
+        0.04969352
+      ],
+      "luminance": 0.00445193565
+    },
+    {
+      "name": "Warm point 4.2",
+      "meanLinearRGB": [
+        0.0437753238,
+        0.008915837,
+        0.00178409985
+      ],
+      "luminance": 0.0158120524
+    },
+    {
+      "name": "Warm point 5.04",
+      "meanLinearRGB": [
+        0.0525304265,
+        0.0106990095,
+        0.00214091782
+      ],
+      "luminance": 0.0189744737
+    },
+    {
+      "name": "White spot cookie",
+      "meanLinearRGB": [
+        0.104226217,
+        0.0212281942,
+        0.004247858
+      ],
+      "luminance": 0.0376475938
+    },
+    {
+      "name": "Black spot cookie",
+      "meanLinearRGB": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "luminance": 0.0
+    },
+    {
+      "name": "Spot without blocker",
+      "meanLinearRGB": [
+        0.06866376,
+        0.0139730247,
+        0.00283055939
+      ],
+      "luminance": 0.02479579
+    },
+    {
+      "name": "Spot with blocker",
+      "meanLinearRGB": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "luminance": 0.0
+    },
+    {
+      "name": "Main directional sun",
+      "meanLinearRGB": [
+        0.0345094725,
+        0.0180322044,
+        0.009084259
+      ],
+      "luminance": 0.02088923
+    },
+    {
+      "name": "Main directional sun +20%",
+      "meanLinearRGB": [
+        0.0414116159,
+        0.021638494,
+        0.0109011009
+      ],
+      "luminance": 0.02506702
+    },
+    {
+      "name": "Main directional sun with blocker",
+      "meanLinearRGB": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "luminance": 0.0
+    }
+  ],
+  "redLightTints": true,
+  "blueLightTints": true,
+  "localLightBrightnessResponds": true,
+  "cookieResponds": true,
+  "receivesShadow": true,
+  "shadowRatio": 0.0,
+  "mainSunResponds": true,
+  "mainSunShadowResponds": true,
+  "mainSunShadowRatio": 0.0,
+  "sharedMaterialPreserved": true,
+  "shaderErrors": [],
+  "note": "Isolated linear HDR render using the courtyard renderer; ambient multiplier and reflection intensity disabled to measure direct light. All original lights and material settings restored after capture."
+}

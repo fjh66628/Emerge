@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "hops": true,
+  "hopCount": 3,
+  "verticalTravel": 0.5401077,
+  "minimumScaleY": 0.73,
+  "maximumScaleY": 1.17,
+  "spellBlockedByWall": true,
+  "firstSpellLeavesOneHit": true,
+  "secondSpellDefeats": true,
+  "defeatHidesSprite": true,
+  "respawned": true,
+  "litShader": "MVP04/Lit Pixel Character",
+  "receivesShadow": true,
+  "castsShadow": "TwoSided",
+  "note": "Isolated live prefab and real CharacterController on a temporary floor; three ballistic hops with squash/stretch, actual MagicBolt sphere sweeps against wall and enemy, then defeat/respawn. Native keyboard and the player's actor are untouched."
+}

@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "texture": "Assets/MVP03/Textures/FlameFlipbook.png",
+  "width": 1024,
+  "height": 1024,
+  "colourSRGB": true,
+  "sourceAlpha": true,
+  "grid": "4 x 4 / 16 frames",
+  "shaderMessages": [],
+  "live": [
+    {
+      "aliveParticleCount": 1167,
+      "pivot": "(0.00, -0.32, 0.00)",
+      "height": 0.5,
+      "width": 1.0,
+      "brightness": 4.0
+    }
+  ],
+  "preview": "Previews/MVP03_GroundFire.png",
+  "tool": "built-in image_gen",
+  "prompt": "Assets/MVP03/FireArt.txt"
+}

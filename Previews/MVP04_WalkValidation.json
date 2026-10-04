@@ -1,0 +1,86 @@
+{
+  "directions": [
+    {
+      "direction": "Front",
+      "integratedMovement": true,
+      "displacementMetres": 0.869327,
+      "visitedFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "idleRetainsDirection": true,
+      "blockedStops": true,
+      "textureBound": true,
+      "sprite": "Pilgrim_Front_2",
+      "atlasRightMatchesScreen": true,
+      "magicFacingMatchesMovement": true
+    },
+    {
+      "direction": "Left",
+      "integratedMovement": true,
+      "displacementMetres": 0.9475664,
+      "visitedFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "idleRetainsDirection": true,
+      "blockedStops": true,
+      "textureBound": true,
+      "sprite": "Pilgrim_Left_2",
+      "atlasRightMatchesScreen": true,
+      "magicFacingMatchesMovement": true
+    },
+    {
+      "direction": "Right",
+      "integratedMovement": true,
+      "displacementMetres": 0.9032479,
+      "visitedFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "idleRetainsDirection": true,
+      "blockedStops": true,
+      "textureBound": true,
+      "sprite": "Pilgrim_Right_2",
+      "atlasRightMatchesScreen": true,
+      "magicFacingMatchesMovement": true
+    },
+    {
+      "direction": "Back",
+      "integratedMovement": true,
+      "displacementMetres": 1.01147342,
+      "visitedFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "idleRetainsDirection": true,
+      "blockedStops": true,
+      "textureBound": true,
+      "sprite": "Pilgrim_Back_2",
+      "atlasRightMatchesScreen": true,
+      "magicFacingMatchesMovement": true
+    }
+  ],
+  "physicalDevicesUnchanged": true,
+  "nativeKeyboard": true,
+  "originalPlayerEnabled": true,
+  "originalCameraFollowing": true,
+  "shaderErrors": [],
+  "note": "Frame callbacks exercise a temporary actor's actual controller Move path for 30 frames per direction. Frame coverage and previews are checked separately. The player and native input devices are preserved."
+}

@@ -1,0 +1,78 @@
+{
+  "passed": true,
+  "scatteringPixels": 129574,
+  "warmScatteringRGB": [
+    4842.831615418196,
+    3813.346110619139,
+    2310.0042859697714
+  ],
+  "pixelsShadowedByGeometry": 128656,
+  "sourceOffMaximumScattering": 0.0,
+  "nonfinitePixels": 0,
+  "originalChapelSourceSelectionAndBoundsPreserved": true,
+  "shaderErrors": false,
+  "note": "480x270 linear HDR. Scattering is isolated by subtracting the same frame with only the directional scattering branch disabled, preserving extinction. Shadowed and unshadowed cases each use their own surface baseline. Colour grading is disabled and density noise temporarily held uniform; all settings restored.",
+  "performanceAndAir": {
+    "samples": 180,
+    "width": 2560,
+    "height": 1440,
+    "averageEditorFrameMilliseconds": 5.3491416,
+    "p95EditorFrameMilliseconds": 6.23450232,
+    "airAdvectionMetres": 0.21702449,
+    "airMoves": true,
+    "note": "Live Editor game-frame timings after 30 warm-up frames, with the current user-controlled view. Not isolated GPU timing or a frame-rate guarantee."
+  },
+  "controls": {
+    "passed": true,
+    "fourDirectionDisplacementMetres": [
+      0.7351039,
+      0.770302,
+      0.7640933,
+      0.781714141
+    ],
+    "maximumViewportCentreError": 1.55086661e-06,
+    "maximumCameraAngleDriftDegrees": 0.0,
+    "nearDistance": 5.000037,
+    "farDistance": 14.9999609,
+    "mainCameraBoundAndZoomEnabled": true,
+    "note": "360 live frames: clone uses PixelPilgrim.Move and its real CharacterController, then PixelFollowCamera.LateUpdate. Four cardinal movements and smooth zoom convergence to 5/15 metres are measured. Native keyboard and the real player are untouched."
+  },
+  "compilationErrors": 0,
+  "shaderWarnings": 0,
+  "consoleErrors": 0,
+  "migrationRepeatedWithoutDuplicates": true,
+  "preview": "Previews/MVP03_WarmVolumeGame.png",
+  "preset": {
+    "sunColour": [
+      1,
+      0.9,
+      0.72
+    ],
+    "sunIntensity": 3.4,
+    "sunPropagationDirectionBeforeNormalization": [
+      0.18,
+      -0.64,
+      -0.746
+    ],
+    "density": 0.022,
+    "albedo": 0.92,
+    "anisotropy": 0.35,
+    "noiseAmount": 0.7,
+    "noiseScale": 0.38,
+    "flowSpeed": 0.18,
+    "resolutionDivisor": 3,
+    "viewSteps": 32,
+    "lightSteps": 1,
+    "denoiseStrength": 0.9,
+    "mediumMin": [
+      -13.9,
+      0,
+      -30.4
+    ],
+    "mediumMax": [
+      12,
+      15,
+      3.4
+    ]
+  }
+}

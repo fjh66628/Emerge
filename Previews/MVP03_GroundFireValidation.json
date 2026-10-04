@@ -1,0 +1,57 @@
+{
+  "uiRejectsPlacement": true,
+  "fireCoveragePixels": 15584,
+  "duplicateCoverageIdentical": true,
+  "mixedEnqueue": {
+    "accepted": 64,
+    "PendingCount": 64
+  },
+  "mixedCompleted": {
+    "FireCount": 34,
+    "PuddleCount": 32,
+    "PendingCount": 0,
+    "fireSurfaces": 1,
+    "waterSurfaces": 1,
+    "FireLightCount": 1,
+    "FireEffectCount": 1,
+    "frames": 65
+  },
+  "clearWhilePendingAndWaterReuse": true,
+  "disableReleasesBothElements": true,
+  "shaderMessages": [],
+  "error": null,
+  "passed": true,
+  "finalAnimation": {
+    "texture": "Assets/MVP03/Textures/FlameFlipbook.png",
+    "width": 1024,
+    "height": 1024,
+    "sourceAlpha": true,
+    "linear": true,
+    "frames": 16,
+    "frameBlending": true,
+    "graphReferencesTexture": true,
+    "shaderMessages": [],
+    "active": [
+      {
+        "aliveParticleCount": 207,
+        "culled": false,
+        "animationFPS": 16.0,
+        "height": 0.532
+      }
+    ],
+    "scorch": 0.756
+  },
+  "pivot": {
+    "fieldPresent": true,
+    "pivot": "(0.00, 0.32, 0.00, 0.00)",
+    "shaderMessages": [],
+    "live": [
+      {
+        "aliveParticleCount": 683,
+        "exposed": true,
+        "pivot": "(0.00, 0.32, 0.00)",
+        "matchesMaterial": true
+      }
+    ]
+  }
+}

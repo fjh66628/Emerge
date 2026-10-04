@@ -1,0 +1,94 @@
+{
+  "samples": [
+    {
+      "name": "No direct light",
+      "meanLinearRGB": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "luminance": 0.0
+    },
+    {
+      "name": "Red point light",
+      "meanLinearRGB": [
+        0.0838020444,
+        0.0004181841,
+        6.642552E-05
+      ],
+      "luminance": 0.0181201957
+    },
+    {
+      "name": "Blue point light",
+      "meanLinearRGB": [
+        0.000129724416,
+        0.0011396592,
+        0.042911198
+      ],
+      "luminance": 0.00394085236
+    },
+    {
+      "name": "Candle 4.2",
+      "meanLinearRGB": [
+        0.04399597,
+        0.008686373,
+        0.00154059846
+      ],
+      "luminance": 0.0156772677
+    },
+    {
+      "name": "Candle 5.04",
+      "meanLinearRGB": [
+        0.05279544,
+        0.010423624,
+        0.0018487206
+      ],
+      "luminance": 0.0188127644
+    },
+    {
+      "name": "White spot cookie",
+      "meanLinearRGB": [
+        0.10475228,
+        0.0206817538,
+        0.00366808032
+      ],
+      "luminance": 0.03732676
+    },
+    {
+      "name": "Black spot cookie",
+      "meanLinearRGB": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "luminance": 0.0
+    },
+    {
+      "name": "Spot without blocker",
+      "meanLinearRGB": [
+        0.10475228,
+        0.0206817538,
+        0.00366808032
+      ],
+      "luminance": 0.03732676
+    },
+    {
+      "name": "Spot with blocker",
+      "meanLinearRGB": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "luminance": 0.0
+    }
+  ],
+  "redLightTints": true,
+  "blueLightTints": true,
+  "candleBrightnessResponds": true,
+  "cookieResponds": true,
+  "receivesShadow": true,
+  "shadowRatio": 0.0,
+  "sharedMaterialPreserved": true,
+  "shaderErrors": [],
+  "note": "Isolated linear HDR render using the chapel renderer; ambient multiplier and reflection intensity disabled to measure direct light. All original lights and material settings restored after capture."
+}

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f69206b8d771714b8fecaa939e47d18, type: 3}
+  m_Name: ExteriorLeft
+  m_EditorClassIdentifier: Assembly-CSharp::MVP04.ChapelLightSettings
+  sourceEnabled: 1
+  position: {x: -24, y: 14, z: 12}
+  target: {x: 0, y: 1, z: 1}
+  intensity: 18000
+  colour: {r: 0.76, g: 0.84, b: 1, a: 1}
+  coneAngle: 82
+  range: 65
+  directTransmission: 0.7
+  roseTransmission: {fileID: 2800000, guid: 56e3f532a09e25d4596c5667e9eaed6e, type: 3}
+  sideTransmission: {fileID: 2800000, guid: 26f75f8b699672544b4e6b4b95a8beb7, type: 3}

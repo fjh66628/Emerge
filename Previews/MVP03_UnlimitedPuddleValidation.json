@@ -1,0 +1,34 @@
+{
+  "burst": {
+    "accepted": 100,
+    "PuddleCount": 100,
+    "PendingCount": 100,
+    "enqueueMilliseconds": 13.812100000000001
+  },
+  "completed": {
+    "frames": 101,
+    "PuddleCount": 100,
+    "PendingCount": 0,
+    "ready": 100,
+    "retainedOldest": true,
+    "surfaces": 1
+  },
+  "clearedWhileActive": true,
+  "afterClear": {
+    "PuddleCount": 3,
+    "PendingCount": 0,
+    "surfaces": 1
+  },
+  "afterReenable": {
+    "PuddleCount": 1,
+    "PendingCount": 0,
+    "surfaces": 1
+  },
+  "error": null,
+  "passed": true,
+  "editor": {
+    "unityVersion": "6000.3.25f1",
+    "errors": 0,
+    "warnings": 0
+  }
+}

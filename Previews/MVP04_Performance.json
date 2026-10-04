@@ -1,0 +1,30 @@
+{
+  "method": "Unity Editor unscaled frame times, fixed Game camera, 30 warmup frames then 120 samples per phase; effect enabled then disabled; original one emitter vs optimized three emitters.",
+  "before": {
+    "enabledMs": 48.1297874,
+    "disabledMs": 5.63557243,
+    "enabledFps": 20.777153,
+    "disabledFps": 177.44426,
+    "resolution": "2560x1440",
+    "frames": 120
+  },
+  "after": {
+    "enabledMs": 9.591278,
+    "disabledMs": 7.77765751,
+    "enabledFps": 104.261391,
+    "disabledFps": 128.57341,
+    "resolution": "2560x1440",
+    "frames": 120
+  },
+  "quality": {
+    "resolutionDivisor": 2,
+    "viewSteps": 40,
+    "lightSteps": 2
+  },
+  "frameTimeReductionPercent": 80.07,
+  "measuredSourceIntensities": {
+    "ExteriorLight": 50000,
+    "ExteriorLeft": 18000,
+    "ExteriorRight": 18000
+  }
+}

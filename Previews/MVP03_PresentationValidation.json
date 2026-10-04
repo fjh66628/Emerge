@@ -1,0 +1,36 @@
+{
+  "densityLive": true,
+  "undo": true,
+  "redo": true,
+  "qualityLive": true,
+  "flowLive": true,
+  "toggleLive": true,
+  "intensityFieldExists": true,
+  "sourceBindingLive": true,
+  "sourceSavedToDisk": true,
+  "camera": {
+    "euler": [
+      11.4000025,
+      0.0,
+      0.0
+    ],
+    "sameX": true,
+    "viewportCentreError": 0.0,
+    "zoomEnabled": true
+  },
+  "portraits": [
+    {
+      "name": "RebuiltTraveler1",
+      "shader": "MVP04/Lit Pixel Character",
+      "receiveShadows": true,
+      "castShadows": "TwoSided"
+    },
+    {
+      "name": "RebuiltTraveler0",
+      "shader": "MVP04/Lit Pixel Character",
+      "receiveShadows": true,
+      "castShadows": "TwoSided"
+    }
+  ],
+  "playSettingsPersistInEdit": true
+}

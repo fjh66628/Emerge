@@ -1,0 +1,73 @@
+{
+  "isolated": {
+    "results": [
+      {
+        "source": [
+          -8.0,
+          58.0,
+          0.0
+        ],
+        "oldShadowPixels": 0,
+        "newShadowPixels": 5517,
+        "oldShadowEnergy": 0.0,
+        "newShadowEnergy": 2892.45752
+      },
+      {
+        "source": [
+          8.0,
+          58.0,
+          0.0
+        ],
+        "oldShadowPixels": 0,
+        "newShadowPixels": 5512,
+        "oldShadowEnergy": 0.0,
+        "newShadowEnergy": 2893.083
+      },
+      {
+        "source": [
+          0.0,
+          58.0,
+          -8.0
+        ],
+        "oldShadowPixels": 5532,
+        "newShadowPixels": 5532,
+        "oldShadowEnergy": 2861.06885,
+        "newShadowEnergy": 2861.06885
+      }
+    ],
+    "shaderMessages": [],
+    "note": "Offscreen ground receiver with one spot at a time; baseline without caster, original flat-card shadow, then light-facing shadow. Only ground is visible."
+  },
+  "altar": {
+    "changedGroundPixels": 19302,
+    "groundShadowDifferenceVisible": true,
+    "luminanceReduction": 1947.8717384953052,
+    "bounds": [
+      366,
+      304,
+      1263,
+      352
+    ],
+    "heroPosition": [
+      0.416786969,
+      0.0149998665,
+      11.7558842
+    ],
+    "note": "Same camera, frame, lighting and pose; only the light-facing shadow switch changes. Ground sample excludes the character's centre."
+  },
+  "bounds": {
+    "checkedFrames": 24,
+    "allBoundsValid": true,
+    "restoredBounds": true
+  },
+  "currentState": {
+    "heroEnabled": true,
+    "characterVisible": true,
+    "componentEnabled": true,
+    "casting": "TwoSided",
+    "receiveShadows": true,
+    "shadowSwitch": 1.0,
+    "temporaryObjects": []
+  },
+  "shaderMessages": []
+}

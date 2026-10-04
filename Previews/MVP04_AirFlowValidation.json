@@ -1,0 +1,21 @@
+{
+  "flowingDisplacementMetres": 1.67544961,
+  "zeroSpeedDisplacementMetres": 0.0,
+  "freezeWorks": true,
+  "frameMeanMs": 8.784095,
+  "frameP95Ms": 11.403203,
+  "sampleCount": 120,
+  "resolution": "2560x1440",
+  "resolutionDivisor": 3,
+  "viewSteps": 32,
+  "lightSteps": 1,
+  "denoiseStrength": 0.9,
+  "originalSpeed": 0.28,
+  "flowWarp": 1.1,
+  "flowDetail": 0.45,
+  "noiseAmount": 1.0,
+  "noiseScale": 0.892,
+  "sameLightAndMediumSettings": true,
+  "shaderErrors": [],
+  "note": "Unity Editor full-frame timings; not isolated GPU cost. Two views six seconds apart use the same camera and lights."
+}

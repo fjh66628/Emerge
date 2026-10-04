@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb10c02419a62554790555e8a5764c49, type: 3}
+  m_Name: CourtyardSun
+  m_EditorClassIdentifier: Assembly-CSharp::MVP03.CourtyardSunSettings
+  sourceEnabled: 1
+  rotation: {x: 39.82728, y: 166.43457, z: 0.0000011117152}
+  colour: {r: 1, g: 0.9, b: 0.72, a: 1}
+  intensity: 3.4
+  shadowStrength: 1

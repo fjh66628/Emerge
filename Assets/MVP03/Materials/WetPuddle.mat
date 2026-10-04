@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: WetPuddle
+  m_Shader: {fileID: 4800000, guid: 67ff67b5730219c43b11688865e54f02, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _PlanarReflection:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StainMap:
+        m_Texture: {fileID: 2800000, guid: 47a76b5b18a7a78469bea40109269c9c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SupportMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _EdgeNoise: 0.8
+    - _EdgeSoftness: 0.1198
+    - _HasReflection: 0
+    - _ReflectionBlur: 0.6
+    - _ReflectionStrength: 0.48
+    - _RippleStrength: 0.006
+    - _Seed: 0
+    - _Smoothness: 0.9128
+    - _SunHighlight: 1
+    - _WaterThreshold: 0.5
+    - _WetDarkening: 0.6
+    m_Colors:
+    - _SupportAtlas: {r: 0, g: 0, b: 1, a: 1}
+    - _WetTint: {r: 0, g: 0, b: 0, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
