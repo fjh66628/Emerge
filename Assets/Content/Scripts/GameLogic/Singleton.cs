@@ -8,7 +8,6 @@ using UnityEngine;
 public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
 {
     private static T instance;
-    private static bool isQuitting;
 
     /// <summary>场景中的实例；不存在或已销毁时返回 null。</summary>
     public static T Instance
@@ -20,10 +19,6 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
                 return instance;
             }
 
-            if (isQuitting)
-            {
-                return null;
-            }
 
             instance = FindInstance();
             return instance;
@@ -36,18 +31,6 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
     [SerializeField]
     [Tooltip("切换场景时保留该单例")]
     private bool persistent;
-
-    /// <summary>获取实例，若不存在则动态创建并挂载 T。</summary>
-    public static T EnsureInstance()
-    {
-        T current = Instance;
-        if (current != null)
-        {
-            return current;
-        }
-
-        return new GameObject(typeof(T).Name).AddComponent<T>();
-    }
 
     protected virtual void Awake()
     {
