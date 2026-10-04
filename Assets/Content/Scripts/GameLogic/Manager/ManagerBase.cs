@@ -24,7 +24,7 @@ public abstract class ManagerBase : MonoBehaviour, Instance_interface
     public bool IsSwitchedOn => this.enabled;
 
     //判断该组件在指定场景名是否应该激活
-    bool IsActiveInScene(string sceneName)
+    public bool IsActiveInScene(string sceneName)
     {
         switch (activationMode)
         {
