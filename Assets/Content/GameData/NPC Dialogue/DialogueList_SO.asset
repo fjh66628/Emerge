@@ -12,3 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b78a887dac0abc640954b1a8d7de616c, type: 3}
   m_Name: DialogueList_SO
   m_EditorClassIdentifier: Assembly-CSharp::DialogueList
+  dialogues:
+  - hello
+  - world
+  - xdu
