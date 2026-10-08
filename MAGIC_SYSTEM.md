@@ -2,6 +2,25 @@
 
 > 适用范围：`Assets/Content/` 下的魔法玩法代码与配表。本文说明数据结构怎么工作、配表怎么配、代码怎么构造与调用。
 
+## 脚本一览
+
+| 脚本 | 位置（相对 `Assets/Content/Scripts/`） | 作用 |
+| --- | --- | --- |
+| `UseMagic` | `GameLogic/Magic/UseMagic.cs` | 挂在施法者身上，对外唯一释放入口 `Cast(MagicType, MagicMoveType)`：算方向/速度/存活时间，实例化魔法预制体，并把施法者自己传进去 |
+| `MagicObject` | `GameLogic/Magic/MagicObject.cs` | 挂在魔法预制体上：按类型查配表构造数据类，持有本次数值与施法者，把移动参数转交 `MagicMove` |
+| `MagicMove` | `GameLogic/Magic/MagicMove.cs` | 挂在同一个预制体上：按 `MagicMoveType` 驱动飞行（目前只实现直线），`Init` 时注册超时自毁 |
+| `MagicMoveType` | `GameLogic/Magic/MagicMoveType.cs` | 枚举：直线 / 追踪 / 原地 |
+| `MagicHitDetector` | `GameLogic/Magic/MagicHitDetector.cs` | 挂在魔法预制体上：出生帧 `OverlapSphere` + 之后每帧按位移 `SphereCast` 扫掠；撞到实体就停在命中点、通知 `MagicInteractable`、销毁魔法；施法者（含子物体）、魔法自己、Trigger 都不算命中 |
+| `MagicInteractable` | `GameLogic/Magic/InteractiveObject/MagicInteractable.cs` | 挂在可交互场景物体上：被命中时 `OnMagicHit(MagicHitInfo)` 按反应表处理，子类可重写补充自己的逻辑 |
+| `MagicReaction` / `MagicReactionKind` | `GameLogic/Magic/InteractiveObject/MagicReaction.cs` | 反应表里的一条：魔法类型 + 反应种类（无反应 / 销毁自身 / 换成预制体）+ 替换预制体 + 命中特效 |
+| `MagicReactionList` | `GameLogic/Magic/InteractiveObject/MagicReactionList.cs` | ScriptableObject 反应表（一组 `MagicReaction`），`MagicInteractable.reactions` 指向它 |
+| `MagicHitInfo` | `GameLogic/Magic/InteractiveObject/MagicHitInfo.cs` | 一次命中的信息：魔法类型、配表数值、命中点 / 法线 / 飞行方向 |
+| `MagicType` / `MagicElement` | `GameDataScripts/MagicData/MagicType.cs` | 魔法类型（水/火/岩/气/烤/融）与元素分类枚举（元素**未接入**） |
+| `MagicClassBase` + `WaterMagic` 等 6 个子类 | `GameDataScripts/MagicData/MagicClass.cs` | 一条魔法的基础数值（名字/描述/伤害/蓝耗/图标）；子类构造函数从配表拷贝对应类型的数值 |
+| `MagicList` | `GameDataScripts/MagicData/MagicList.cs` | ScriptableObject 配表容器（`List<MagicClassBase>`），对外只读 `GetMagicList` |
+| `MoveEnum` | `GameDataScripts/MagicData/MoveEnum.cs` | 旧枚举（None/Forward/Rotate），目前没有任何代码使用，与 `MagicMoveType` 概念重叠 |
+| `MagicCastTest` | `test/MagicCastTest.cs` | 临时测试脚本：`Start` 里调一次 `Cast`，验完可删 |
+
 ## 一、一次释放的完整链路
 
 ```text
